@@ -30,6 +30,11 @@ public class UserController {
     public String createUser(@RequestBody UserDto userDto) {
         User newUser = new User();
         newUser.setUsername(userDto.username);
+
+        newUser.setVoornaam(userDto.voornaam);
+        newUser.setAchternaam(userDto.achternaam);
+        newUser.setEmail(userDto.email);
+
         newUser.setPassword(encoder.encode(userDto.password));
 
         List<Role> userRoles = new ArrayList<>();

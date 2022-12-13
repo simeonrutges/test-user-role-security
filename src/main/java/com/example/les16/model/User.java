@@ -11,6 +11,10 @@ public class User {
 
     private String password;
 
+    private String voornaam;
+    private String achternaam;
+    private String email;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
 
@@ -28,6 +32,31 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getVoornaam() {
+        return voornaam;
+    }
+
+    public void setVoornaam(String voornaam) {
+        this.voornaam = voornaam;
+    }
+
+    public String getAchternaam() {
+        return achternaam;
+    }
+
+    public void setAchternaam(String achternaam) {
+        this.achternaam = achternaam;
+    }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Collection<Role> getRoles() {
