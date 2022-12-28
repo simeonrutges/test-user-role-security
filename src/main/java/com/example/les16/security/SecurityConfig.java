@@ -52,6 +52,7 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers("/secret").hasAuthority("BESTUURDER")
+                // Mark zegt hasRoles is waarschijnljik beter als hasAthority. Hij weet niet echt wat het verschil is
                 .antMatchers("/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .and()
                 .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)

@@ -1,52 +1,38 @@
 package com.example.les16.controller;
 
-import com.example.les16.repository.RoleRepository;
 import com.example.les16.dto.UserDto;
-import com.example.les16.model.Role;
-import com.example.les16.model.User;
-import com.example.les16.repository.UserRepository;
+import com.example.les16.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.net.URI;
 
 @RestController
 public class UserController {
+@Autowired
+private UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    // passwordEncoder staat ook in de uitwerking hier
 
-    private final UserRepository userRepos;
-    private final RoleRepository roleRepos;
-    private final PasswordEncoder encoder;
-
-    public UserController(UserRepository userRepos, RoleRepository roleRepos, PasswordEncoder encoder) {
-        this.userRepos = userRepos;
-        this.roleRepos = roleRepos;
-        this.encoder = encoder;
+    public UserController(PasswordEncoder encoder) {
+        this.passwordEncoder = encoder;
     }
     @PostMapping("/users")
-    public String createUser(@RequestBody UserDto userDto) {
-        User newUser = new User();
-        newUser.setUsername(userDto.username);
+    public ResponseEntity<String> klant(@RequestBody UserDto dto) {;
 
-        newUser.setVoornaam(userDto.voornaam);
-        newUser.setAchternaam(userDto.achternaam);
-        newUser.setEmail(userDto.email);
+        //met password encoder encoden
+        dto.setPassword(passwordEncoder.encode(dto.password));
 
-        newUser.setPassword(encoder.encode(userDto.password));
+        String newUsername = userService.createUser(dto);
 
-        List<Role> userRoles = new ArrayList<>();
-        for (String rolename : userDto.roles) {
-            Optional<Role> or = roleRepos.findById(rolename);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .buildAndExpand(newUsername).toUri();
 
-            userRoles.add(or.get());
-        }
-        newUser.setRoles(userRoles);
-
-        userRepos.save(newUser);
-
-        return "Done";
+        return ResponseEntity.created(location).body(newUsername);
     }
 }
