@@ -8,12 +8,18 @@ import java.util.Collection;
 public class User {
     @Id
     private String username;
-
     private String password;
-
-    private String voornaam;
-    private String achternaam;
+    private String firstname;
+    private String lastname;
     private String email;
+//    @Column(nullable = false)
+    private boolean enabled = true;
+//    @Column
+    private int phoneNumber;
+//    @Column
+    private String bio;
+
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
@@ -34,20 +40,20 @@ public class User {
         this.password = password;
     }
 
-    public String getVoornaam() {
-        return voornaam;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setVoornaam(String voornaam) {
-        this.voornaam = voornaam;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getAchternaam() {
-        return achternaam;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setAchternaam(String achternaam) {
-        this.achternaam = achternaam;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
 
@@ -57,6 +63,30 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public Collection<Role> getRoles() {

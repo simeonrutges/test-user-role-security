@@ -1,12 +1,22 @@
 package com.example.les16.dto;
 
+import com.example.les16.model.Role;
+
+import javax.persistence.Column;
+import java.util.List;
+
 public class UserDto {
     public String username;
     public String password;
-    public String voornaam;
-    public String achternaam;
+    public String firstname;
+    public String lastname;
     public String email;
-
+//    @Column
+    public String bio;
+//    @Column(nullable = false)
+    public boolean enabled = true;
+//    @Column
+    public int phoneNumber;
     public String[] roles;
 
     public String getUsername() {
@@ -25,20 +35,20 @@ public class UserDto {
         this.password = password;
     }
 
-    public String getVoornaam() {
-        return voornaam;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setVoornaam(String voornaam) {
-        this.voornaam = voornaam;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getAchternaam() {
-        return achternaam;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setAchternaam(String achternaam) {
-        this.achternaam = achternaam;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getEmail() {
@@ -49,6 +59,30 @@ public class UserDto {
         this.email = email;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public String[] getRoles() {
         return roles;
     }
@@ -56,4 +90,7 @@ public class UserDto {
     public void setRoles(String[] roles) {
         this.roles = roles;
     }
+
+//    public void setRoles(List<Role> userRoles) {
+//    }
 }

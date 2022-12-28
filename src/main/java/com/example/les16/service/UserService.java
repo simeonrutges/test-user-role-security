@@ -23,12 +23,14 @@ public class UserService {
 
     public String createUser(@RequestBody UserDto userDto) {
         User newUser = new User();
+
         newUser.setUsername(userDto.username);
-
-        newUser.setVoornaam(userDto.voornaam);
-        newUser.setAchternaam(userDto.achternaam);
+        newUser.setFirstname(userDto.firstname);
+        newUser.setLastname(userDto.lastname);
         newUser.setEmail(userDto.email);
-
+        newUser.setBio(userDto.bio);
+        newUser.setPhoneNumber(userDto.phoneNumber);
+        newUser.setEnabled(userDto.enabled);
         newUser.setPassword(userDto.password);
 
         List<Role> userRoles = new ArrayList<>();
@@ -44,5 +46,54 @@ public class UserService {
         return "Done";
     }
 
+//    public String createUser(@RequestBody UserDto userDto) {
+////        User newUser = new User();
+//
+//        List<Role> userRoles = new ArrayList<>();
+//        for (String rolename : userDto.getRoles()) {
+//            Optional<Role> or = roleRepos.findById(rolename);
+//
+//            userRoles.add(or.get());
+//        }
+//        userDto.setRoles(userRoles);
+//
+//        userRepository.save(toUser(userDto));
+//
+//        return "Done";
+//    }
+//
+//
+//
+//    public static UserDto fromUser(User user){
+//
+//        var dto = new UserDto();
+//
+//        dto.username = user.getUsername();
+//        dto.password = user.getPassword();
+//        dto.enabled = user.isEnabled();
+//        dto.firstname = user.getFirstname();
+//        dto.lastname = user.getLastname();
+//        dto.phoneNumber = user.getPhoneNumber();
+//        dto.email = user.getEmail();
+//        dto.bio = user.getBio();
+//
+//        return dto;
+//    }
+//
+//    public User toUser(UserDto userDto) {
+//
+//        var user = new User();
+//
+//        user.setUsername(userDto.getUsername());
+//        user.setPassword(userDto.getPassword());
+//        user.setEnabled(userDto.isEnabled());
+//        user.setFirstname(userDto.getFirstname());
+//        user.setLastname(userDto.getLastname());
+//        user.setPhoneNumber(userDto.getPhoneNumber());
+//        user.setEmail(userDto.getEmail());
+//        user.setBio(userDto.getBio());
+//
+//        return user;
+//    }
 
 }
