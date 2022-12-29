@@ -18,11 +18,10 @@ public class User {
     private int phoneNumber;
 //    @Column
     private String bio;
-
-
-
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
+    @OneToOne
+    Car car;
 
     public String getUsername() {
         return username;
@@ -95,5 +94,13 @@ public class User {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
     }
 }

@@ -5,14 +5,14 @@ import com.example.les16.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
+@RequestMapping(value = "/users")
 public class UserController {
 @Autowired
 private UserService userService;
@@ -22,7 +22,7 @@ private UserService userService;
     public UserController(PasswordEncoder encoder) {
         this.passwordEncoder = encoder;
     }
-    @PostMapping("/users")
+    @PostMapping("")
     public ResponseEntity<String> klant(@RequestBody UserDto dto) {;
 
         //met password encoder encoden
@@ -35,4 +35,24 @@ private UserService userService;
 
         return ResponseEntity.created(location).body(newUsername);
     }
+
+    //vanaf hier nieuw. Nog even wachten tot dto in service werkt
+//    @GetMapping(value = "")
+//    public ResponseEntity<List<UserDto>> getUsers() {
+//
+//        List<UserDto> userDtos = userService.getUsers();
+//
+//        return ResponseEntity.ok().body(userDtos);
+//    }
+//
+//    @GetMapping(value = "/{username}")
+//    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
+//
+//        UserDto optionalUser = userService.getUser(username);
+//
+//
+//        return ResponseEntity.ok().body(optionalUser);
+//
+//    }
+
 }

@@ -18,6 +18,8 @@ public class UserDto {
 //    @Column
     public int phoneNumber;
     public String[] roles;
+    public CarDto carDto;
+
 
     public String getUsername() {
         return username;
@@ -91,6 +93,14 @@ public class UserDto {
         this.roles = roles;
     }
 
-//    public void setRoles(List<Role> userRoles) {
+    public CarDto getCarDto() {
+        return carDto;
+    }
+
+    public void setCarDto(CarDto carDto) {
+        this.carDto = carDto;
+    }
+
+    //    public void setRoles(List<Role> userRoles) {
 //    }
 }

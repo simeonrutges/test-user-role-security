@@ -6,6 +6,7 @@ import com.example.les16.model.User;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -45,6 +46,26 @@ public class UserService {
 
         return "Done";
     }
+//    public List<UserDto> getUsers() {
+//        List<UserDto> collection = new ArrayList<>();
+//        List<User> list = userRepository.findAll();
+//        for (User user : list) {
+//            collection.add(fromUser(user));
+//        }
+//        return collection;
+//    }
+//
+//    public UserDto getUser(String username) {
+//        UserDto dto = new UserDto();
+//        Optional<User> user = userRepository.findById(username);
+//        if (user.isPresent()){
+//            dto = fromUser(user.get());
+//        }else {
+//            throw new UsernameNotFoundException(username);
+//        }
+//        return dto;
+//    }
+
 
 //    public String createUser(@RequestBody UserDto userDto) {
 ////        User newUser = new User();
