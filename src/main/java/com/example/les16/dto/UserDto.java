@@ -1,8 +1,10 @@
 package com.example.les16.dto;
 
+import com.example.les16.model.Ride;
 import com.example.les16.model.Role;
 
 import javax.persistence.Column;
+import java.util.Collection;
 import java.util.List;
 
 public class UserDto {
@@ -19,6 +21,8 @@ public class UserDto {
     public int phoneNumber;
     public String[] roles;
     public CarDto carDto;
+
+    public Collection<Ride> rides;
 
 
     public String getUsername() {
@@ -101,6 +105,13 @@ public class UserDto {
         this.carDto = carDto;
     }
 
+    public Collection<Ride> getRides() {
+        return rides;
+    }
+
+    public void setRides(Collection<Ride> rides) {
+        this.rides = rides;
+    }
     //    public void setRoles(List<Role> userRoles) {
 //    }
 }

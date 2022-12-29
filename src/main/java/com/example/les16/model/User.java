@@ -20,6 +20,12 @@ public class User {
     private String bio;
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
+
+//    @ManyToMany(fetch = FetchType.EAGER)
+    // dit is wel de bedoeling. Bij bv een get van user geeft SB dan ook de collectie rides mee
+    @ManyToMany
+    private Collection<Ride> rides;
+    // bij deze many-to-many controlleren of wel moet
     @OneToOne
     Car car;
 
@@ -102,5 +108,13 @@ public class User {
 
     public void setCar(Car car) {
         this.car = car;
+    }
+
+    public Collection<Ride> getRides() {
+        return rides;
+    }
+
+    public void setRides(Collection<Ride> rides) {
+        this.rides = rides;
     }
 }

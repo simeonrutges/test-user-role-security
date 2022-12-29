@@ -42,6 +42,8 @@ public class UserService {
         }
         newUser.setRoles(userRoles);
 
+//        moet ik hier nog de Cars bijzetten?
+
         userRepository.save(newUser);
 
         return "Done";
