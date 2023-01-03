@@ -1,5 +1,6 @@
 package com.example.les16.controller;
 
+import com.example.les16.dto.IdInputDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,10 @@ private UserService userService;
 //        return ResponseEntity.ok().body(optionalUser);
 //
 //    }
+    @PutMapping("/users/{id}/car")
+    public void assignCarToUser(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
+        userService.assignCarToUser(id, input.id);
+        //@Valid moet bij de  regel voor @Requetsbody!!
+    }
 
 }

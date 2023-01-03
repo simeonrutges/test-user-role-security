@@ -97,7 +97,7 @@ public class RideService {
 
         return dto;
     }
-// hieronder vanavond verder gegaan
+// hieronder vanavond verder gegaan. is dit inderdaad nodig?
     public void assignUserToRide(Long id, String username) {
         var optionalRide = rideRepository.findById(id);
         var optionalUser = userRepository.findById(username);

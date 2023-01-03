@@ -1,8 +1,12 @@
 package com.example.les16.service;
 
 import com.example.les16.dto.UserDto;
+import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.model.Ride;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
+import com.example.les16.repository.CarRepository;
+import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +24,16 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private CarRepository carRepository;
+
+    @Autowired
+    private CarService carService;
+
+    @Autowired
     private RoleRepository roleRepos;
+
+    @Autowired
+    private RideRepository rideRepository;
 
     public String createUser(@RequestBody UserDto userDto) {
         User newUser = new User();
@@ -42,7 +55,16 @@ public class UserService {
         }
         newUser.setRoles(userRoles);
 
-//        moet ik hier nog de Cars bijzetten?
+
+//        moet ik hier nog de Cars bijzetten? bv:
+//        List<Ride> userRides = new ArrayList<>();
+//        for (Ride ride : userDto.rides) {
+//            Optional<Ride> or = rideRepository.findById(ride.getId());
+//
+//            userRides.add(or.get());
+//            //or.get gaat ervan uit dat er inderdaad een ride is. Hoe Moet ik dit veranderen!!!
+//        }
+//        newUser.setRides(userRides);
 
         userRepository.save(newUser);
 
@@ -118,5 +140,21 @@ public class UserService {
 //
 //        return user;
 //    }
+
+    public void assignCarToUser(Long id, Long carId) {
+        var optionalUser = userRepository.findById(String.valueOf(id));
+        // hierboven tussen haakjes was gewoon allen id)
+        var optionalCar = carRepository.findById(carId);
+
+        if(optionalUser.isPresent() && optionalCar.isPresent()) {
+            var user = optionalUser.get();
+            var car = optionalCar.get();
+
+            user.setCar(car);
+            userRepository.save(user);
+        } else {
+            throw new RecordNotFoundException();
+        }
+    }
 
 }

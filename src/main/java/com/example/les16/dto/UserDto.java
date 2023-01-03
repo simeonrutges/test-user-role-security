@@ -23,6 +23,7 @@ public class UserDto {
     public CarDto carDto;
 
     public Collection<Ride> rides;
+    // kan  dit een collection zijn??
 
 
     public String getUsername() {
