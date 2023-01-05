@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserDto {
+//    public Long id;
+
     public String username;
     public String password;
     public String firstname;
@@ -25,6 +27,14 @@ public class UserDto {
     public Collection<Ride> rides;
     // kan  dit een collection zijn??
 
+
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public String getUsername() {
         return username;

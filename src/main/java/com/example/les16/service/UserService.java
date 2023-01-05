@@ -38,6 +38,7 @@ public class UserService {
     public String createUser(@RequestBody UserDto userDto) {
         User newUser = new User();
 
+//        newUser.setId(userDto.id);
         newUser.setUsername(userDto.username);
         newUser.setFirstname(userDto.firstname);
         newUser.setLastname(userDto.lastname);
@@ -141,9 +142,8 @@ public class UserService {
 //        return user;
 //    }
 
-    public void assignCarToUser(Long id, Long carId) {
-        var optionalUser = userRepository.findById(String.valueOf(id));
-        // hierboven tussen haakjes was gewoon allen id)
+    public void assignCarToUser(String username, Long carId) {
+        var optionalUser = userRepository.findById(username);
         var optionalCar = carRepository.findById(carId);
 
         if(optionalUser.isPresent() && optionalCar.isPresent()) {

@@ -56,9 +56,10 @@ private UserService userService;
 //
 //    }
     @PutMapping("/users/{id}/car")
-    public void assignCarToUser(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
-        userService.assignCarToUser(id, input.id);
+    public void assignCarToUser(@PathVariable("id") String username, @RequestBody IdInputDto input) {
+        userService.assignCarToUser(username, input.id);
         //@Valid moet bij de  regel voor @Requetsbody!!
+        // dit was overal ID. zie televisions
     }
 
 }
