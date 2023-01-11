@@ -1,47 +1,91 @@
 package com.example.les16.controller;
 
-import com.example.les16.repository.RoleRepository;
+import com.example.les16.dto.IdInputDto;
+import com.example.les16.dto.RoleDto;
 import com.example.les16.dto.UserDto;
-import com.example.les16.model.Role;
-import com.example.les16.model.User;
-import com.example.les16.repository.UserRepository;
+import com.example.les16.service.UserRoleRideService;
+import com.example.les16.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
+import java.net.URI;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
+@RequestMapping(value = "/users")
 public class UserController {
 
-    private final UserRepository userRepos;
-    private final RoleRepository roleRepos;
-    private final PasswordEncoder encoder;
+    @Autowired
+    private UserService userService;
 
-    public UserController(UserRepository userRepos, RoleRepository roleRepos, PasswordEncoder encoder) {
-        this.userRepos = userRepos;
-        this.roleRepos = roleRepos;
-        this.encoder = encoder;
+    @Autowired
+    private UserRoleRideService userRoleRideService;
+
+    private final PasswordEncoder passwordEncoder;
+    // passwordEncoder staat ook in de uitwerking hier
+
+    public UserController(PasswordEncoder encoder) {
+        this.passwordEncoder = encoder;
     }
-    @PostMapping("/users")
-    public String createUser(@RequestBody UserDto userDto) {
-        User newUser = new User();
-        newUser.setUsername(userDto.username);
-        newUser.setPassword(encoder.encode(userDto.password));
 
-        List<Role> userRoles = new ArrayList<>();
-        for (String rolename : userDto.roles) {
-            Optional<Role> or = roleRepos.findById(rolename);
+    @GetMapping(value = "")
+    public ResponseEntity<List<UserDto>> getUsers() {
 
-            userRoles.add(or.get());
-        }
-        newUser.setRoles(userRoles);
+        List<UserDto> userDtos = userService.getUsers();
 
-        userRepos.save(newUser);
-
-        return "Done";
+        return ResponseEntity.ok().body(userDtos);
     }
+
+    @PostMapping("")
+    public ResponseEntity<String> klant(@RequestBody UserDto dto) {;
+
+        //met password encoder encoden
+        dto.setPassword(passwordEncoder.encode(dto.password));
+
+        String newUsername = userService.createUser(dto);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .buildAndExpand(newUsername).toUri();
+
+        return ResponseEntity.created(location).body(newUsername);
+    }
+
+    //vanaf hier nieuw. Nog even wachten tot dto in service werkt
+//    @GetMapping(value = "")
+//    public ResponseEntity<List<UserDto>> getUsers() {
+//
+//        List<UserDto> userDtos = userService.getUsers();
+//
+//        return ResponseEntity.ok().body(userDtos);
+//    }
+//
+//    @GetMapping(value = "/{username}")
+//    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
+//
+//        UserDto optionalUser = userService.getUser(username);
+//
+//
+//        return ResponseEntity.ok().body(optionalUser);
+//
+//    }
+    @PutMapping("/users/{id}/car")
+    public void assignCarToUser(@PathVariable("id") String username, @RequestBody IdInputDto input) {
+        userService.assignCarToUser(username, input.id);
+        //@Valid moet bij de  regel voor @Requetsbody!!
+        // dit was overal ID. zie televisions
+    }
+
+
+
+
+//    @GetMapping("/roles/{userId}")
+//    public Collection<RoleDto> getRoleByUserId(@PathVariable("userId") String userId){
+////        return roleUserService.getTelevisionWallBracketByTelevisionId(userId);
+//    return userRoleRideService.getUserRoleByUserId(userId);
+//    }
+
 }
