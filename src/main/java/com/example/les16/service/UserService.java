@@ -35,7 +35,7 @@ public class UserService {
     @Autowired
     private RideRepository rideRepository;
 
-    public String createUser(@RequestBody UserDto userDto) {
+    public String createUser(UserDto userDto) {
         User newUser = new User();
 
 //        newUser.setId(userDto.id);

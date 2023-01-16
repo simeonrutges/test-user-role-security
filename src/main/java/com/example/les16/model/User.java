@@ -7,7 +7,6 @@ import java.util.Collection;
 @Table(name="users")
 public class User {
     @Id
-//    Long id;
     private String username;
     private String password;
     private String firstname;
@@ -18,6 +17,7 @@ public class User {
 //    @Column
     private int phoneNumber;
 //    @Column
+
     private String bio;
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
