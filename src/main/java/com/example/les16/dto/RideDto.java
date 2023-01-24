@@ -24,8 +24,6 @@ public class RideDto {
     public boolean automaticAcceptance;
 
     public Collection <User> users;
-    // in model Ride heb ik User niet. Moet dit?
-
 
     public RideDto() {
     }

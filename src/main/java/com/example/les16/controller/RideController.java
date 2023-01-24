@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
+//@CrossOrigin
 @RestController
 @RequestMapping(value = "/rides")
 public class RideController {
@@ -30,8 +31,8 @@ public class RideController {
     }
     // tot hier werkt het... hier verder gegaan
 
-    @PutMapping("/{id}/{username}")
-    public void assignUserToRide(@PathVariable("id") Long id, @PathVariable("username") String username) {
-        rideService.assignUserToRide(id, username);
-    }
+//    @PutMapping("/{id}/{username}")
+//    public void assignUserToRide(@PathVariable("id") Long id, @PathVariable("username") String username) {
+//        rideService.assignUserToRide(id, username);
+//    }
 }

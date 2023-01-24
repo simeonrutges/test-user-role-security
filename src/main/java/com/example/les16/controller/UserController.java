@@ -1,6 +1,5 @@
 package com.example.les16.controller;
 
-import com.example.les16.dto.IdInputDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
@@ -24,7 +23,9 @@ private UserService userService;
         this.passwordEncoder = encoder;
     }
     @PostMapping("")
-    public ResponseEntity<String> klant(@RequestBody UserDto dto) {;
+    public ResponseEntity<String> klant(@RequestBody UserDto dto) {
+
+        //@Valid met BindingResults nog opgeven. Zie les Dto-service 2.06
 
         //met password encoder encoden
         dto.setPassword(passwordEncoder.encode(dto.password));
@@ -55,9 +56,9 @@ private UserService userService;
 //        return ResponseEntity.ok().body(optionalUser);
 //
 //    }
-    @PutMapping("/users/{id}/car")
-    public void assignCarToUser(@PathVariable("id") String username, @RequestBody IdInputDto input) {
-        userService.assignCarToUser(username, input.id);
+    @PutMapping("/{username}/{carId}")
+    public void assignCarToUser(@PathVariable ("username") String username,@PathVariable ("carId") Long carId) {
+        userService.assignCarToUser(username, carId);
         //@Valid moet bij de  regel voor @Requetsbody!!
         // dit was overal ID. zie televisions
     }

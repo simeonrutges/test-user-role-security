@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserDto {
-//    public Long id;
 
     public String username;
     public String password;
@@ -125,4 +124,5 @@ public class UserDto {
     }
     //    public void setRoles(List<Role> userRoles) {
 //    }
+
 }

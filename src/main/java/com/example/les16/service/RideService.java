@@ -1,8 +1,10 @@
 package com.example.les16.service;
 
 import com.example.les16.dto.RideDto;
+import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Ride;
+import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.UserRepository;
@@ -10,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,23 +65,36 @@ public class RideService {
         Ride newRide = transferToRide(rideDto);
         rideRepository.save(newRide);
 
-        return rideDto;
+//        return rideDto;
+
+        return transferToDto(newRide);
+
     }
 
-    public Ride transferToRide(RideDto dto){
+    public Ride transferToRide(RideDto rideDto){
         var ride = new Ride();
 
-        ride.setId(dto.getId());
-        ride.setDestination(dto.getDestination());
-        ride.setPickUpLocation(dto.getPickUpLocation());
-        ride.setRoute(dto.getRoute());
-        ride.setAddRideInfo(dto.getAddRideInfo());
-        ride.setDepartureTime(dto.getDepartureTime());
-        ride.setPricePerPerson(dto.getPricePerPerson());
-        ride.setTotalRitPrice(dto.getTotalRitPrice());
-        ride.setAvailableSpots(dto.getAvailableSpots());
-        ride.setAutomaticAcceptance(dto.isAutomaticAcceptance());
-
+//        ride.setId(rideDto.getId());
+        ride.setDestination(rideDto.getDestination());
+        ride.setPickUpLocation(rideDto.getPickUpLocation());
+        ride.setRoute(rideDto.getRoute());
+        ride.setAddRideInfo(rideDto.getAddRideInfo());
+        ride.setDepartureTime(rideDto.getDepartureTime());
+        ride.setPricePerPerson(rideDto.getPricePerPerson());
+        ride.setTotalRitPrice(rideDto.getTotalRitPrice());
+        ride.setAvailableSpots(rideDto.getAvailableSpots());
+        ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
+/////
+//        List<User> userRides = new ArrayList<>();
+//        for (UserDto user : rideDto.users) {
+//            Optional<User> ou = userRepository.findByUsername(user.getUsername());
+//
+//            userRides.add(ou.get());
+//        }
+//        ride.setUsers(userRides);
+        ///// tot hier erbij gezet
+        rideRepository.save(ride);
+        /// moet deze laatste save erbij???
         return ride;
     }
 
@@ -95,21 +112,25 @@ public class RideService {
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
 
+//        if(ride.getUsers() !=null){
+//            dto.setUsers(UserService.fromUser(ride.getUsers());
+//        }
+
         return dto;
     }
 // hieronder vanavond verder gegaan. is dit inderdaad nodig?
-    public void assignUserToRide(Long id, String username) {
-        var optionalRide = rideRepository.findById(id);
-        var optionalUser = userRepository.findById(username);
-
-        if(optionalRide.isPresent() && optionalUser.isPresent()) {
-            var ride = optionalRide.get();
-            var user = optionalUser.get();
-
-            ride.setUsers((Collection<User>) user);
-            rideRepository.save(ride);
-        } else {
-            throw new RecordNotFoundException();
-        }
-    }
+//    public void assignUserToRide(Long id, String username) {
+//        var optionalRide = rideRepository.findById(id);
+//        var optionalUser = userRepository.findById(username);
+//
+//        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+//            var ride = optionalRide.get();
+//            var user = optionalUser.get();
+//
+//            ride.setUsers((Collection<User>) user);
+//            rideRepository.save(ride);
+//        } else {
+//            throw new RecordNotFoundException();
+//        }
+//    }
 }

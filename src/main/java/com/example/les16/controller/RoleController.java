@@ -4,10 +4,12 @@ import com.example.les16.dto.RoleDto;
 import com.example.les16.model.Role;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.service.RoleService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+//@CrossOrigin
 @RestController
 public class RoleController {
 

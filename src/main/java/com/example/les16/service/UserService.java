@@ -36,36 +36,37 @@ public class UserService {
     private RideRepository rideRepository;
 
     public String createUser(UserDto userDto) {
-        User newUser = new User();
+        User newUser = toUser(userDto);
 
-//        newUser.setId(userDto.id);
-        newUser.setUsername(userDto.username);
-        newUser.setFirstname(userDto.firstname);
-        newUser.setLastname(userDto.lastname);
-        newUser.setEmail(userDto.email);
-        newUser.setBio(userDto.bio);
-        newUser.setPhoneNumber(userDto.phoneNumber);
-        newUser.setEnabled(userDto.enabled);
-        newUser.setPassword(userDto.password);
+//        User newUser = new User();
 
-        List<Role> userRoles = new ArrayList<>();
-        for (String rolename : userDto.roles) {
-            Optional<Role> or = roleRepos.findById(rolename);
-
-            userRoles.add(or.get());
-        }
-        newUser.setRoles(userRoles);
-
-
-//        moet ik hier nog de Cars bijzetten? bv:
-//        List<Ride> userRides = new ArrayList<>();
-//        for (Ride ride : userDto.rides) {
-//            Optional<Ride> or = rideRepository.findById(ride.getId());
+//        newUser.setUsername(userDto.username);
+//        newUser.setFirstname(userDto.firstname);
+//        newUser.setLastname(userDto.lastname);
+//        newUser.setEmail(userDto.email);
+//        newUser.setBio(userDto.bio);
+//        newUser.setPhoneNumber(userDto.phoneNumber);
+//        newUser.setEnabled(userDto.enabled);
+//        newUser.setPassword(userDto.password);
 //
-//            userRides.add(or.get());
-//            //or.get gaat ervan uit dat er inderdaad een ride is. Hoe Moet ik dit veranderen!!!
+//        List<Role> userRoles = new ArrayList<>();
+//        for (String rolename : userDto.roles) {
+//            Optional<Role> or = roleRepos.findById(rolename);
+//
+//            userRoles.add(or.get());
 //        }
-//        newUser.setRides(userRides);
+//        newUser.setRoles(userRoles);
+//
+//
+////        moet ik hier nog de Cars bijzetten? bv:
+////        List<Ride> userRides = new ArrayList<>();
+////        for (Ride ride : userDto.rides) {
+////            Optional<Ride> or = rideRepository.findById(ride.getId());
+////
+////            userRides.add(or.get());
+////            //or.get gaat ervan uit dat er inderdaad een ride is. Hoe Moet ik dit veranderen!!!
+////        }
+////        newUser.setRides(userRides);
 
         userRepository.save(newUser);
 
@@ -109,41 +110,52 @@ public class UserService {
 //    }
 //
 //
+/////////////
+    public static UserDto fromUser(User user){
+
+        var dto = new UserDto();
+
+        dto.username = user.getUsername();
+        dto.password = user.getPassword();
+        dto.enabled = user.isEnabled();
+        dto.firstname = user.getFirstname();
+        dto.lastname = user.getLastname();
+        dto.phoneNumber = user.getPhoneNumber();
+        dto.email = user.getEmail();
+        dto.bio = user.getBio();
+
+        return dto;
+    }
 //
-//    public static UserDto fromUser(User user){
-//
-//        var dto = new UserDto();
-//
-//        dto.username = user.getUsername();
-//        dto.password = user.getPassword();
-//        dto.enabled = user.isEnabled();
-//        dto.firstname = user.getFirstname();
-//        dto.lastname = user.getLastname();
-//        dto.phoneNumber = user.getPhoneNumber();
-//        dto.email = user.getEmail();
-//        dto.bio = user.getBio();
-//
-//        return dto;
-//    }
-//
-//    public User toUser(UserDto userDto) {
-//
-//        var user = new User();
-//
-//        user.setUsername(userDto.getUsername());
-//        user.setPassword(userDto.getPassword());
-//        user.setEnabled(userDto.isEnabled());
-//        user.setFirstname(userDto.getFirstname());
-//        user.setLastname(userDto.getLastname());
-//        user.setPhoneNumber(userDto.getPhoneNumber());
-//        user.setEmail(userDto.getEmail());
-//        user.setBio(userDto.getBio());
-//
-//        return user;
-//    }
+    public User toUser(UserDto userDto) {
+
+        var user = new User();
+
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
+        user.setEnabled(userDto.isEnabled());
+        user.setFirstname(userDto.getFirstname());
+        user.setLastname(userDto.getLastname());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setEmail(userDto.getEmail());
+        user.setBio(userDto.getBio());
+
+        List<Role> userRoles = new ArrayList<>();
+        for (String rolename : userDto.roles) {
+            Optional<Role> or = roleRepos.findById(rolename);
+
+            userRoles.add(or.get());
+        }
+        user.setRoles(userRoles);
+
+        userRepository.save(user);
+// moet deze laatste save erbij?
+        return user;
+    }
+
 
     public void assignCarToUser(String username, Long carId) {
-        var optionalUser = userRepository.findById(username);
+        var optionalUser = userRepository.findByUsername(username);
         var optionalCar = carRepository.findById(carId);
 
         if(optionalUser.isPresent() && optionalCar.isPresent()) {
@@ -152,6 +164,7 @@ public class UserService {
 
             user.setCar(car);
             userRepository.save(user);
+
         } else {
             throw new RecordNotFoundException();
         }
