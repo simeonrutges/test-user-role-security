@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalTime;
 import java.util.Collection;
+import java.util.List;
 
 public class RideDto {
     public Long id;
@@ -23,7 +24,6 @@ public class RideDto {
 
     public boolean automaticAcceptance;
 
-    public Collection <User> users;
 
     public RideDto() {
     }
@@ -121,11 +121,5 @@ public class RideDto {
         this.automaticAcceptance = automaticAcceptance;
     }
 
-    public Collection<User> getUsers() {
-        return users;
-    }
 
-    public void setUsers(Collection<User> users) {
-        this.users = users;
-    }
 }

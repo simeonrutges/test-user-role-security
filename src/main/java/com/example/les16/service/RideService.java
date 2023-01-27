@@ -67,14 +67,21 @@ public class RideService {
 
 //        return rideDto;
 
-        return transferToDto(newRide);
+        return rideDto;
 
     }
+
+//    public RideDto addUserToRide(String username, Long rideId)  {
+//        UserRide userRide = new UserRide(username, rideId);
+//        UserRideRepository.save(userRide);
+//
+//        return
+//    }
 
     public Ride transferToRide(RideDto rideDto){
         var ride = new Ride();
 
-//        ride.setId(rideDto.getId());
+        ride.setId(rideDto.getId());
         ride.setDestination(rideDto.getDestination());
         ride.setPickUpLocation(rideDto.getPickUpLocation());
         ride.setRoute(rideDto.getRoute());
@@ -84,15 +91,7 @@ public class RideService {
         ride.setTotalRitPrice(rideDto.getTotalRitPrice());
         ride.setAvailableSpots(rideDto.getAvailableSpots());
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
-/////
-//        List<User> userRides = new ArrayList<>();
-//        for (UserDto user : rideDto.users) {
-//            Optional<User> ou = userRepository.findByUsername(user.getUsername());
-//
-//            userRides.add(ou.get());
-//        }
-//        ride.setUsers(userRides);
-        ///// tot hier erbij gezet
+
         rideRepository.save(ride);
         /// moet deze laatste save erbij???
         return ride;
@@ -112,25 +111,22 @@ public class RideService {
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
 
-//        if(ride.getUsers() !=null){
-//            dto.setUsers(UserService.fromUser(ride.getUsers());
-//        }
 
         return dto;
     }
 // hieronder vanavond verder gegaan. is dit inderdaad nodig?
-//    public void assignUserToRide(Long id, String username) {
-//        var optionalRide = rideRepository.findById(id);
-//        var optionalUser = userRepository.findById(username);
-//
-//        if(optionalRide.isPresent() && optionalUser.isPresent()) {
-//            var ride = optionalRide.get();
-//            var user = optionalUser.get();
-//
-//            ride.setUsers((Collection<User>) user);
-//            rideRepository.save(ride);
-//        } else {
-//            throw new RecordNotFoundException();
-//        }
-//    }
+    public void addUserToRide(String username, Long id) {
+        var optionalRide = rideRepository.findById(id);
+        var optionalUser = userRepository.findById(username);
+
+        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+            var ride = optionalRide.get();
+            var user = optionalUser.get();
+
+            ride.setUsers(List<> user);
+            rideRepository.save(ride);
+        } else {
+            throw new RecordNotFoundException();
+        }
+    }
 }

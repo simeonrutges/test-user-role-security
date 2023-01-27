@@ -21,19 +21,13 @@ public class UserDto {
 //    @Column
     public int phoneNumber;
     public String[] roles;
-    public CarDto carDto;
 
-    public Collection<Ride> rides;
-    // kan  dit een collection zijn??
+//    public CarDto carDto;
+// Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
+    
+//    public Collection<Ride> rides;
+    // Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
 
-
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 
     public String getUsername() {
         return username;
@@ -107,22 +101,22 @@ public class UserDto {
         this.roles = roles;
     }
 
-    public CarDto getCarDto() {
-        return carDto;
-    }
-
-    public void setCarDto(CarDto carDto) {
-        this.carDto = carDto;
-    }
-
-    public Collection<Ride> getRides() {
-        return rides;
-    }
-
-    public void setRides(Collection<Ride> rides) {
-        this.rides = rides;
-    }
-    //    public void setRoles(List<Role> userRoles) {
+//    public CarDto getCarDto() {
+//        return carDto;
 //    }
+//
+//    public void setCarDto(CarDto carDto) {
+//        this.carDto = carDto;
+//    }
+//
+//    public Collection<Ride> getRides() {
+//        return rides;
+//    }
+//
+//    public void setRides(Collection<Ride> rides) {
+//        this.rides = rides;
+//    }
+//    //    public void setRoles(List<Role> userRoles) {
+////    }
 
 }

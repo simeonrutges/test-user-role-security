@@ -3,6 +3,7 @@ package com.example.les16.model;
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "rides")
@@ -24,7 +25,7 @@ public class Ride {
     @ManyToMany(mappedBy = "rides")
 //    @ManyToMany(fetch = FetchType.EAGER)
 //    dit wil ik er eigenlijk ook bij hebben. Bij het opvragen van een rit wil ik ook de users zien
-    private Collection<User> users;
+    private List<User> users;
     //rides is de naam van het veld aan de userkant
 
     public Long getId() {
@@ -108,11 +109,12 @@ public class Ride {
     }
 
     // deze na het eten erbij gezet
-    public Collection<User> getUsers() {
+
+    public List<User> getUsers() {
         return users;
     }
 
-    public void setUsers(Collection<User> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 }

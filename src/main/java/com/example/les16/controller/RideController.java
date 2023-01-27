@@ -22,12 +22,19 @@ public class RideController {
 
 
     @PostMapping("")
-    public RideDto addRide(@RequestBody RideDto dto){
+            public RideDto addRide(@RequestBody RideDto dto){
+//    public RideDto addRide(@RequestBody RideDto dto){
         RideDto dto1 = rideService.addRide(dto);
 //        Rit savedRit =  rideService.save(ritDto);
 
 
         return dto1;
+    }
+
+    @PostMapping("/{username}/{rideId}")
+    public RideDto addUserToRide(@PathVariable String username, @PathVariable Long rideId){
+        RideDto dto2 = rideService.addUserToRide(username, rideId);
+        return dto2;
     }
     // tot hier werkt het... hier verder gegaan
 
