@@ -41,7 +41,7 @@ public class RideService {
         if(ride.isPresent()) {
             return transferToDto(ride.get());
         } else {
-            throw new RecordNotFoundException("No car found");
+            throw new RecordNotFoundException("Geen rit gevonden");
         }
     }
 
@@ -115,18 +115,64 @@ public class RideService {
         return dto;
     }
 // hieronder vanavond verder gegaan. is dit inderdaad nodig?
-    public void addUserToRide(String username, Long id) {
+    public void addUserToRide(Long id, String username) {
         var optionalRide = rideRepository.findById(id);
-        var optionalUser = userRepository.findById(username);
+        var optionalUser = userRepository.findByUsername(username);
 
         if(optionalRide.isPresent() && optionalUser.isPresent()) {
             var ride = optionalRide.get();
             var user = optionalUser.get();
 
-            ride.setUsers(List<> user);
+            user.getRides().add(ride);
+            ride.getUsers().add(user);
+
+            userRepository.save(user);
             rideRepository.save(ride);
         } else {
             throw new RecordNotFoundException();
+        }
+    }
+
+    public List<RideDto> getAllRidesByDestination(String destination) {
+        List<Ride> rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination);
+        return transferRideListToDtoList(rideList);
+    }
+    public List<RideDto> transferRideListToDtoList(List<Ride> rides){
+        List<RideDto> rideDtoList = new ArrayList<>();
+
+        for(Ride ride : rides) {
+            RideDto dto = transferToDto(ride);
+//            if(ride.getPassengers() != null){
+//                dto.setPassengers(passengerService.transferToDto(ride.getPassengers()));
+//            }
+//            if(ride.getRemoteController() != null){
+//                dto.setRemoteControllerDto(remoteControllerService.transferToDto(ride.getRemoteController()));
+//            }
+            rideDtoList.add(dto);
+        }
+        return rideDtoList;
+    }
+
+    public void deleteRide(Long id) {
+        rideRepository.deleteById(id);
+    }
+
+    public RideDto updateRide(Long id, RideDto newRide) {
+        if (rideRepository.findById(id).isPresent()){
+
+            Ride ride = rideRepository.findById(id).get();
+
+            Ride ride1 = transferToRide(newRide);
+            ride1.setId(ride.getId());
+
+            rideRepository.save(ride1);
+
+            return transferToDto(ride1);
+
+        } else {
+
+            throw new  RecordNotFoundException("geen rit gevonden");
+
         }
     }
 }

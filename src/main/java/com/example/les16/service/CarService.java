@@ -56,6 +56,16 @@ public class CarService {
         carRepository.save(storedCar);
     }
 
+    public Car transferToCar(CarDto carDto){
+        var car = new Car();
+
+        car.setId(carDto.getId());
+        car.setLicensePlate(carDto.getLicensePlate());
+        car.setModel(carDto.getModel());
+        car.setBrand(carDto.getBrand());
+
+        return car;
+    }
     public CarDto transferToDto(Car car){
         var dto = new CarDto();
 
@@ -66,16 +76,4 @@ public class CarService {
 
         return dto;
     }
-
-    public Car transferToCar(CarDto dto){
-        var car = new Car();
-
-        car.setId(dto.getId());
-        car.setLicensePlate(dto.getLicensePlate());
-        car.setModel(dto.getModel());
-        car.setBrand(dto.getBrand());
-
-        return car;
-    }
-
 }

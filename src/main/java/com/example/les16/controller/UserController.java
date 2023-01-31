@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -39,23 +41,60 @@ private UserService userService;
     }
 
     //vanaf hier nieuw. Nog even wachten tot dto in service werkt
-//    @GetMapping(value = "")
-//    public ResponseEntity<List<UserDto>> getUsers() {
-//
-//        List<UserDto> userDtos = userService.getUsers();
-//
-//        return ResponseEntity.ok().body(userDtos);
-//    }
-//
-//    @GetMapping(value = "/{username}")
-//    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
-//
-//        UserDto optionalUser = userService.getUser(username);
-//
-//
-//        return ResponseEntity.ok().body(optionalUser);
-//
-//    }
+    @GetMapping(value = "")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+
+        List<UserDto> userDtos = userService.getAllUsers();
+
+        return ResponseEntity.ok().body(userDtos);
+    }
+
+    @GetMapping(value = "/{username}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
+
+        UserDto optionalUser = userService.getUserByUsername(username);
+
+
+        return ResponseEntity.ok().body(optionalUser);
+
+    }
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Object> deleteUser(@PathVariable String username) {
+        //Deze werkt niet. Wel nodig?
+
+        userService.deleteUser(username);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @PutMapping("/{username}")
+    public ResponseEntity<Object> updateUser(@PathVariable String username, @RequestBody UserDto newUser) {
+
+        UserDto dto = userService.updateUser(username, newUser);
+
+        return ResponseEntity.ok().body(dto);
+    }
+
+
+
+
+
+
+
+
+
+    // tot hier!
+
+
+    @PostMapping("/{username}/{rideId}")
+    public ResponseEntity<Object> addRideToUser(@PathVariable String username, @PathVariable Long rideId){
+        userService.addRideToUser(username, rideId);
+        return ResponseEntity.ok().build();
+        //object kan ook void zijn
+    }
+
+
     @PutMapping("/{username}/{carId}")
     public void assignCarToUser(@PathVariable ("username") String username,@PathVariable ("carId") Long carId) {
         userService.assignCarToUser(username, carId);

@@ -36,64 +36,14 @@ public class UserService {
     private RideRepository rideRepository;
 
     public String createUser(UserDto userDto) {
-        User newUser = toUser(userDto);
 
-//        User newUser = new User();
-
-//        newUser.setUsername(userDto.username);
-//        newUser.setFirstname(userDto.firstname);
-//        newUser.setLastname(userDto.lastname);
-//        newUser.setEmail(userDto.email);
-//        newUser.setBio(userDto.bio);
-//        newUser.setPhoneNumber(userDto.phoneNumber);
-//        newUser.setEnabled(userDto.enabled);
-//        newUser.setPassword(userDto.password);
-//
-//        List<Role> userRoles = new ArrayList<>();
-//        for (String rolename : userDto.roles) {
-//            Optional<Role> or = roleRepos.findById(rolename);
-//
-//            userRoles.add(or.get());
-//        }
-//        newUser.setRoles(userRoles);
-//
-//
-////        moet ik hier nog de Cars bijzetten? bv:
-////        List<Ride> userRides = new ArrayList<>();
-////        for (Ride ride : userDto.rides) {
-////            Optional<Ride> or = rideRepository.findById(ride.getId());
-////
-////            userRides.add(or.get());
-////            //or.get gaat ervan uit dat er inderdaad een ride is. Hoe Moet ik dit veranderen!!!
-////        }
-////        newUser.setRides(userRides);
-
+        User newUser = transferToUser(userDto);
         userRepository.save(newUser);
 
         return "Done";
     }
-//    public List<UserDto> getUsers() {
-//        List<UserDto> collection = new ArrayList<>();
-//        List<User> list = userRepository.findAll();
-//        for (User user : list) {
-//            collection.add(fromUser(user));
-//        }
-//        return collection;
-//    }
-//
-//    public UserDto getUser(String username) {
-//        UserDto dto = new UserDto();
-//        Optional<User> user = userRepository.findById(username);
-//        if (user.isPresent()){
-//            dto = fromUser(user.get());
-//        }else {
-//            throw new UsernameNotFoundException(username);
-//        }
-//        return dto;
-//    }
 
-
-//    public String createUser(@RequestBody UserDto userDto) {
+    //    public String createUser(@RequestBody UserDto userDto) {
 ////        User newUser = new User();
 //
 //        List<Role> userRoles = new ArrayList<>();
@@ -108,10 +58,32 @@ public class UserService {
 //
 //        return "Done";
 //    }
+
+
+    public List<UserDto> getAllUsers() {
+        List<User> wallBracketList = userRepository.findAll();
+        List<UserDto> dtos = new ArrayList<>();
+        for (User wb : wallBracketList) {
+            dtos.add(transferToDto(wb));
+        }
+        return dtos;
+    }
+
 //
-//
-/////////////
-    public static UserDto fromUser(User user){
+//    public UserDto getUser(String username) {
+//        UserDto dto = new UserDto();
+//        Optional<User> user = userRepository.findById(username);
+//        if (user.isPresent()){
+//            dto = fromUser(user.get());
+//        }else {
+//            throw new UsernameNotFoundException(username);
+//        }
+//        return dto;
+//    }
+
+
+
+    public static UserDto transferToDto (User user){
 
         var dto = new UserDto();
 
@@ -127,7 +99,7 @@ public class UserService {
         return dto;
     }
 //
-    public User toUser(UserDto userDto) {
+    public User transferToUser(UserDto userDto) {
 
         var user = new User();
 
@@ -170,4 +142,63 @@ public class UserService {
         }
     }
 
+    public void addRideToUser(String username, Long id) {
+        var optionalRide = rideRepository.findById(id);
+        var optionalUser = userRepository.findByUsername(username);
+
+        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+            var ride = optionalRide.get();
+            var user = optionalUser.get();
+
+            user.getRides().add(ride);
+            ride.getUsers().add(user);
+
+            userRepository.save(user);
+            rideRepository.save(ride);
+        } else {
+            throw new RecordNotFoundException();
+        }
+    }
+
+
+    public UserDto getUserByUsername(String username) {
+        if (userRepository.findByUsername(username).isPresent()){
+            User user = userRepository.findByUsername(username).get();
+            UserDto dto =transferToDto(user);
+//            if(ride.getPassengers() != null){
+//                dto.setPassengers(passengerService.transferToDto(ride.getPassengers().get()));
+//            }
+//            if(ride.getRemoteController() != null){
+//                dto.setRemoteControllerDto(remoteControllerService.transferToDto(ride.getRemoteController()));
+//            }
+
+            return transferToDto(user);
+        }
+        else {
+            throw new RecordNotFoundException("geen user gevonden");
+        }
+    }
+
+    public void deleteUser(String username) {
+        userRepository.deleteByUsername(username);
+    }
+
+    public UserDto updateUser(String username, UserDto newUser) {
+        if (userRepository.findByUsername(username).isPresent()){
+
+            User user = userRepository.findByUsername(username).get();
+
+            User user1 = transferToUser(newUser);
+            user1.setUsername(user.getUsername());
+
+            userRepository.save(user1);
+
+            return transferToDto(user1);
+
+        } else {
+
+            throw new  RecordNotFoundException("geen user gevonden");
+
+        }
+    }
 }

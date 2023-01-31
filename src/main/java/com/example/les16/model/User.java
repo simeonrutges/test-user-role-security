@@ -2,6 +2,7 @@ package com.example.les16.model;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -25,7 +26,7 @@ public class User {
 //    @ManyToMany(fetch = FetchType.EAGER)
     // dit is wel de bedoeling. Bij bv een get van user geeft SB dan ook de collectie rides mee
     @ManyToMany
-    private Collection<Ride> rides;
+    private List<Ride> rides;
     // bij deze many-to-many controlleren of wel moet
     @OneToOne
     Car car;
@@ -119,11 +120,11 @@ public class User {
         this.car = car;
     }
 
-    public Collection<Ride> getRides() {
+    public List<Ride> getRides() {
         return rides;
     }
 
-    public void setRides(Collection<Ride> rides) {
+    public void setRides(List<Ride> rides) {
         this.rides = rides;
     }
 }
