@@ -31,8 +31,9 @@ public class ReviewService {
                 .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
 
         Review review = new Review();
-        review.setReviewedUser(review.getReviewedUser());
-        review.setReviewer(review.getReviewer());
+
+        review.setReviewedUser(reviewedUser);
+        review.setReviewer(reviewer);
         review.setText(reviewDto.getText());
         review.setPublishDate(reviewDto.getPublishDate());
 
