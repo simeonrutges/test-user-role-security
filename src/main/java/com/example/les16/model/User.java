@@ -1,6 +1,7 @@
 package com.example.les16.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +31,14 @@ public class User {
     // bij deze many-to-many controlleren of wel moet
     @OneToOne
     Car car;
+
+    @OneToMany(mappedBy = "reviewer")
+    private List<Review> reviewsWritten = new ArrayList<>();
+
+    @OneToMany(mappedBy = "reviewedUser")
+    private List<Review> reviewsReceived = new ArrayList<>();
+
+
 
 //    public Long getId() {
 //        return id;
@@ -126,5 +135,21 @@ public class User {
 
     public void setRides(List<Ride> rides) {
         this.rides = rides;
+    }
+
+    public List<Review> getReviewsWritten() {
+        return reviewsWritten;
+    }
+
+    public void setReviewsWritten(List<Review> reviewsWritten) {
+        this.reviewsWritten = reviewsWritten;
+    }
+
+    public List<Review> getReviewsReceived() {
+        return reviewsReceived;
+    }
+
+    public void setReviewsReceived(List<Review> reviewsReceived) {
+        this.reviewsReceived = reviewsReceived;
     }
 }
