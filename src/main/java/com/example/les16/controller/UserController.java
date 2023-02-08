@@ -1,13 +1,18 @@
 package com.example.les16.controller;
 
 import com.example.les16.dto.UserDto;
+import com.example.les16.model.User;
 import com.example.les16.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -25,20 +30,32 @@ private UserService userService;
         this.passwordEncoder = encoder;
     }
     @PostMapping("")
-    public ResponseEntity<String> klant(@RequestBody UserDto dto) {
+    public ResponseEntity<String> klant(@Valid @RequestBody UserDto dto, BindingResult br) {
 
-        //@Valid met BindingResults nog opgeven. Zie les Dto-service 2.06
+        if (br.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            for (FieldError fe : br.getFieldErrors()) {
+                sb.append(fe.getField() + ": ");
+                sb.append(fe.getDefaultMessage());
+                sb.append("\n");
+            }
+            return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
+        } else {
 
-        //met password encoder encoden
-        dto.setPassword(passwordEncoder.encode(dto.password));
+            //@Valid met BindingResults nog opgeven. Zie les Dto-service 2.06
 
-        String newUsername = userService.createUser(dto);
+            //met password encoder encoden
+            dto.setPassword(passwordEncoder.encode(dto.password));
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .buildAndExpand(newUsername).toUri();
+            String newUsername = userService.createUser(dto);
 
-        return ResponseEntity.created(location).body(newUsername);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .buildAndExpand(newUsername).toUri();
+
+            return ResponseEntity.created(location).body(newUsername);
+        }
     }
+
 
     //vanaf hier nieuw. Nog even wachten tot dto in service werkt
     @GetMapping(value = "")
@@ -101,5 +118,11 @@ private UserService userService;
         //@Valid moet bij de  regel voor @Requetsbody!!
         // dit was overal ID. zie televisions
     }
+//    @GetMapping("/{role}")
+//    public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
+//        List<User> users = userService.getUsersByRole(role);
+//        return ResponseEntity.ok(users);
+//    }
+    // bovenstaande is het probleem. Heeft met de security te maken?
 
 }

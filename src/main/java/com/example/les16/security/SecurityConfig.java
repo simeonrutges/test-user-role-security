@@ -51,7 +51,12 @@ public class SecurityConfig  {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
-                .antMatchers("/secret").hasAuthority("BESTUURDER")
+
+                .antMatchers(HttpMethod.POST, "/rides").hasAuthority("BESTUURDER")
+                .antMatchers(HttpMethod.POST, "/cars").hasAuthority("BESTUURDER")
+                .antMatchers("/reviews").hasAnyAuthority("PASSAGIER", "BESTUURDER")
+//                .antMatchers("/rides").hasAuthority("BESTUURDER")
+//                .antMatchers("/cars").hasAuthority("BESTUURDER")
 //                .antMatchers("/bestuurder").hasAuthority("BESTUURDER")
                 // Mark zegt hasRoles is waarschijnljik beter als hasAthority. Hij weet niet echt wat het verschil is
                 .antMatchers("/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")

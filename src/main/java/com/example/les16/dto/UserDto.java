@@ -4,21 +4,33 @@ import com.example.les16.model.Ride;
 import com.example.les16.model.Role;
 
 import javax.persistence.Column;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.List;
 
 public class UserDto {
 
+    @NotBlank
     public String username;
+    @NotBlank
+    @Size(min = 4, max = 30)
     public String password;
+    @NotBlank
     public String firstname;
+    @NotBlank
     public String lastname;
+    @Email
+    @NotNull
     public String email;
 //    @Column
     public String bio;
 //    @Column(nullable = false)
     public boolean enabled = true;
 //    @Column
+//    @Size (min = 10, max = 10)
     public int phoneNumber;
     public String[] roles;
 

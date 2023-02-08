@@ -49,7 +49,8 @@ public class CarService {
             throw new RecordNotFoundException("No car found");
         }
         Car storedCar = carRepository.findById(id).orElse(null);
-        storedCar.setId(carDto.getId());
+        // deze weggehaalt met Mark. Anders werkte de put niet
+//        storedCar.setId(carDto.getId());
         storedCar.setLicensePlate(carDto.getLicensePlate());
         storedCar.setModel(carDto.getModel());
         storedCar.setBrand(carDto.getBrand());

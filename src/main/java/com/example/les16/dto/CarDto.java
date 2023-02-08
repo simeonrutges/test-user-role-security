@@ -1,9 +1,14 @@
 package com.example.les16.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class CarDto {
     public Long id;
+    @NotBlank
     public String licensePlate;
+    @NotBlank
     public String model;
+    @NotBlank
     public String brand;
 
 

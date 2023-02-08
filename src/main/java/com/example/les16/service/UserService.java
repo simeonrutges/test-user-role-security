@@ -102,7 +102,7 @@ public class UserService {
     public User transferToUser(UserDto userDto) {
 
         var user = new User();
-
+//deze vandaag weggehaalt vanwege PUT
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
         user.setEnabled(userDto.isEnabled());
@@ -201,4 +201,7 @@ public class UserService {
 
         }
     }
+//    public List<User> getUsersByRole(String role) {
+//        return userRepository.findByRoles(role);
+//    }
 }

@@ -1,9 +1,12 @@
 package com.example.les16.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class ReviewDto {
     public Long id;
+    @NotBlank
     public String text;
     public LocalDate publishDate;
     public String reviewedUserUsername;

@@ -3,10 +3,14 @@ package com.example.les16.controller;
 import com.example.les16.dto.RideDto;
 import com.example.les16.service.RideService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +28,25 @@ public class RideController {
 
 
     @PostMapping("")
-            public RideDto addRide(@RequestBody RideDto dto){
+            public Object addRide(@Valid @RequestBody RideDto dto, BindingResult br) {
+        if (br.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            for (FieldError fe : br.getFieldErrors()) {
+                sb.append(fe.getField() + ": ");
+                sb.append(fe.getDefaultMessage());
+                sb.append("\n");
+            }
+            return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
+        } else {
+
+
 //    public RideDto addRide(@RequestBody RideDto dto){
-        RideDto dto1 = rideService.addRide(dto);
+            RideDto dto1 = rideService.addRide(dto);
 //        Rit savedRit =  rideService.save(ritDto);
 
 
-        return dto1;
+            return dto1;
+        }
     }
 
     @PostMapping("/{rideId}/{username}")

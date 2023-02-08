@@ -80,7 +80,7 @@ public class RideService {
 
     public Ride transferToRide(RideDto rideDto){
         var ride = new Ride();
-
+//deze hieronder vandaag weggehaalt vanwege de PUT
         ride.setId(rideDto.getId());
         ride.setDestination(rideDto.getDestination());
         ride.setPickUpLocation(rideDto.getPickUpLocation());
@@ -164,7 +164,7 @@ public class RideService {
 
             Ride ride1 = transferToRide(newRide);
             ride1.setId(ride.getId());
-
+//deze hierboven geprobeert weg te halen
             rideRepository.save(ride1);
 
             return transferToDto(ride1);

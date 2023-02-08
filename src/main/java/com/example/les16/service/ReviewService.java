@@ -10,8 +10,11 @@ import com.example.les16.model.User;
 import com.example.les16.repository.ReviewRepository;
 import com.example.les16.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +28,7 @@ public class ReviewService {
     private UserRepository userRepository;
 
     public ReviewDto createReview(ReviewDto reviewDto) {
-        com.example.les16.model.User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())
+        User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())
                 .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
         User reviewer = userRepository.findByUsername(reviewDto.getReviewerUsername())
                 .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
@@ -50,6 +53,31 @@ public class ReviewService {
         return dtos;
     }
 
+    /////////
+//    public List<ReviewDto> getAllReviewsByReviewedUser(Principal reviewedUser) {
+//        UserDetails userDetails = (UserDetails) ((Authentication) reviewedUser).getPrincipal();
+//        List<Review> reviewList = reviewRepository.findAllByReviewedUserEqualsIgnoreCase((org.springframework.security.core.userdetails.User) userDetails);
+//        return transferReviewListToDtoList(reviewList);
+//    }
+//
+//    public List<ReviewDto> transferReviewListToDtoList(List<Review> reviews){
+//        List<ReviewDto> reviewDtoList = new ArrayList<>();
+//
+//        for(Review review : reviews) {
+//            ReviewDto dto = transferToDto(review);
+////            if(review.getCiModule() != null){
+////                dto.setCiModuleDto(ciModuleService.transferToDto(review.getCiModule()));
+////            }
+////            if(review.getRemoteController() != null){
+////                dto.setRemoteControllerDto(remoteControllerService.transferToDto(review.getRemoteController()));
+////            }
+//            reviewDtoList.add(dto);
+//        }
+//        return reviewDtoList;
+//    }
+
+    /////////
+
     public ReviewDto getReview(long id) {
         Optional<Review> review = reviewRepository.findById(id);
         if(review.isPresent()) {
@@ -59,40 +87,28 @@ public class ReviewService {
         }
     }
 
-//    public ReviewDto addReview(ReviewDto reviewDto) {
-//        Review rc =  transferToReview(reviewDto);
-//        reviewRepository.save(rc);
-//        return reviewDto;
-//    }
-
     public void deleteReview(Long id) {
         reviewRepository.deleteById(id);
     }
 
-//    public void updateReview(Long id, ReviewDto reviewDto) {
-//        if(!reviewRepository.existsById(id)) {
-//            throw new RecordNotFoundException("No review found");
-//        }
-//        Review storedReview = reviewRepository.findById(id).orElse(null);
-//        storedReview.setId(reviewDto.getId());
-//        storedReview.setReviewer(reviewDto.getReviewer());
-//        storedReview.setReceiver(reviewDto.getReceiver());
-//        storedReview.setText(reviewDto.getText());
-//        storedReview.setPublishDate(reviewDto.getPublishDate());
-//        reviewRepository.save(storedReview);
-//    }
+    public void updateReview(Long id, ReviewDto reviewDto) {
+        User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())
+                .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
+        User reviewer = userRepository.findByUsername(reviewDto.getReviewerUsername())
+                .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
 
-//    public Review transferToReview(ReviewDto reviewDto){
-//        var review = new Review();
-//
-//        review.setId(reviewDto.getId());
-//        review.setReviewer(reviewDto.getReviewer());
-//        review.setReceiver(reviewDto.getReceiver());
-//        review.setText(reviewDto.getText());
-//        review.setPublishDate(reviewDto.getPublishDate());
-//
-//        return review;
-//    }
+        if(!reviewRepository.existsById(id)) {
+            throw new RecordNotFoundException("No review found");
+        }
+        Review storedReview = reviewRepository.findById(id).orElse(null);
+//        storedReview.setId(reviewDto.getId());
+        storedReview.setReviewedUser(reviewedUser);
+        storedReview.setReviewer(reviewer);
+        storedReview.setText(reviewDto.getText());
+        storedReview.setPublishDate(reviewDto.getPublishDate());
+        reviewRepository.save(storedReview);
+    }
+
     public ReviewDto transferToDto(Review review){
         var dto = new ReviewDto();
 
@@ -104,4 +120,23 @@ public class ReviewService {
 
         return dto;
     }
+
+    //    public Review transferToReview(ReviewDto reviewDto){
+//        var review = new Review();
+//
+//        review.setId(reviewDto.getId());
+//        review.setReviewer(reviewDto.getReviewer());
+//        review.setReceiver(reviewDto.getReceiver());
+//        review.setText(reviewDto.getText());
+//        review.setPublishDate(reviewDto.getPublishDate());
+//
+//        return review;
+//    }
+
+
+    //    public ReviewDto addReview(ReviewDto reviewDto) {
+//        Review rc =  transferToReview(reviewDto);
+//        reviewRepository.save(rc);
+//        return reviewDto;
+//    }
 }
