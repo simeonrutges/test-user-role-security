@@ -6,6 +6,8 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
@@ -18,8 +20,12 @@ public class RideDto {
     public String destination;
     public String route;
     public String addRideInfo;
-    @FutureOrPresent
+
     public LocalTime departureTime;
+    @FutureOrPresent
+    public LocalDate departureDate;
+    @FutureOrPresent
+    public LocalDateTime departureDateTime;
     @NotNull
     public double pricePerPerson;
     public double totalRitPrice;
@@ -31,13 +37,15 @@ public class RideDto {
     public RideDto() {
     }
 
-    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, double pricePerPerson, double totalRitPrice, int availableSpots, boolean automaticAcceptance) {
+    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, double totalRitPrice, int availableSpots, boolean automaticAcceptance) {
         this.id = id;
         this.pickUpLocation = pickUpLocation;
         this.destination = destination;
         this.route = route;
         this.addRideInfo = addRideInfo;
         this.departureTime = departureTime;
+        this.departureDate = departureDate;
+        this.departureDateTime = departureDateTime;
         this.pricePerPerson = pricePerPerson;
         this.totalRitPrice = totalRitPrice;
         this.availableSpots = availableSpots;
@@ -90,6 +98,22 @@ public class RideDto {
 
     public void setDepartureTime(LocalTime departureTime) {
         this.departureTime = departureTime;
+    }
+
+    public LocalDate getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(LocalDate departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public LocalDateTime getDepartureDateTime() {
+        return departureDateTime;
+    }
+
+    public void setDepartureDateTime(LocalDateTime departureDateTime) {
+        this.departureDateTime = departureDateTime;
     }
 
     public double getPricePerPerson() {

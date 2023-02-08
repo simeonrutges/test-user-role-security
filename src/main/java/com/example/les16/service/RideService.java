@@ -87,6 +87,8 @@ public class RideService {
         ride.setRoute(rideDto.getRoute());
         ride.setAddRideInfo(rideDto.getAddRideInfo());
         ride.setDepartureTime(rideDto.getDepartureTime());
+        ride.setDepartureDate(rideDto.getDepartureDate());
+        ride.setDepartureDateTime(rideDto.getDepartureDateTime());
         ride.setPricePerPerson(rideDto.getPricePerPerson());
         ride.setTotalRitPrice(rideDto.getTotalRitPrice());
         ride.setAvailableSpots(rideDto.getAvailableSpots());
@@ -106,6 +108,8 @@ public class RideService {
         dto.route = ride.getRoute();
         dto.addRideInfo = ride.getAddRideInfo();
         dto.departureTime = ride.getDepartureTime();
+        dto.departureDate = ride.getDepartureDate();
+        dto.departureDateTime = ride.getDepartureDateTime();
         dto.pricePerPerson = ride.getPricePerPerson();
         dto.totalRitPrice = ride.getTotalRitPrice();
         dto.availableSpots = ride.getAvailableSpots();

@@ -1,6 +1,8 @@
 package com.example.les16.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +18,8 @@ public class Ride {
     private String route;
     private String addRideInfo;
     private LocalTime departureTime;
+    private LocalDate departureDate;
+    private LocalDateTime departureDateTime;
     private double pricePerPerson;
     private double totalRitPrice;
     private int availableSpots;
@@ -74,6 +78,22 @@ public class Ride {
 
     public void setDepartureTime(LocalTime departureTime) {
         this.departureTime = departureTime;
+    }
+
+    public LocalDate getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(LocalDate departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public LocalDateTime getDepartureDateTime() {
+        return departureDateTime;
+    }
+
+    public void setDepartureDateTime(LocalDateTime departureDateTime) {
+        this.departureDateTime = departureDateTime;
     }
 
     public double getPricePerPerson() {
