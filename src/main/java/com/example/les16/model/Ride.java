@@ -24,6 +24,7 @@ public class Ride {
     private double totalRitPrice;
     private int availableSpots;
     private boolean automaticAcceptance;
+    private LocalTime eta;
 
 
     @ManyToMany(mappedBy = "rides")
@@ -126,6 +127,14 @@ public class Ride {
 
     public void setAutomaticAcceptance(boolean automaticAcceptance) {
         this.automaticAcceptance = automaticAcceptance;
+    }
+
+    public LocalTime getEta() {
+        return eta;
+    }
+
+    public void setEta(LocalTime eta) {
+        this.eta = eta;
     }
 
     // deze na het eten erbij gezet

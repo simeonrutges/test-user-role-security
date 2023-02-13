@@ -32,12 +32,14 @@ public class RideDto {
     @NotNull
     public int availableSpots;
     public boolean automaticAcceptance;
+    @Future
+    public LocalTime eta;
 
 
     public RideDto() {
     }
 
-    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, double totalRitPrice, int availableSpots, boolean automaticAcceptance) {
+    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, double totalRitPrice, int availableSpots, boolean automaticAcceptance, LocalTime eta) {
         this.id = id;
         this.pickUpLocation = pickUpLocation;
         this.destination = destination;
@@ -50,6 +52,7 @@ public class RideDto {
         this.totalRitPrice = totalRitPrice;
         this.availableSpots = availableSpots;
         this.automaticAcceptance = automaticAcceptance;
+        this.eta = eta;
     }
 
     public Long getId() {
@@ -148,5 +151,11 @@ public class RideDto {
         this.automaticAcceptance = automaticAcceptance;
     }
 
+    public LocalTime getEta() {
+        return eta;
+    }
 
+    public void setEta(LocalTime eta) {
+        this.eta = eta;
+    }
 }

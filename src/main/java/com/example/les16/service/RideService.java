@@ -93,6 +93,7 @@ public class RideService {
         ride.setTotalRitPrice(rideDto.getTotalRitPrice());
         ride.setAvailableSpots(rideDto.getAvailableSpots());
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
+        ride.setEta(rideDto.getEta());
 
         rideRepository.save(ride);
         /// moet deze laatste save erbij???
@@ -114,6 +115,7 @@ public class RideService {
         dto.totalRitPrice = ride.getTotalRitPrice();
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
+        dto.eta = ride.getEta();
 
 
         return dto;
