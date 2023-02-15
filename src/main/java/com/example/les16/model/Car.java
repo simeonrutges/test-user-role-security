@@ -8,6 +8,8 @@ import javax.persistence.OneToOne;
 @Entity
 public class Car {
     //is push test-user-role-sec branch gelukt?
+    // dit staat alleen in de foto upload
+    // komt dit er dan ook bij?
     @Id
     @GeneratedValue
     private Long id;
