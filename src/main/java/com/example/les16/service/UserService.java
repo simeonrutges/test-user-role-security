@@ -2,7 +2,6 @@ package com.example.les16.service;
 
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.RecordNotFoundException;
-import com.example.les16.model.Ride;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
@@ -10,13 +9,24 @@ import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class UserService {
@@ -95,6 +105,8 @@ public class UserService {
         dto.phoneNumber = user.getPhoneNumber();
         dto.email = user.getEmail();
         dto.bio = user.getBio();
+        dto.fileName = user.getFileName();
+        dto.docFile = user.getDocFile();
 
         return dto;
     }
@@ -111,6 +123,8 @@ public class UserService {
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setEmail(userDto.getEmail());
         user.setBio(userDto.getBio());
+        user.setFileName(userDto.getFileName());
+        user.setDocFile(user.getDocFile());
 
         List<Role> userRoles = new ArrayList<>();
         for (String rolename : userDto.roles) {
@@ -201,7 +215,95 @@ public class UserService {
 
         }
     }
+
+
 //    public List<User> getUsersByRole(String role) {
 //        return userRepository.findByRoles(role);
 //    }
+
+
+    //hieronder met profielfoto toegevoegd
+    public User uploadFileDocument(MultipartFile file) throws IOException {
+        String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+        User fileDocument = new User();
+        fileDocument.setFileName(name);
+        fileDocument.setDocFile(file.getBytes());
+
+        userRepository.save(fileDocument);
+
+        return fileDocument;
+
+    }
+
+    public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request){
+
+        User document = userRepository.findByFileName(fileName);
+
+//        this mediaType decides witch type you accept if you only accept 1 type
+//        MediaType contentType = MediaType.IMAGE_JPEG;
+//        this is going to accept multiple types
+
+        String mimeType = request.getServletContext().getMimeType(document.getFileName());
+
+//        for download attachment use next line
+//        return ResponseEntity.ok().contentType(contentType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=" + resource.getFilename()).body(resource);
+//        for showing image in browser
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + document.getFileName()).body(document.getDocFile());
+
+    }
+    public void getZipDownload(String[] files, HttpServletResponse response) throws IOException {
+        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+            Arrays.stream(files).forEach(file -> {
+                try {
+                    createZipEntry(file, zos);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            zos.finish();
+
+            response.setStatus(200);
+            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=zipfile");
+        }
+    }
+
+    public Resource downLoadFileDatabase(String fileName) {
+
+        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFromDB/").path(fileName).toUriString();
+
+        Resource resource;
+
+        try {
+            resource = new UrlResource(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Issue in reading the file", e);
+        }
+
+        if(resource.exists()&& resource.isReadable()) {
+            return resource;
+        } else {
+            throw new RuntimeException("the file doesn't exist or not readable");
+        }
+    }
+
+    public void createZipEntry(String file, ZipOutputStream zos) throws IOException {
+
+        Resource resource = downLoadFileDatabase(file);
+        ZipEntry zipEntry = new ZipEntry(Objects.requireNonNull(resource.getFilename()));
+        try {
+            zipEntry.setSize(resource.contentLength());
+            zos.putNextEntry(zipEntry);
+
+            StreamUtils.copy(resource.getInputStream(), zos);
+
+            zos.closeEntry();
+        } catch (IOException e) {
+            System.out.println("some exception while zipping");
+        }
+
+    }
+
+
+
 }
