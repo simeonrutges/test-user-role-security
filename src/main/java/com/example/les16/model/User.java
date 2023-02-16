@@ -21,6 +21,7 @@ public class User {
 //    @Column
 
     private String bio;
+    @Column
     private String fileName;
     @Lob
     private byte[] docFile;

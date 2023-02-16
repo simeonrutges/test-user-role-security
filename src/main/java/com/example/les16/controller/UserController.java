@@ -2,6 +2,7 @@ package com.example.les16.controller;
 
 import com.example.les16.FileUploadResponse.FileUploadResponse;
 import com.example.les16.dto.UserDto;
+import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.model.User;
 import com.example.les16.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,11 +137,11 @@ private UserService userService;
     // hieronder toegevoegd voor het uploaden van de profielfoto:
 
     @PostMapping("/single/uploadDb")
-    public FileUploadResponse singleFileUpload(@RequestParam("file") MultipartFile file) throws IOException {
+    public FileUploadResponse singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) throws IOException, ExtensionNotSupportedException {
 
 
         // next line makes url. example "http://localhost:8080/download/naam.jpg"
-        User fileDocument = userService.uploadFileDocument(file);
+        User fileDocument = userService.uploadFileDocument(username, file);
         String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFromDB/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
 
         String contentType = file.getContentType();
@@ -167,12 +168,12 @@ private UserService userService;
 //
 //    }
 
-    @GetMapping("/zipDownload/db")
-    public void zipDownload(@RequestParam("fileName") String[] files, HttpServletResponse response) throws IOException {
-
-        userService.getZipDownload(files, response);
-
-    }
+//    @GetMapping("/zipDownload/db")
+//    public void zipDownload(@RequestParam("fileName") String[] files, HttpServletResponse response) throws IOException {
+//
+//        userService.getZipDownload(files, response);
+//
+//    }
 
 //    @GetMapping("/getAll/db")
 //    public Collection<User> getAllFromDB(){

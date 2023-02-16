@@ -1,6 +1,7 @@
 package com.example.les16.service;
 
 import com.example.les16.dto.UserDto;
+import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
@@ -92,8 +93,7 @@ public class UserService {
 //    }
 
 
-
-    public static UserDto transferToDto (User user){
+    public static UserDto transferToDto(User user) {
 
         var dto = new UserDto();
 
@@ -110,7 +110,8 @@ public class UserService {
 
         return dto;
     }
-//
+
+    //
     public User transferToUser(UserDto userDto) {
 
         var user = new User();
@@ -144,7 +145,7 @@ public class UserService {
         var optionalUser = userRepository.findByUsername(username);
         var optionalCar = carRepository.findById(carId);
 
-        if(optionalUser.isPresent() && optionalCar.isPresent()) {
+        if (optionalUser.isPresent() && optionalCar.isPresent()) {
             var user = optionalUser.get();
             var car = optionalCar.get();
 
@@ -160,7 +161,7 @@ public class UserService {
         var optionalRide = rideRepository.findById(id);
         var optionalUser = userRepository.findByUsername(username);
 
-        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+        if (optionalRide.isPresent() && optionalUser.isPresent()) {
             var ride = optionalRide.get();
             var user = optionalUser.get();
 
@@ -176,9 +177,9 @@ public class UserService {
 
 
     public UserDto getUserByUsername(String username) {
-        if (userRepository.findByUsername(username).isPresent()){
+        if (userRepository.findByUsername(username).isPresent()) {
             User user = userRepository.findByUsername(username).get();
-            UserDto dto =transferToDto(user);
+            UserDto dto = transferToDto(user);
 //            if(ride.getPassengers() != null){
 //                dto.setPassengers(passengerService.transferToDto(ride.getPassengers().get()));
 //            }
@@ -187,8 +188,7 @@ public class UserService {
 //            }
 
             return transferToDto(user);
-        }
-        else {
+        } else {
             throw new RecordNotFoundException("geen user gevonden");
         }
     }
@@ -198,7 +198,7 @@ public class UserService {
     }
 
     public UserDto updateUser(String username, UserDto newUser) {
-        if (userRepository.findByUsername(username).isPresent()){
+        if (userRepository.findByUsername(username).isPresent()) {
 
             User user = userRepository.findByUsername(username).get();
 
@@ -211,7 +211,7 @@ public class UserService {
 
         } else {
 
-            throw new  RecordNotFoundException("geen user gevonden");
+            throw new RecordNotFoundException("geen user gevonden");
 
         }
     }
@@ -223,19 +223,30 @@ public class UserService {
 
 
     //hieronder met profielfoto toegevoegd
-    public User uploadFileDocument(MultipartFile file) throws IOException {
-        String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        User fileDocument = new User();
-        fileDocument.setFileName(name);
-        fileDocument.setDocFile(file.getBytes());
 
-        userRepository.save(fileDocument);
-
-        return fileDocument;
-
+    private boolean isJpg(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        return fileExtension.equals("jpg");
     }
 
-    public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request){
+    public User uploadFileDocument(String username, MultipartFile file) throws IOException, ExtensionNotSupportedException {
+        if (isJpg(file)) {
+            String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            User fileDocument = new User();
+            fileDocument.setUsername(username); // instellen van de gebruikersnaam als ID. ids for this class must be manually assigned before calling save() Hier zit het probleem!
+            fileDocument.setFileName(name);
+            fileDocument.setDocFile(file.getBytes());
+
+            userRepository.saveAndFlush(fileDocument);
+
+            return fileDocument;
+        } else {
+            throw new ExtensionNotSupportedException("Only .jpg files are allowed");
+        }
+    }
+
+    public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request) {
 
         User document = userRepository.findByFileName(fileName);
 
@@ -251,59 +262,58 @@ public class UserService {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + document.getFileName()).body(document.getDocFile());
 
     }
-    public void getZipDownload(String[] files, HttpServletResponse response) throws IOException {
-        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
-            Arrays.stream(files).forEach(file -> {
-                try {
-                    createZipEntry(file, zos);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            zos.finish();
-
-            response.setStatus(200);
-            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=zipfile");
-        }
-    }
-
-    public Resource downLoadFileDatabase(String fileName) {
-
-        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFromDB/").path(fileName).toUriString();
-
-        Resource resource;
-
-        try {
-            resource = new UrlResource(url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Issue in reading the file", e);
-        }
-
-        if(resource.exists()&& resource.isReadable()) {
-            return resource;
-        } else {
-            throw new RuntimeException("the file doesn't exist or not readable");
-        }
-    }
-
-    public void createZipEntry(String file, ZipOutputStream zos) throws IOException {
-
-        Resource resource = downLoadFileDatabase(file);
-        ZipEntry zipEntry = new ZipEntry(Objects.requireNonNull(resource.getFilename()));
-        try {
-            zipEntry.setSize(resource.contentLength());
-            zos.putNextEntry(zipEntry);
-
-            StreamUtils.copy(resource.getInputStream(), zos);
-
-            zos.closeEntry();
-        } catch (IOException e) {
-            System.out.println("some exception while zipping");
-        }
-
-    }
-
-
-
+//    public void getZipDownload(String[] files, HttpServletResponse response) throws IOException {
+//        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+//            Arrays.stream(files).forEach(file -> {
+//                try {
+//                    createZipEntry(file, zos);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//
+//            zos.finish();
+//
+//            response.setStatus(200);
+//            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=zipfile");
+//        }
+//    }
+//
+//    public Resource downLoadFileDatabase(String fileName) {
+//
+//        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFromDB/").path(fileName).toUriString();
+//
+//        Resource resource;
+//
+//        try {
+//            resource = new UrlResource(url);
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException("Issue in reading the file", e);
+//        }
+//
+//        if(resource.exists()&& resource.isReadable()) {
+//            return resource;
+//        } else {
+//            throw new RuntimeException("the file doesn't exist or not readable");
+//        }
+//    }
+//
+//    public void createZipEntry(String file, ZipOutputStream zos) throws IOException {
+//
+//        Resource resource = downLoadFileDatabase(file);
+//        ZipEntry zipEntry = new ZipEntry(Objects.requireNonNull(resource.getFilename()));
+//        try {
+//            zipEntry.setSize(resource.contentLength());
+//            zos.putNextEntry(zipEntry);
+//
+//            StreamUtils.copy(resource.getInputStream(), zos);
+//
+//            zos.closeEntry();
+//        } catch (IOException e) {
+//            System.out.println("some exception while zipping");
+//        }
+//    }
 }
+
+
+
