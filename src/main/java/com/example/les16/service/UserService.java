@@ -3,6 +3,7 @@ package com.example.les16.service;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.exceptions.UserNotFoundException;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
@@ -15,6 +16,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -105,8 +107,8 @@ public class UserService {
         dto.phoneNumber = user.getPhoneNumber();
         dto.email = user.getEmail();
         dto.bio = user.getBio();
-        dto.fileName = user.getFileName();
-        dto.docFile = user.getDocFile();
+//        dto.fileName = user.getFileName();
+//        dto.docFile = user.getDocFile();
 
         return dto;
     }
@@ -124,8 +126,8 @@ public class UserService {
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setEmail(userDto.getEmail());
         user.setBio(userDto.getBio());
-        user.setFileName(userDto.getFileName());
-        user.setDocFile(user.getDocFile());
+//        user.setFileName(userDto.getFileName());
+//        user.setDocFile(user.getDocFile());
 
         List<Role> userRoles = new ArrayList<>();
         for (String rolename : userDto.roles) {
@@ -224,42 +226,62 @@ public class UserService {
 
     //hieronder met profielfoto toegevoegd
 
-    private boolean isJpg(MultipartFile file) {
+    private boolean isJpgOrJpeg(MultipartFile file) {
         String fileName = file.getOriginalFilename();
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-        return fileExtension.equals("jpg");
+        return fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("jpeg");
     }
 
     public User uploadFileDocument(String username, MultipartFile file) throws IOException, ExtensionNotSupportedException {
-        if (isJpg(file)) {
+        ///// dit er als laatste bijgeprobeerd: middag
+        if (isJpgOrJpeg(file)) {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            User fileDocument = new User();
-            fileDocument.setUsername(username); // instellen van de gebruikersnaam als ID. ids for this class must be manually assigned before calling save() Hier zit het probleem!
-            fileDocument.setFileName(name);
-            fileDocument.setDocFile(file.getBytes());
+            user.setFileName(name);
+            user.setDocFile(file.getBytes());
 
-            userRepository.saveAndFlush(fileDocument);
+            userRepository.saveAndFlush(user);
 
-            return fileDocument;
+            return user;
         } else {
-            throw new ExtensionNotSupportedException("Only .jpg files are allowed");
+            throw new ExtensionNotSupportedException("Only .jpg or .jpeg files are allowed");
         }
     }
+    // werkt!
+        //////
+// deze werkt sowieso:
+//        if (isJpgOrJpeg(file)) {
+//            String name = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+//            User fileDocument = new User();
+//            fileDocument.setUsername(username); // instellen van de gebruikersnaam als ID. ids for this class must be manually assigned before calling save() Hier zit het probleem!
+//            fileDocument.setFileName(name);
+//            fileDocument.setDocFile(file.getBytes());
+//
+//            userRepository.saveAndFlush(fileDocument);
+//
+//            return fileDocument;
+//        } else {
+//            throw new ExtensionNotSupportedException("Only .jpg or .jpeg files are allowed");
+//        }
+//    }
+
+        ///////
 
     public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request) {
-
-        User document = userRepository.findByFileName(fileName);
+//        String username, stond hierboven nog bij
+        User userFile = userRepository.findByFileName(fileName);
 
 //        this mediaType decides witch type you accept if you only accept 1 type
 //        MediaType contentType = MediaType.IMAGE_JPEG;
 //        this is going to accept multiple types
 
-        String mimeType = request.getServletContext().getMimeType(document.getFileName());
+        String mimeType = request.getServletContext().getMimeType(userFile.getFileName());
 
 //        for download attachment use next line
 //        return ResponseEntity.ok().contentType(contentType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=" + resource.getFilename()).body(resource);
 //        for showing image in browser
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + document.getFileName()).body(document.getDocFile());
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + userFile.getFileName()).body(userFile.getDocFile());
 
     }
 //    public void getZipDownload(String[] files, HttpServletResponse response) throws IOException {
