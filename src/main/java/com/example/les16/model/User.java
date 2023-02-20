@@ -1,5 +1,7 @@
 package com.example.les16.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +26,7 @@ public class User {
     @Column
     private String fileName;
     @Lob
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] docFile;
 
     @ManyToMany(fetch = FetchType.EAGER)
