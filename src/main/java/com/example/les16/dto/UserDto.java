@@ -1,15 +1,10 @@
 package com.example.les16.dto;
 
-import com.example.les16.model.Ride;
-import com.example.les16.model.Role;
-
-import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.List;
 
 public class UserDto {
 
@@ -32,6 +27,10 @@ public class UserDto {
 //    @Column
 //    @Size (min = 10, max = 10)
     public int phoneNumber;
+
+    public String fileName;
+    @Lob
+    public byte[] docFile;
     public String[] roles;
 
 //    public CarDto carDto;
@@ -113,7 +112,22 @@ public class UserDto {
         this.roles = roles;
     }
 
-//    public CarDto getCarDto() {
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public byte[] getDocFile() {
+        return docFile;
+    }
+
+    public void setDocFile(byte[] docFile) {
+        this.docFile = docFile;
+    }
+    //    public CarDto getCarDto() {
 //        return carDto;
 //    }
 //

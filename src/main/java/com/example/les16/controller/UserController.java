@@ -1,6 +1,8 @@
 package com.example.les16.controller;
 
+import com.example.les16.FileUploadResponse.FileUploadResponse;
 import com.example.les16.dto.UserDto;
+import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.model.User;
 import com.example.les16.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +12,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @CrossOrigin
@@ -94,13 +103,6 @@ private UserService userService;
     }
 
 
-
-
-
-
-
-
-
     // tot hier!
 
 
@@ -125,4 +127,75 @@ private UserService userService;
 //    }
     // bovenstaande is het probleem. Heeft met de security te maken?
 
+
+    // hieronder toegevoegd voor het uploaden van de profielfoto:
+//////////////////////
+//    @PostMapping("/single/uploadDb")
+//    public FileUploadResponse singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) throws IOException {
+//
+//        // next line makes url. example "http://localhost:8080/download/naam.jpg"
+//        User fileDocument = userService.uploadFileDocument(username, file);
+//        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFromDB/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
+//
+//        String contentType = file.getContentType();
+//
+//        return new FileUploadResponse(fileDocument.getFileName(), url, contentType );
+//    }
+    ////////////////////
+
+    @PostMapping("/single/uploadDb")
+    public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
+        try {
+            User fileDocument = userService.uploadFileDocument(username, file);
+            // users erbij gezet hieronder
+            String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("users/downloadFromDB/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
+            String contentType = file.getContentType();
+            return ResponseEntity.ok(new FileUploadResponse(fileDocument.getFileName(), url, contentType));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not upload file: " + e.getMessage());
+        } catch (ExtensionNotSupportedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not upload file: " + e.getMessage());
+        }
+    }
+    ///werkt
+////////////////////
+
+    //    get for single download
+//    @GetMapping("/downloadFromDB/{fileName}/{username}")
+//    ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, @PathVariable String username, HttpServletRequest request) {
+//// dit hierboven erbij gezet:  @RequestParam("username") String username. Zie ook UserService
+//        return userService.singleFileDownload(fileName, username, request);
+//    }
+/////////////
+    @GetMapping("/downloadFromDB/{fileName}")
+    ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
+
+        return userService.singleFileDownload(fileName, request);
+    }
+
+    ////////////
+
+//    //    post for multiple uploads to database
+//    @PostMapping("/multiple/upload/db")
+//    List<FileUploadResponse> multipleUpload(@RequestParam("files") MultipartFile [] files) {
+//
+//        if(files.length > 7) {
+//            throw new RuntimeException("to many files selected");
+//        }
+//
+//        return userService.createMultipleUpload(files);
+//
+//    }
+
+//    @GetMapping("/zipDownload/db")
+//    public void zipDownload(@RequestParam("fileName") String[] files, HttpServletResponse response) throws IOException {
+//
+//        userService.getZipDownload(files, response);
+//
+//    }
+
+//    @GetMapping("/getAll/db")
+//    public Collection<User> getAllFromDB(){
+//        return userService.getALlFromDB();
+//    }
 }

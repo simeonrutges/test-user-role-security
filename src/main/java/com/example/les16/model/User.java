@@ -1,5 +1,7 @@
 package com.example.les16.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +23,12 @@ public class User {
 //    @Column
 
     private String bio;
+    @Column
+    private String fileName;
+    @Lob
+    @Type(type = "org.hibernate.type.ImageType")
+    private byte[] docFile;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
 
@@ -151,5 +159,22 @@ public class User {
 
     public void setReviewsReceived(List<Review> reviewsReceived) {
         this.reviewsReceived = reviewsReceived;
+    }
+
+    // fileName en Docfile  op 15/2 toegevoegd voor profielfoto. Nog geen DTO
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public byte[] getDocFile() {
+        return docFile;
+    }
+
+    public void setDocFile(byte[] docFile) {
+        this.docFile = docFile;
     }
 }
