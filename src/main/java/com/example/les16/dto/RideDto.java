@@ -28,6 +28,8 @@ public class RideDto {
     public LocalDateTime departureDateTime;
     @NotNull
     public double pricePerPerson;
+    @NotNull
+    public int pax;
     public double totalRitPrice;
     @NotNull
     public int availableSpots;
@@ -39,7 +41,7 @@ public class RideDto {
     public RideDto() {
     }
 
-    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, double totalRitPrice, int availableSpots, boolean automaticAcceptance, LocalTime eta) {
+    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, int pax, double totalRitPrice, int availableSpots, boolean automaticAcceptance, LocalTime eta) {
         this.id = id;
         this.pickUpLocation = pickUpLocation;
         this.destination = destination;
@@ -49,6 +51,7 @@ public class RideDto {
         this.departureDate = departureDate;
         this.departureDateTime = departureDateTime;
         this.pricePerPerson = pricePerPerson;
+        this.pax = pax;
         this.totalRitPrice = totalRitPrice;
         this.availableSpots = availableSpots;
         this.automaticAcceptance = automaticAcceptance;
@@ -125,6 +128,14 @@ public class RideDto {
 
     public void setPricePerPerson(double pricePerPerson) {
         this.pricePerPerson = pricePerPerson;
+    }
+
+    public int getPax() {
+        return pax;
+    }
+
+    public void setPax(int pax) {
+        this.pax = pax;
     }
 
     public double getTotalRitPrice() {

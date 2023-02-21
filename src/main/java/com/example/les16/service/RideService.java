@@ -78,6 +78,13 @@ public class RideService {
 //        return
 //    }
 
+    public double calculateTotalRitPrice(double pricePerPerson, int pax){
+        double totalPrice = pricePerPerson * pax;
+
+        return totalPrice;
+
+    }
+
     public Ride transferToRide(RideDto rideDto){
         var ride = new Ride();
 //deze hieronder vandaag weggehaalt vanwege de PUT
@@ -90,7 +97,8 @@ public class RideService {
         ride.setDepartureDate(rideDto.getDepartureDate());
         ride.setDepartureDateTime(rideDto.getDepartureDateTime());
         ride.setPricePerPerson(rideDto.getPricePerPerson());
-        ride.setTotalRitPrice(rideDto.getTotalRitPrice());
+        ride.setPax(rideDto.getPax());
+        ride.setTotalRitPrice(calculateTotalRitPrice(rideDto.getPricePerPerson(), ride.getPax()));
         ride.setAvailableSpots(rideDto.getAvailableSpots());
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
         ride.setEta(rideDto.getEta());
@@ -112,6 +120,7 @@ public class RideService {
         dto.departureDate = ride.getDepartureDate();
         dto.departureDateTime = ride.getDepartureDateTime();
         dto.pricePerPerson = ride.getPricePerPerson();
+        dto.pax = ride.getPax();
         dto.totalRitPrice = ride.getTotalRitPrice();
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
