@@ -62,7 +62,7 @@ public class SecurityConfig  {
                 .antMatchers("/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .and()
                 .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
-                .csrf().disable()
+                .csrf().disable().cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 //@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping(value = "/rides")
 public class RideController {

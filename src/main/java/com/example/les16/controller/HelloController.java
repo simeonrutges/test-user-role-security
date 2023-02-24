@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 //@CrossOrigin
+//@CrossOrigin
 @RestController
 public class HelloController {
     @GetMapping("/hello")

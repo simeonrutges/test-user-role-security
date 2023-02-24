@@ -29,7 +29,8 @@ public class UserDto {
     public int phoneNumber;
 
     public String fileName;
-    @Lob
+
+    //Mark zegt dat de docfile niet nodig is hier
     public byte[] docFile;
     public String[] roles;
 

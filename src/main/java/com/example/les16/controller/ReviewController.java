@@ -22,6 +22,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+//@CrossOrigin
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
