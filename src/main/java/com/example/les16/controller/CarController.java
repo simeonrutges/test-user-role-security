@@ -18,8 +18,6 @@ import java.util.List;
 @RequestMapping("/cars")
 public class CarController {
     private final CarService carService;
-
-    @Autowired
     public CarController(CarService carService) {
         this.carService = carService;
     }

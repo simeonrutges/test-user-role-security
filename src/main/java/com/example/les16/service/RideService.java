@@ -19,22 +19,13 @@ import java.util.Optional;
 
 @Service
 public class RideService {
-//    private final RideRepository rideRepository;
-//
-//    private final DriverProfileRepository driverProfileRepository;
-//
-//    private final DriverProfileService driverProfileService;
-//
-//    public RideService(RideRepository rideRepository) {
-//        this.rideRepository = rideRepository;
-//    }
+    private final RideRepository rideRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private RideRepository rideRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    public RideService(RideRepository rideRepository, UserRepository userRepository) {
+        this.rideRepository = rideRepository;
+        this.userRepository = userRepository;
+    }
 
     public RideDto getRideById(Long id) {
         Optional<Ride> ride = rideRepository.findById(id);

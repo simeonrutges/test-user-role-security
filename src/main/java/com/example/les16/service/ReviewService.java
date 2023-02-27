@@ -21,11 +21,12 @@ import java.util.Optional;
 
 @Service
 public class ReviewService {
-    @Autowired
-    private ReviewRepository reviewRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository) {
+        this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+    }
 
     public ReviewDto createReview(ReviewDto reviewDto) {
         User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())

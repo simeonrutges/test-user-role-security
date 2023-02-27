@@ -33,20 +33,19 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final CarRepository carRepository;
+    private final CarService carService;
+    private final RoleRepository roleRepos;
+    private final RideRepository rideRepository;
 
-    @Autowired
-    private CarRepository carRepository;
-
-    @Autowired
-    private CarService carService;
-
-    @Autowired
-    private RoleRepository roleRepos;
-
-    @Autowired
-    private RideRepository rideRepository;
+    public UserService(UserRepository userRepository, CarRepository carRepository, CarService carService, RoleRepository roleRepos, RideRepository rideRepository) {
+        this.userRepository = userRepository;
+        this.carRepository = carRepository;
+        this.carService = carService;
+        this.roleRepos = roleRepos;
+        this.rideRepository = rideRepository;
+    }
 
     public String createUser(UserDto userDto) {
 

@@ -26,15 +26,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
-
-    @Autowired
-    private UserService userService;
-private  final ReviewService reviewService;
-
-    @Autowired
-    public ReviewController(ReviewService reviewService) {
+    private final UserService userService;
+    private  final ReviewService reviewService;
+    public ReviewController(UserService userService, ReviewService reviewService) {
+        this.userService = userService;
         this.reviewService = reviewService;
     }
+
     @GetMapping("")
     public List<ReviewDto> getAllReviews() {
 

@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class RoleService {
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+    public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     public String createRole(RoleDto roleDto) {
         Role newRole = new Role();
