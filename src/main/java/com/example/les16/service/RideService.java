@@ -1,19 +1,12 @@
 package com.example.les16.service;
 
 import com.example.les16.dto.RideDto;
-import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Ride;
-import com.example.les16.model.Role;
-import com.example.les16.model.User;
 import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 

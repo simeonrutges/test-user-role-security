@@ -1,11 +1,9 @@
 package com.example.les16.controller;
-
 import com.example.les16.FileUploadResponse.FileUploadResponse;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.model.User;
 import com.example.les16.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,26 +11,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-//@CrossOrigin
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    // passwordEncoder staat ook in de uitwerking hier
+
     public UserController(UserService userService, PasswordEncoder encoder) {
         this.userService = userService;
         this.passwordEncoder = encoder;

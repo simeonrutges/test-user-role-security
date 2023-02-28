@@ -1,28 +1,17 @@
 package com.example.les16.controller;
-
-import com.example.les16.dto.CarDto;
 import com.example.les16.dto.ReviewDto;
-import com.example.les16.repository.UserRepository;
 import com.example.les16.service.ReviewService;
 import com.example.les16.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.validation.Valid;
 import java.net.URI;
-import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
-//@CrossOrigin
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
