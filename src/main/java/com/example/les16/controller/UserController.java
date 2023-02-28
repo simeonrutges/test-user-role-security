@@ -26,18 +26,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-@Autowired
-private UserService userService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     // passwordEncoder staat ook in de uitwerking hier
-
-    public UserController(PasswordEncoder encoder) {
+    public UserController(UserService userService, PasswordEncoder encoder) {
+        this.userService = userService;
         this.passwordEncoder = encoder;
     }
+
     @PostMapping("")
     public ResponseEntity<String> klant(@Valid @RequestBody UserDto dto, BindingResult br) {
 

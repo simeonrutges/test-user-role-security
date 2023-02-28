@@ -13,7 +13,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-        private final static String SECRET_KEY = "yabbadabbadoo";
+//        private final static String SECRET_KEY = "yabbadabbadoo";
+        private final static String SECRET_KEY = "1$@Lk#2&*Jn8%tGh";
 
         public String extractUsername(String token) {
             return extractClaim(token, Claims::getSubject);
@@ -45,6 +46,7 @@ public class JwtService {
         private String createToken(Map<String, Object> claims, String
                 subject) {
             long validPeriod = 1000 * 60 * 60 * 24 * 10; // 10 days in ms
+//            long validPeriod = 1000 * 60 * 60 * 24 * 90; // changed to 90 days in ms
             long currentTime = System.currentTimeMillis();
             return Jwts.builder()
                     .setClaims(claims)

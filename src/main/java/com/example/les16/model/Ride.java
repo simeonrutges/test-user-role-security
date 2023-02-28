@@ -21,6 +21,7 @@ public class Ride {
     private LocalDate departureDate;
     private LocalDateTime departureDateTime;
     private double pricePerPerson;
+    private int pax;
     private double totalRitPrice;
     private int availableSpots;
     private boolean automaticAcceptance;
@@ -103,6 +104,14 @@ public class Ride {
 
     public void setPricePerPerson(double pricePerPerson) {
         this.pricePerPerson = pricePerPerson;
+    }
+
+    public int getPax() {
+        return pax;
+    }
+
+    public void setPax(int pax) {
+        this.pax = pax;
     }
 
     public double getTotalRitPrice() {

@@ -13,12 +13,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 //@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping("/cars")
 public class CarController {
     private final CarService carService;
-
-    @Autowired
     public CarController(CarService carService) {
         this.carService = carService;
     }

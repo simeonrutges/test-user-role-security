@@ -16,16 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 //@CrossOrigin
+//@CrossOrigin
 @RestController
 @RequestMapping(value = "/rides")
 public class RideController {
     private final RideService rideService;
-
-    @Autowired
     public RideController(RideService rideService) {
         this.rideService = rideService;
     }
-
 
     @PostMapping("")
             public Object addRide(@Valid @RequestBody RideDto dto, BindingResult br) {

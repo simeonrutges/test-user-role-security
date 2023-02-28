@@ -13,8 +13,10 @@ import java.util.Optional;
 
 @Service
 public class CarService {
-    @Autowired
-    private CarRepository carRepository;
+    private final CarRepository carRepository;
+    public CarService(CarRepository carRepository) {
+        this.carRepository = carRepository;
+    }
 
     public List<CarDto> getAllCars() {
         List<CarDto> dtos = new ArrayList<>();

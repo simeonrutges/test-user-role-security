@@ -19,22 +19,13 @@ import java.util.Optional;
 
 @Service
 public class RideService {
-//    private final RideRepository rideRepository;
-//
-//    private final DriverProfileRepository driverProfileRepository;
-//
-//    private final DriverProfileService driverProfileService;
-//
-//    public RideService(RideRepository rideRepository) {
-//        this.rideRepository = rideRepository;
-//    }
+    private final RideRepository rideRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private RideRepository rideRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    public RideService(RideRepository rideRepository, UserRepository userRepository) {
+        this.rideRepository = rideRepository;
+        this.userRepository = userRepository;
+    }
 
     public RideDto getRideById(Long id) {
         Optional<Ride> ride = rideRepository.findById(id);
@@ -78,6 +69,13 @@ public class RideService {
 //        return
 //    }
 
+    public double calculateTotalRitPrice(double pricePerPerson, int pax){
+        double totalPrice = pricePerPerson * pax;
+
+        return totalPrice;
+
+    }
+
     public Ride transferToRide(RideDto rideDto){
         var ride = new Ride();
 //deze hieronder vandaag weggehaalt vanwege de PUT
@@ -90,7 +88,8 @@ public class RideService {
         ride.setDepartureDate(rideDto.getDepartureDate());
         ride.setDepartureDateTime(rideDto.getDepartureDateTime());
         ride.setPricePerPerson(rideDto.getPricePerPerson());
-        ride.setTotalRitPrice(rideDto.getTotalRitPrice());
+        ride.setPax(rideDto.getPax());
+        ride.setTotalRitPrice(calculateTotalRitPrice(rideDto.getPricePerPerson(), ride.getPax()));
         ride.setAvailableSpots(rideDto.getAvailableSpots());
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
         ride.setEta(rideDto.getEta());
@@ -112,6 +111,7 @@ public class RideService {
         dto.departureDate = ride.getDepartureDate();
         dto.departureDateTime = ride.getDepartureDateTime();
         dto.pricePerPerson = ride.getPricePerPerson();
+        dto.pax = ride.getPax();
         dto.totalRitPrice = ride.getTotalRitPrice();
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
