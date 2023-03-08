@@ -2,7 +2,6 @@ package com.example.les16.controller;
 
 import com.example.les16.dto.CarDto;
 import com.example.les16.service.CarService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-//@CrossOrigin
-//@CrossOrigin
 @RestController
 @RequestMapping("/cars")
 public class CarController {

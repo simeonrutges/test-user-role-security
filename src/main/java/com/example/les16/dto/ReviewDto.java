@@ -1,7 +1,6 @@
 package com.example.les16.dto;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class ReviewDto {

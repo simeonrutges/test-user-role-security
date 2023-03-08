@@ -2,21 +2,15 @@ package com.example.les16.controller;
 
 import com.example.les16.dto.RideDto;
 import com.example.les16.service.RideService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-//@CrossOrigin
-//@CrossOrigin
 @RestController
 @RequestMapping(value = "/rides")
 public class RideController {
