@@ -1,20 +1,13 @@
 package com.example.les16.service;
 
-import com.example.les16.dto.CarDto;
 import com.example.les16.dto.ReviewDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.exceptions.UserNotFoundException;
-import com.example.les16.model.Car;
 import com.example.les16.model.Review;
 import com.example.les16.model.User;
 import com.example.les16.repository.ReviewRepository;
 import com.example.les16.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

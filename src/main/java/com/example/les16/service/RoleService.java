@@ -3,9 +3,7 @@ package com.example.les16.service;
 import com.example.les16.dto.RoleDto;
 import com.example.les16.model.Role;
 import com.example.les16.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class RoleService {

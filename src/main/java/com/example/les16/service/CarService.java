@@ -4,7 +4,6 @@ import com.example.les16.dto.CarDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Car;
 import com.example.les16.repository.CarRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

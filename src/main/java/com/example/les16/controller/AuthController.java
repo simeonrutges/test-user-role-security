@@ -10,12 +10,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-//@CrossOrigin
 @RestController
 public class AuthController {
 
@@ -40,8 +38,9 @@ public class AuthController {
 
                 // Alleen deze aanpassingen gedaan met Sam. Voor het terugdraaien alleen de body weer in de header laten retouneren.
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .body("Token generated");
+//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .body(token);
+//                        .body("Token generated");
             }
             catch (AuthenticationException ex) {
                 return new ResponseEntity(ex.getMessage(), HttpStatus.UNAUTHORIZED);

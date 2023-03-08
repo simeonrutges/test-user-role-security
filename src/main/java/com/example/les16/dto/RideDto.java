@@ -1,7 +1,5 @@
 package com.example.les16.dto;
 
-import org.springframework.security.core.userdetails.User;
-
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
@@ -9,8 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
-import java.util.List;
+
 
 public class RideDto {
     public Long id;
