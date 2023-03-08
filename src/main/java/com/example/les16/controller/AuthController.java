@@ -37,8 +37,9 @@ public class AuthController {
                 String token = jwtService.generateToken(ud);
 
                 return ResponseEntity.ok()
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .body("Token generated");
+//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .body(token);
+//                        .body("Token generated");
             }
             catch (AuthenticationException ex) {
                 return new ResponseEntity(ex.getMessage(), HttpStatus.UNAUTHORIZED);
