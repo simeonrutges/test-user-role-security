@@ -38,6 +38,7 @@ public class AuthController {
                 UserDetails ud = (UserDetails) auth.getPrincipal();
                 String token = jwtService.generateToken(ud);
 
+                // Alleen deze aanpassingen gedaan met Sam. Voor het terugdraaien alleen de body weer in de header laten retouneren.
                 return ResponseEntity.ok()
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .body("Token generated");
