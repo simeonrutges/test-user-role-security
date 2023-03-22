@@ -20,6 +20,17 @@ public class RideService {
         this.userRepository = userRepository;
     }
 
+    public RideDto addRide(RideDto rideDto) {
+
+        Ride newRide = transferToRide(rideDto);
+        rideRepository.save(newRide);
+        rideDto.setId(newRide.getId());
+
+        return rideDto;
+
+    }
+
+
     public RideDto getRideById(Long id) {
         Optional<Ride> ride = rideRepository.findById(id);
         if(ride.isPresent()) {
@@ -44,16 +55,7 @@ public class RideService {
 //            throw new RecordNotFoundException("geen rit gevonden");
 //        }
 //    }
-    public RideDto addRide(RideDto rideDto) {
 
-        Ride newRide = transferToRide(rideDto);
-        rideRepository.save(newRide);
-
-//        return rideDto;
-
-        return rideDto;
-
-    }
 
 //    public RideDto addUserToRide(String username, Long rideId)  {
 //        UserRide userRide = new UserRide(username, rideId);

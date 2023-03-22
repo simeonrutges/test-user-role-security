@@ -19,8 +19,30 @@ public class RideController {
         this.rideService = rideService;
     }
 
+//    @PostMapping("")
+//            public Object addRide(@Valid @RequestBody RideDto dto, BindingResult br) {
+//        if (br.hasErrors()) {
+//            StringBuilder sb = new StringBuilder();
+//            for (FieldError fe : br.getFieldErrors()) {
+//                sb.append(fe.getField() + ": ");
+//                sb.append(fe.getDefaultMessage());
+//                sb.append("\n");
+//            }
+//            return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
+//        } else {
+//
+//
+////    public RideDto addRide(@RequestBody RideDto dto){
+//            RideDto dto1 = rideService.addRide(dto);
+////        Rit savedRit =  rideService.save(ritDto);
+//
+//
+//            return dto1;
+//        }
+//    }
+
     @PostMapping("")
-            public Object addRide(@Valid @RequestBody RideDto dto, BindingResult br) {
+    public ResponseEntity<RideDto> addRide(@Valid @RequestBody RideDto dto, BindingResult br) {
         if (br.hasErrors()) {
             StringBuilder sb = new StringBuilder();
             for (FieldError fe : br.getFieldErrors()) {
@@ -28,16 +50,10 @@ public class RideController {
                 sb.append(fe.getDefaultMessage());
                 sb.append("\n");
             }
-            return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(null);
         } else {
-
-
-//    public RideDto addRide(@RequestBody RideDto dto){
-            RideDto dto1 = rideService.addRide(dto);
-//        Rit savedRit =  rideService.save(ritDto);
-
-
-            return dto1;
+            RideDto addedRideDto = rideService.addRide(dto);
+            return ResponseEntity.ok(addedRideDto);
         }
     }
 
@@ -52,19 +68,9 @@ public class RideController {
     public ResponseEntity<List<RideDto>> getAllRides(@RequestParam(value = "destination", required = true) Optional<String> destination) {
 
         List<RideDto> dtos;
-
-//        if (name.isEmpty()){
-//
-//            dtos = rideService.getAllRides();
-//
-//        } else {
-
-            dtos = rideService.getAllRidesByDestination(destination.get());
-
-//        }
+        dtos = rideService.getAllRidesByDestination(destination.get());
 
         return ResponseEntity.ok().body(dtos);
-
     }
 
     @GetMapping("/{id}")
