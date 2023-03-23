@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,16 +63,68 @@ public class RideController {
         rideService.addUserToRide(rideId, username);
         return ResponseEntity.ok().build();
     }
-    // tot hier werkt het... hier verder gegaan
 
-    @GetMapping("")
-    public ResponseEntity<List<RideDto>> getAllRides(@RequestParam(value = "destination", required = true) Optional<String> destination) {
+//    @GetMapping("")
+//    public ResponseEntity<List<RideDto>> getAllRides(@RequestParam(value = "destination", required = true) Optional<String> destination) {
+//
+//        List<RideDto> dtos;
+//        dtos = rideService.getAllRidesByDestination(destination.get());
+//
+//        return ResponseEntity.ok().body(dtos);
+//    }
 
-        List<RideDto> dtos;
-        dtos = rideService.getAllRidesByDestination(destination.get());
+//    @GetMapping("")
+//    public ResponseEntity<List<RideDto>> getRidesByCriteria(
+//            @RequestParam(value = "destination", required = false) Optional<String> destination,
+//            @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
+//            @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate ) {
+//
+//        List<RideDto> dtos;
+//
+//        if (destination.isPresent() && pickUpLocation.isPresent() && departureDate.isPresent()) {
+//            dtos = rideService.getRidesByDestinationAndPickUpLocationAndDepartureDate(
+//                    destination.get(),
+//                    pickUpLocation.get(),
+//                    departureDate.get()
+//            );
+//        } else if (destination.isPresent() && pickUpLocation.isPresent()) {
+//            dtos = rideService.getRidesByDestinationAndPickUpLocation(
+//                    destination.get(),
+//                    pickUpLocation.get()
+//            );
+//        } else if (destination.isPresent() && departureDate.isPresent()) {
+//            dtos = rideService.getRidesByDestinationAndDepartureDate(
+//                    destination.get(),
+//                    departureDate.get()
+//            );
+//        } else if (pickUpLocation.isPresent() && departureDate.isPresent()) {
+//            dtos = rideService.getRidesByPickUpLocationAndDepartureDate(
+//                    pickUpLocation.get(),
+//                    departureDate.get()
+//            );
+//        } else if (destination.isPresent()) {
+//            dtos = rideService.getRidesByDestination(destination.get());
+//        } else if (pickUpLocation.isPresent()) {
+//            dtos = rideService.getRidesByPickUpLocation(pickUpLocation.get());
+//        } else if (departureDate.isPresent()) {
+//            dtos = rideService.getRidesByDepartureDate(departureDate.get());
+//        } else {
+//            dtos = rideService.getAllRides();
+//        }
+//
+//        return ResponseEntity.ok().body(dtos);
+//    }
+@GetMapping("")
+public ResponseEntity<List<RideDto>> getRidesByCriteria(
+        @RequestParam(value = "destination", required = false) Optional<String> destination,
+        @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
+        @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate ) {
 
-        return ResponseEntity.ok().body(dtos);
-    }
+    List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDate);
+
+    return ResponseEntity.ok().body(dtos);
+}
+
 
     @GetMapping("/{id}")
     public ResponseEntity<RideDto> getRide(@PathVariable("id")Long id) {
