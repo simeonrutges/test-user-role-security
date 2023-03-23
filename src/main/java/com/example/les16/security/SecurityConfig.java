@@ -59,7 +59,7 @@ public class SecurityConfig  {
         return http.build();
 
 
-
+//als alles gelukt is weer overschakelen naar hieronder
 
 //        http
 //                .httpBasic().disable()
