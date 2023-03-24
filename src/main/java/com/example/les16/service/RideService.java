@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -144,37 +145,40 @@ public class RideService {
 public List<RideDto> getRidesByCriteria(
         Optional<String> destination,
         Optional<String> pickUpLocation,
-        Optional<LocalDate> departureDate) {
+//        Optional<LocalDate> departureDate)
+        Optional<LocalDateTime> departureDateTime)
+
+{
 
     List<Ride> rideList;
 
-    if (destination.isPresent() && pickUpLocation.isPresent() && departureDate.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
+    if (destination.isPresent() && pickUpLocation.isPresent() && departureDateTime.isPresent()) {
+        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
                 destination.get(),
                 pickUpLocation.get(),
-                departureDate.get()
+                departureDateTime.get()
         );
     } else if (destination.isPresent() && pickUpLocation.isPresent()) {
         rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
                 destination.get(),
                 pickUpLocation.get()
         );
-    } else if (destination.isPresent() && departureDate.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateEquals(
+    } else if (destination.isPresent() && departureDateTime.isPresent()) {
+        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
                 destination.get(),
-                departureDate.get()
+                departureDateTime.get()
         );
-    } else if (pickUpLocation.isPresent() && departureDate.isPresent()) {
-        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
+    } else if (pickUpLocation.isPresent() && departureDateTime.isPresent()) {
+        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
                 pickUpLocation.get(),
-                departureDate.get()
+                departureDateTime.get()
         );
     } else if (destination.isPresent()) {
         rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination.get());
     } else if (pickUpLocation.isPresent()) {
         rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase(pickUpLocation.get());
-    } else if (departureDate.isPresent()) {
-        rideList = rideRepository.findAllRidesByDepartureDateEquals(departureDate.get());
+    } else if (departureDateTime.isPresent()) {
+        rideList = rideRepository.findAllRidesByDepartureDateTimeEquals(departureDateTime.get());
     } else {
         rideList = rideRepository.findAll();
     }

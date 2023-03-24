@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,16 +115,20 @@ public class RideController {
 //
 //        return ResponseEntity.ok().body(dtos);
 //    }
+
 @GetMapping("")
 public ResponseEntity<List<RideDto>> getRidesByCriteria(
         @RequestParam(value = "destination", required = false) Optional<String> destination,
         @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
-        @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate ) {
-
-    List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDate);
+//        @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate)
+        @RequestParam(value = "departureDateTime", required = false) Optional<LocalDateTime> departureDateTime)
+{
+    List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
 
     return ResponseEntity.ok().body(dtos);
 }
+
+
 
 
     @GetMapping("/{id}")

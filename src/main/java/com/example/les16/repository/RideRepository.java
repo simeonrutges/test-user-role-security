@@ -5,6 +5,7 @@ import com.example.les16.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,18 +16,32 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     List<Ride> findAllRidesByPickUpLocationEqualsIgnoreCase(String pickUpLocation);
 
-    List<Ride> findAllRidesByDepartureDateEquals(LocalDate departureDate);
+//    List<Ride> findAllRidesByDepartureDateEquals(LocalDate departureDate);
+//
+//    List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
+//            String destination, String pickUpLocation, LocalDate departureDate);
+//
+//    List<Ride >findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
+//            String destination, String pickUpLocation);
+//
+//    List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateEquals(
+//            String destination, LocalDate departureDate);
+//
+//    List<Ride> findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
+//            String pickUpLocation, LocalDate departureDate);
 
-    List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
-            String destination, String pickUpLocation, LocalDate departureDate);
+List<Ride> findAllRidesByDepartureDateTimeEquals(LocalDateTime departureDateTime);
+
+    List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+            String destination, String pickUpLocation, LocalDateTime departureDateTime);
 
     List<Ride >findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
             String destination, String pickUpLocation);
 
-    List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateEquals(
-            String destination, LocalDate departureDate);
+    List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+            String destination, LocalDateTime departureDateTime);
 
-    List<Ride> findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
-            String pickUpLocation, LocalDate departureDate);
+    List<Ride> findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+            String pickUpLocation, LocalDateTime departureDateTime);
 
 }
