@@ -3,9 +3,13 @@ import com.example.les16.FileUploadResponse.FileUploadResponse;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.model.User;
+import com.example.les16.security.MyUserDetails;
+import com.example.les16.security.MyUserDetailsService;
 import com.example.les16.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -18,6 +22,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+
+import com.example.les16.security.JwtService;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -58,7 +64,6 @@ public class UserController {
     }
 
 
-    //vanaf hier nieuw. Nog even wachten tot dto in service werkt
     @GetMapping(value = "")
     public ResponseEntity<List<UserDto>> getAllUsers() {
 
@@ -76,6 +81,7 @@ public class UserController {
         return ResponseEntity.ok().body(optionalUser);
 
     }
+
     @DeleteMapping("/{username}")
     public ResponseEntity<Object> deleteUser(@PathVariable String username) {
         //Deze werkt niet. Wel nodig?
