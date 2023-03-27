@@ -95,6 +95,14 @@ public class UserService {
         dto.phoneNumber = user.getPhoneNumber();
         dto.email = user.getEmail();
         dto.bio = user.getBio();
+
+
+//         nieuwe regel om roles in te stellen
+        dto.roles = user.getRoles().stream()
+                .map(Role::getRolename)
+                .toArray(String[]::new);
+
+
 //        dto.fileName = user.getFileName();
 //        dto.docFile = user.getDocFile();
 
