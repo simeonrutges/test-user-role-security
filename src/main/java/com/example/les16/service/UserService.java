@@ -97,10 +97,15 @@ public class UserService {
         dto.bio = user.getBio();
 
 
+// als het niet meer werkt regel 101 en 116-121 weghalen. En uncommenten: r104 t/m 111!!!!
+        dto.setRoles(getRoleNames((List<Role>) user.getRoles()));
+
+////////////////
 //         nieuwe regel om roles in te stellen
-        dto.roles = user.getRoles().stream()
-                .map(Role::getRolename)
-                .toArray(String[]::new);
+//        dto.roles = user.getRoles().stream()
+//                .map(Role::getRolename)
+//                .toArray(String[]::new);
+        ////////////////
 
 
 //        dto.fileName = user.getFileName();
@@ -108,6 +113,13 @@ public class UserService {
 
         return dto;
     }
+
+    private static String[] getRoleNames(List<Role> roles) {
+        return roles.stream()
+                .map(Role::getRolename)
+                .toArray(String[]::new);
+    }
+
 
     //
     public User transferToUser(UserDto userDto) {
