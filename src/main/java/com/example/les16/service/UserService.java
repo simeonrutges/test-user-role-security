@@ -3,6 +3,7 @@ package com.example.les16.service;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.model.Car;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
@@ -16,7 +17,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 
@@ -150,7 +154,7 @@ public class UserService {
         return user;
     }
 
-
+// deze hieronder weer terugzetten:
     public void assignCarToUser(String username, Long carId) {
         var optionalUser = userRepository.findByUsername(username);
         var optionalCar = carRepository.findById(carId);
@@ -166,6 +170,17 @@ public class UserService {
             throw new RecordNotFoundException();
         }
     }
+
+//    @Transactional
+//    public void assignCarToUser(String username, Long carId) {
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//        Car car = carRepository.findById(carId)
+//                .orElseThrow(() -> new EntityNotFoundException("Car not found"));
+//        user.setCar(car);
+//        userRepository.save(user);
+//    }
+
 
     public void addRideToUser(String username, Long id) {
         var optionalRide = rideRepository.findById(id);

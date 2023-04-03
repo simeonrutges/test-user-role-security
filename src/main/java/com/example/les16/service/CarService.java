@@ -3,7 +3,9 @@ package com.example.les16.service;
 import com.example.les16.dto.CarDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Car;
+import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
+import com.example.les16.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,9 +15,13 @@ import java.util.Optional;
 @Service
 public class CarService {
     private final CarRepository carRepository;
-    public CarService(CarRepository carRepository) {
+    private final UserRepository userRepository;
+
+    public CarService(CarRepository carRepository, UserRepository userRepository) {
         this.carRepository = carRepository;
+        this.userRepository = userRepository;
     }
+
 
     public List<CarDto> getAllCars() {
         List<CarDto> dtos = new ArrayList<>();
@@ -35,11 +41,36 @@ public class CarService {
         }
     }
 
-    public CarDto addCar(CarDto carDto) {
+//    public CarDto addCar(CarDto carDto) {
+//        Car rc =  transferToCar(carDto);
+//        carRepository.save(rc);
+//        return carDto;
+//    }
+
+//    deze werkt goed:
+public CarDto addCar(CarDto carDto) {
+    Car rc =  transferToCar(carDto);
+    carRepository.save(rc);
+    CarDto addedCar = transferToDto(rc);
+    return addedCar;
+}
+
+    public CarDto addCar(CarDto carDto, String username) {
         Car rc =  transferToCar(carDto);
-        carRepository.save(rc);
-        return carDto;
+        rc = carRepository.save(rc);
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()){
+            User u = user.get();
+            u.setCar(rc);
+            userRepository.save(u);
+        }
+
+        CarDto addedCar = transferToDto(rc);
+        return addedCar;
     }
+
+
+
 
     public void deleteCar(Long id) {
         carRepository.deleteById(id);

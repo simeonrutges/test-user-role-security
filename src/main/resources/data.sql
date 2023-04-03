@@ -21,6 +21,9 @@ VALUES
     (116, 'Breukelen', 'Amsterdam', 'A2', 'Free wifi available', NULL, '2023-08-11T17:30', NULL, 6.0, 4, 24.0, 2, true, '18:00'),
     (117, 'Breukelen', 'Amsterdam', 'A2', 'Snacks provided', NULL, '2023-08-12T19:00', NULL, 4.5, 3, 13.5, 3, false, '19:30');
 
+-- INSERT INTO users (username, password, firstname, lastname, email, phoneNumber, roles)
+-- VALUES ('Jack', '$2a$10$TJ0H7SwT6yKx6/pvlU92G.WzjbHLkHsZJP/jDdql0KwbF29N12jI6', 'John', 'Doe', 'johndoe@example.com', '+31 6 12345678', 'PASSAGIER');
+
 
 
 
