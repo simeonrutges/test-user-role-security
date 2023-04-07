@@ -3,6 +3,7 @@ package com.example.les16.service;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.model.Car;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
@@ -16,7 +17,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 
@@ -97,10 +101,15 @@ public class UserService {
         dto.bio = user.getBio();
 
 
+// als het niet meer werkt regel 101 en 116-121 weghalen. En uncommenten: r104 t/m 111!!!!
+        dto.setRoles(getRoleNames((List<Role>) user.getRoles()));
+
+////////////////
 //         nieuwe regel om roles in te stellen
-        dto.roles = user.getRoles().stream()
-                .map(Role::getRolename)
-                .toArray(String[]::new);
+//        dto.roles = user.getRoles().stream()
+//                .map(Role::getRolename)
+//                .toArray(String[]::new);
+        ////////////////
 
 
 //        dto.fileName = user.getFileName();
@@ -108,6 +117,13 @@ public class UserService {
 
         return dto;
     }
+
+    private static String[] getRoleNames(List<Role> roles) {
+        return roles.stream()
+                .map(Role::getRolename)
+                .toArray(String[]::new);
+    }
+
 
     //
     public User transferToUser(UserDto userDto) {
@@ -138,7 +154,7 @@ public class UserService {
         return user;
     }
 
-
+// deze hieronder weer terugzetten:
     public void assignCarToUser(String username, Long carId) {
         var optionalUser = userRepository.findByUsername(username);
         var optionalCar = carRepository.findById(carId);
@@ -154,6 +170,17 @@ public class UserService {
             throw new RecordNotFoundException();
         }
     }
+
+//    @Transactional
+//    public void assignCarToUser(String username, Long carId) {
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//        Car car = carRepository.findById(carId)
+//                .orElseThrow(() -> new EntityNotFoundException("Car not found"));
+//        user.setCar(car);
+//        userRepository.save(user);
+//    }
+
 
     public void addRideToUser(String username, Long id) {
         var optionalRide = rideRepository.findById(id);
@@ -195,17 +222,24 @@ public class UserService {
         userRepository.deleteByUsername(username);
     }
 
-    public UserDto updateUser(String username, UserDto newUser) {
+    public UserDto updateUser(String username, UserDto userDto) {
         if (userRepository.findByUsername(username).isPresent()) {
 
             User user = userRepository.findByUsername(username).get();
+            user.setUsername(userDto.getUsername());
+            user.setPassword(userDto.getPassword());
+            user.setEnabled(userDto.isEnabled());
+            user.setFirstname(userDto.getFirstname());
+            user.setLastname(userDto.getLastname());
+            user.setPhoneNumber(userDto.getPhoneNumber());
+            user.setEmail(userDto.getEmail());
+            user.setBio(userDto.getBio());
 
-            User user1 = transferToUser(newUser);
-            user1.setUsername(user.getUsername());
 
-            userRepository.save(user1);
 
-            return transferToDto(user1);
+            userRepository.save(user);
+
+            return transferToDto(user);
 
         } else {
 

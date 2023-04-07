@@ -1,9 +1,6 @@
 package com.example.les16.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 public class Car {
@@ -18,8 +15,10 @@ public class Car {
     private String model;
     private String brand;
 
+    // cascade erbij gezet 3/4. als user delete wordt dan car ook: , cascade = CascadeType.ALL
     @OneToOne(mappedBy = "car")
     User user;
+
     public Long getId() {
         return id;
     }

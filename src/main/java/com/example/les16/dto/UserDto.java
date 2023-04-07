@@ -32,7 +32,7 @@ public class UserDto {
 //    @NotEmpty
     public String[] roles;
 
-//    public CarDto carDto;
+    public CarDto car;
 // Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
     
 //    public Collection<Ride> rides;
@@ -126,14 +126,20 @@ public class UserDto {
     public void setDocFile(byte[] docFile) {
         this.docFile = docFile;
     }
-    //    public CarDto getCarDto() {
-//        return carDto;
-//    }
-//
-//    public void setCarDto(CarDto carDto) {
-//        this.carDto = carDto;
-//    }
-//
+
+
+    //////
+
+    public CarDto getCar() {
+        return car;
+    }
+
+    public void setCar(CarDto car) {
+        this.car = car;
+    }
+
+
+    //
 //    public Collection<Ride> getRides() {
 //        return rides;
 //    }
