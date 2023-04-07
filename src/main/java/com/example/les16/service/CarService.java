@@ -8,6 +8,8 @@ import com.example.les16.repository.CarRepository;
 import com.example.les16.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -71,10 +73,37 @@ public CarDto addCar(CarDto carDto) {
 
 
 
+// de orineel werkende:
+//    public void deleteCar(Long id) {
+//        carRepository.deleteById(id);
+//    }
 
-    public void deleteCar(Long id) {
-        carRepository.deleteById(id);
+    ///////////
+    // nu mee bezig: werkt wek, maar niet de juiste timing met FE:
+    public void removeCarFromUser(Long carId) {
+        User user = userRepository.findByCarId(carId);
+        if (user != null) {
+            user.setCar(null);
+            userRepository.save(user);
+        }
     }
+    public void deleteCar(Long carId) {
+        removeCarFromUser(carId);
+        carRepository.deleteById(carId);
+    }
+    public Car getCarByUser(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return user.getCar();
+        } else {
+            throw new EntityNotFoundException("User not found with username: " + username);
+        }
+    }
+
+///////////////
+
+
 
     public void updateCar(Long id, CarDto carDto) {
         if(!carRepository.existsById(id)) {

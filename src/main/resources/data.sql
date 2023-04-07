@@ -21,8 +21,20 @@ VALUES
     (116, 'Breukelen', 'Amsterdam', 'A2', 'Free wifi available', NULL, '2023-08-11T17:30', NULL, 6.0, 4, 24.0, 2, true, '18:00'),
     (117, 'Breukelen', 'Amsterdam', 'A2', 'Snacks provided', NULL, '2023-08-12T19:00', NULL, 4.5, 3, 13.5, 3, false, '19:30');
 
--- INSERT INTO users (username, password, firstname, lastname, email, phoneNumber, roles)
--- VALUES ('Jack', '$2a$10$TJ0H7SwT6yKx6/pvlU92G.WzjbHLkHsZJP/jDdql0KwbF29N12jI6', 'John', 'Doe', 'johndoe@example.com', '+31 6 12345678', 'PASSAGIER');
+-- INSERT INTO roles (rolename)
+-- VALUES ('PASSAGIER');
+
+INSERT INTO users (username, password, firstname, lastname, email, phone_number, enabled)
+VALUES ('Jack', '$2a$12$W91wFrPpzARW/VZ755bAouA5Kuwa1OewK9B2GXGVALmXkse8Hzrne', 'John', 'Doe', 'johndoe@example.com', 3161234, true),
+       ('Livia', '$2a$12$W91wFrPpzARW/VZ755bAouA5Kuwa1OewK9B2GXGVALmXkse8Hzrne', 'Olivia', 'Johnson', 'olivia@example.com', 316687675, true),
+       ('Eline', '$2a$12$W91wFrPpzARW/VZ755bAouA5Kuwa1OewK9B2GXGVALmXkse8Hzrne', 'Els', 'Horst', 'els@example.com', 316876554, true);
+
+INSERT INTO users_roles (users_username, roles_rolename)
+VALUES ('Jack', 'PASSAGIER'),
+       ('Livia', 'PASSAGIER'),
+       ('Livia', 'BESTUURDER'),
+       ('Eline', 'BESTUURDER');
+
 
 
 

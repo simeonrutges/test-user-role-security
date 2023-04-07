@@ -37,7 +37,9 @@ public class User {
     @ManyToMany
     private List<Ride> rides;
     // bij deze many-to-many controlleren of wel moet
-    @OneToOne
+
+    // deze cascade 3/4 erbij gezet: Let op: Het gebruik van CascadeType.REMOVE in een @OneToOne relatie kan onbedoelde gevolgen hebben voor de gegevensintegriteit.
+    @OneToOne (cascade = CascadeType.REMOVE, orphanRemoval = true)
     Car car;
 
     @OneToMany(mappedBy = "reviewer")

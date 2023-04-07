@@ -222,17 +222,24 @@ public class UserService {
         userRepository.deleteByUsername(username);
     }
 
-    public UserDto updateUser(String username, UserDto newUser) {
+    public UserDto updateUser(String username, UserDto userDto) {
         if (userRepository.findByUsername(username).isPresent()) {
 
             User user = userRepository.findByUsername(username).get();
+            user.setUsername(userDto.getUsername());
+            user.setPassword(userDto.getPassword());
+            user.setEnabled(userDto.isEnabled());
+            user.setFirstname(userDto.getFirstname());
+            user.setLastname(userDto.getLastname());
+            user.setPhoneNumber(userDto.getPhoneNumber());
+            user.setEmail(userDto.getEmail());
+            user.setBio(userDto.getBio());
 
-            User user1 = transferToUser(newUser);
-            user1.setUsername(user.getUsername());
 
-            userRepository.save(user1);
 
-            return transferToDto(user1);
+            userRepository.save(user);
+
+            return transferToDto(user);
 
         } else {
 
