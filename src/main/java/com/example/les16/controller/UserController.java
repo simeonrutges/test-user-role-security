@@ -72,6 +72,7 @@ public class UserController {
         return ResponseEntity.ok().body(userDtos);
     }
 
+
     @GetMapping(value = "/{username}")
     public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
 

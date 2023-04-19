@@ -27,7 +27,8 @@ public class Ride {
     private LocalTime eta;
 
 
-    @ManyToMany(mappedBy = "rides")
+//    @ManyToMany(mappedBy = "rides")
+    @ManyToMany(mappedBy = "rides", cascade = CascadeType.REMOVE)
 //    @ManyToMany(fetch = FetchType.EAGER)
 //    dit wil ik er eigenlijk ook bij hebben. Bij het opvragen van een rit wil ik ook de users zien
     private List<User> users;

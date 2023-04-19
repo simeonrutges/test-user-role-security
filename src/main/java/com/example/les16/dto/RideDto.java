@@ -1,5 +1,7 @@
 package com.example.les16.dto;
 
+import com.example.les16.model.User;
+
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
@@ -7,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 
 public class RideDto {
@@ -34,26 +37,29 @@ public class RideDto {
     @Future
     public LocalTime eta;
 
+//    public List<UserDto> users;
 
-    public RideDto() {
-    }
 
-    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, int pax, double totalRitPrice, int availableSpots, boolean automaticAcceptance, LocalTime eta) {
-        this.id = id;
-        this.pickUpLocation = pickUpLocation;
-        this.destination = destination;
-        this.route = route;
-        this.addRideInfo = addRideInfo;
-        this.departureTime = departureTime;
-        this.departureDate = departureDate;
-        this.departureDateTime = departureDateTime;
-        this.pricePerPerson = pricePerPerson;
-        this.pax = pax;
-        this.totalRitPrice = totalRitPrice;
-        this.availableSpots = availableSpots;
-        this.automaticAcceptance = automaticAcceptance;
-        this.eta = eta;
-    }
+// deze werkte perfect voor 13/4. Nu testen zonder
+//    public RideDto() {
+//    }
+//
+//    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, int pax, double totalRitPrice, int availableSpots, boolean automaticAcceptance, LocalTime eta) {
+//        this.id = id;
+//        this.pickUpLocation = pickUpLocation;
+//        this.destination = destination;
+//        this.route = route;
+//        this.addRideInfo = addRideInfo;
+//        this.departureTime = departureTime;
+//        this.departureDate = departureDate;
+//        this.departureDateTime = departureDateTime;
+//        this.pricePerPerson = pricePerPerson;
+//        this.pax = pax;
+//        this.totalRitPrice = totalRitPrice;
+//        this.availableSpots = availableSpots;
+//        this.automaticAcceptance = automaticAcceptance;
+//        this.eta = eta;
+//    }
 
     public Long getId() {
         return id;
@@ -166,4 +172,12 @@ public class RideDto {
     public void setEta(LocalTime eta) {
         this.eta = eta;
     }
+
+//    public List<UserDto> getUsers() {
+//        return users;
+//    }
+//
+//    public void setUsers(List<UserDto> users) {
+//        this.users = users;
+//    }
 }
