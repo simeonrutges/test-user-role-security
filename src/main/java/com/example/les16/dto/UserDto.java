@@ -1,6 +1,7 @@
 package com.example.les16.dto;
 
 import javax.validation.constraints.*;
+import java.util.List;
 
 public class UserDto {
 
@@ -34,8 +35,11 @@ public class UserDto {
 
     public CarDto car;
 // Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
-    
-//    public Collection<Ride> rides;
+
+
+
+//    public List<RideDto> rides;
+
     // Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
 
 
@@ -149,5 +153,14 @@ public class UserDto {
 //    }
 //    //    public void setRoles(List<Role> userRoles) {
 ////    }
+
+
+//    public List<RideDto> getRides() {
+//        return rides;
+//    }
+//
+//    public void setRides(List<RideDto> rides) {
+//        this.rides = rides;
+//    }
 
 }

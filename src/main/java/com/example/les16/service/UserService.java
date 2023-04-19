@@ -1,15 +1,18 @@
 package com.example.les16.service;
 
+import com.example.les16.dto.RideDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Car;
+import com.example.les16.model.Ride;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
 import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+//    @Autowired
+//    private static RideService rideService;
+
+
     private final UserRepository userRepository;
     private final CarRepository carRepository;
     private final CarService carService;
@@ -111,6 +119,13 @@ public class UserService {
 //                .toArray(String[]::new);
         ////////////////
 
+// test 13/4
+//        dto.setRides(user.getRides().stream()
+//                .map(rideService::transferToDto) // gebruik de rideService om de methode aan te roepen
+//                .collect(Collectors.toList()));
+
+
+
 
 //        dto.fileName = user.getFileName();
 //        dto.docFile = user.getDocFile();
@@ -148,6 +163,13 @@ public class UserService {
             userRoles.add(or.get());
         }
         user.setRoles(userRoles);
+
+        //test 13/4
+//        List<Ride> rides = userDto.getRides().stream()
+//                .map(rideService::transferToRide)
+//                .collect(Collectors.toList());
+//        user.setRides(rides);
+        //
 
         userRepository.save(user);
 // moet deze laatste save erbij?

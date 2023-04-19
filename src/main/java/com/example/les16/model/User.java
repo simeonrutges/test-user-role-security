@@ -1,5 +1,6 @@
 package com.example.les16.model;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -34,7 +35,17 @@ public class User {
 
 //    @ManyToMany(fetch = FetchType.EAGER)
     // dit is wel de bedoeling. Bij bv een get van user geeft SB dan ook de collectie rides mee
-    @ManyToMany
+        @ManyToMany
+    //was gewoon many-to-many!
+///
+//    @ManyToMany
+//    @JoinTable(name = "users_rides",
+//        joinColumns = @JoinColumn(name = "user_id"),
+//        inverseJoinColumns = @JoinColumn(name = "ride_id"),
+//        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "ride_id"})})
+//    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
+
+////
     private List<Ride> rides;
     // bij deze many-to-many controlleren of wel moet
 

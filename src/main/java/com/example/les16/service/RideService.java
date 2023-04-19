@@ -1,10 +1,13 @@
 package com.example.les16.service;
 
 import com.example.les16.dto.RideDto;
+import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.model.Ride;
+import com.example.les16.model.User;
 import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +16,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RideService {
+//    @Autowired
+//    private UserService userService;
+
+
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
 
@@ -93,6 +101,16 @@ public class RideService {
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
         ride.setEta(rideDto.getEta());
 
+        //test 13/4?
+        // gebruikers omzetten van UserDto naar User
+//        List<User> users = rideDto.getUsers().stream()
+//                .map(userDto -> userService.transferToUser(userDto))
+//                .collect(Collectors.toList());
+//        ride.setUsers(users);
+        //
+
+
+
         rideRepository.save(ride);
         /// moet deze laatste save erbij???
         return ride;
@@ -116,6 +134,11 @@ public class RideService {
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
         dto.eta = ride.getEta();
 
+        // test 13/4: omzetten van de User objecten naar UserDto objecten
+//        List<UserDto> userDtos = ride.getUsers().stream()
+//                .map(UserService::transferToDto)
+//                .collect(Collectors.toList());
+//        dto.setUsers(userDtos);
 
         return dto;
     }

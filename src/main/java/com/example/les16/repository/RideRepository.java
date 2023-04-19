@@ -30,7 +30,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 //    List<Ride> findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateEquals(
 //            String pickUpLocation, LocalDate departureDate);
 
-List<Ride> findAllRidesByDepartureDateTimeEquals(LocalDateTime departureDateTime);
+    List<Ride> findAllRidesByDepartureDateTimeEquals(LocalDateTime departureDateTime);
 
     List<Ride> findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
             String destination, String pickUpLocation, LocalDateTime departureDateTime);
