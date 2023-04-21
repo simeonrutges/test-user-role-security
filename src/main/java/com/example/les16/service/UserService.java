@@ -153,6 +153,8 @@ public class UserService {
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setEmail(userDto.getEmail());
         user.setBio(userDto.getBio());
+
+        // de setFiles erbij zetten??
 //        user.setFileName(userDto.getFileName());
 //        user.setDocFile(user.getDocFile());
 

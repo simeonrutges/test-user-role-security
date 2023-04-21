@@ -3,6 +3,7 @@ package com.example.les16.repository;
 import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     void deleteByUsername(String username);
 
 //    List<User> findByRoles(String role);
+//   @Query("SELECT u FROM User u WHERE u.fileName = ?1")
    User findByFileName(String fileName);
 
     User findByCarId(Long carId);
