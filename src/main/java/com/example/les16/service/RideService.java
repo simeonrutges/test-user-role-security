@@ -101,6 +101,11 @@ public class RideService {
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
         ride.setEta(rideDto.getEta());
 
+
+        ride.setDriverUsername(rideDto.getDriverUsername());
+
+
+
         //test 13/4?
         // gebruikers omzetten van UserDto naar User
 //        List<User> users = rideDto.getUsers().stream()
@@ -133,6 +138,10 @@ public class RideService {
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
         dto.eta = ride.getEta();
+
+
+        dto.driverUsername = ride.getDriverUsername();
+
 
         // test 13/4: omzetten van de User objecten naar UserDto objecten
 //        List<UserDto> userDtos = ride.getUsers().stream()
@@ -252,9 +261,30 @@ public List<RideDto> getRidesByCriteria(
         return rideDtoList;
     }
 
+//    public void deleteRide(Long id) {
+//        rideRepository.deleteById(id);
+//    }
+
     public void deleteRide(Long id) {
-        rideRepository.deleteById(id);
+        Optional<Ride> optionalRide = rideRepository.findById(id);
+
+        if (optionalRide.isPresent()) {
+            Ride ride = optionalRide.get();
+
+            // Verwijder de rit uit de lijst van ritten voor elke gerelateerde gebruiker
+            for (User user : ride.getUsers()) {
+                user.getRides().remove(ride);
+                userRepository.save(user); // Sla de bijgewerkte User entiteit op
+            }
+
+            // Verwijder de Ride entiteit
+            rideRepository.deleteById(id);
+        } else {
+            throw new RecordNotFoundException("Rit niet gevonden");
+        }
     }
+
+
 
     public RideDto updateRide(Long id, RideDto newRide) {
         if (rideRepository.findById(id).isPresent()){

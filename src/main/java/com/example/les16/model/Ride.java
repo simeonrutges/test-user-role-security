@@ -26,13 +26,15 @@ public class Ride {
     private boolean automaticAcceptance;
     private LocalTime eta;
 
+    private String driverUsername;
 
-//    @ManyToMany(mappedBy = "rides")
-    @ManyToMany(mappedBy = "rides", cascade = CascadeType.REMOVE)
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    dit wil ik er eigenlijk ook bij hebben. Bij het opvragen van een rit wil ik ook de users zien
+
+    @ManyToMany(mappedBy = "rides")
+//    @ManyToMany(mappedBy = "rides", cascade = CascadeType.REMOVE) // dit is de enigste die werkt! Maar haalt ook gelijk de user weg...
     private List<User> users;
-    //rides is de naam van het veld aan de userkant
+    //    @ManyToMany(fetch = FetchType.EAGER)
+//    dit wil ik er eigenlijk ook bij hebben. Bij het opvragen van een rit wil ik ook de users zien
+
 
     public Long getId() {
         return id;
@@ -146,6 +148,14 @@ public class Ride {
         this.eta = eta;
     }
 
+    public String getDriverUsername() {
+        return driverUsername;
+    }
+
+    public void setDriverUsername(String driverUsername) {
+        this.driverUsername = driverUsername;
+    }
+
     // deze na het eten erbij gezet
 
     public List<User> getUsers() {
@@ -155,4 +165,6 @@ public class Ride {
     public void setUsers(List<User> users) {
         this.users = users;
     }
+
+
 }
