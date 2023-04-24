@@ -126,9 +126,9 @@ public class UserService {
 
 
 
-
-//        dto.fileName = user.getFileName();
-//        dto.docFile = user.getDocFile();
+// 23/4 erbij
+        dto.fileName = user.getFileName();
+        dto.docFile = user.getDocFile();
 
         return dto;
     }
@@ -154,9 +154,9 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setBio(userDto.getBio());
 
-        // de setFiles erbij zetten??
-//        user.setFileName(userDto.getFileName());
-//        user.setDocFile(user.getDocFile());
+        // 23/4 erbij
+        user.setFileName(userDto.getFileName());
+        user.setDocFile(user.getDocFile());
 
         List<Role> userRoles = new ArrayList<>();
         for (String rolename : userDto.roles) {
@@ -258,6 +258,11 @@ public class UserService {
             user.setPhoneNumber(userDto.getPhoneNumber());
             user.setEmail(userDto.getEmail());
             user.setBio(userDto.getBio());
+
+//            23/4 erbij
+            user.setFileName(userDto.getFileName());
+            user.setDocFile(userDto.getDocFile());
+//
 
 
 
@@ -389,6 +394,20 @@ public class UserService {
 //            System.out.println("some exception while zipping");
 //        }
 //    }
+
+    public void deleteProfileImage(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setFileName(null);
+            user.setDocFile(null);
+            userRepository.save(user);
+        } else {
+            throw new UsernameNotFoundException("User not found");
+        }
+    }
+
+
 }
 
 
