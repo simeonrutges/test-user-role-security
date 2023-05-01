@@ -3,6 +3,8 @@ package com.example.les16.repository;
 import com.example.les16.model.Ride;
 import com.example.les16.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,4 +46,6 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
             String pickUpLocation, LocalDateTime departureDateTime);
 
+    @Query("SELECT r FROM Ride r JOIN r.users u WHERE u = :user")
+    List<Ride> findRidesForUser(@Param("user") User user);
 }

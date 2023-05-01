@@ -4,6 +4,7 @@ import com.example.les16.dto.RideDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.exceptions.UserNotFoundException;
 import com.example.les16.model.Car;
 import com.example.les16.model.Ride;
 import com.example.les16.model.Role;
@@ -38,13 +39,15 @@ public class UserService {
     private final CarRepository carRepository;
     private final CarService carService;
     private final RoleRepository roleRepos;
+    private final RideService rideService;
     private final RideRepository rideRepository;
 
-    public UserService(UserRepository userRepository, CarRepository carRepository, CarService carService, RoleRepository roleRepos, RideRepository rideRepository) {
+    public UserService(UserRepository userRepository, CarRepository carRepository, CarService carService, RoleRepository roleRepos, RideService rideService, RideRepository rideRepository) {
         this.userRepository = userRepository;
         this.carRepository = carRepository;
         this.carService = carService;
         this.roleRepos = roleRepos;
+        this.rideService = rideService;
         this.rideRepository = rideRepository;
     }
 
@@ -405,6 +408,16 @@ public class UserService {
         } else {
             throw new UsernameNotFoundException("User not found");
         }
+    }
+
+    public List<RideDto> findRidesForUser(String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (!optionalUser.isPresent()) {
+            throw new UserNotFoundException("User not found with username: " + username);
+        }
+        User user = optionalUser.get();
+        List<Ride> rides = rideRepository.findRidesForUser(user);
+        return rides.stream().map(rideService::transferToDto).collect(Collectors.toList());
     }
 
 

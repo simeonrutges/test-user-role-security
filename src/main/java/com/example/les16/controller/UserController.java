@@ -1,7 +1,9 @@
 package com.example.les16.controller;
 import com.example.les16.FileUploadResponse.FileUploadResponse;
+import com.example.les16.dto.RideDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
+import com.example.les16.model.Ride;
 import com.example.les16.model.User;
 import com.example.les16.security.MyUserDetails;
 import com.example.les16.security.MyUserDetailsService;
@@ -209,5 +211,9 @@ public class UserController {
         }
     }
 
-
+    @GetMapping("/{username}/rides")
+    public ResponseEntity<List<RideDto>> getRidesForUser(@PathVariable("username") String username) {
+        List<RideDto> rideDtos = userService.findRidesForUser(username);
+        return ResponseEntity.ok(rideDtos);
+    }
 }
