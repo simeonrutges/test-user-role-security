@@ -1,7 +1,9 @@
 package com.example.les16.controller;
 import com.example.les16.FileUploadResponse.FileUploadResponse;
+import com.example.les16.dto.RideDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
+import com.example.les16.model.Ride;
 import com.example.les16.model.User;
 import com.example.les16.security.MyUserDetails;
 import com.example.les16.security.MyUserDetailsService;
@@ -168,6 +170,7 @@ public class UserController {
 /////////////
     @GetMapping("/downloadFromDB/{fileName}")
     ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
+        //Marc heeft in HW klas staan <Resource>
 
         return userService.singleFileDownload(fileName, request);
     }
@@ -197,4 +200,20 @@ public class UserController {
 //    public Collection<User> getAllFromDB(){
 //        return userService.getALlFromDB();
 //    }
+
+    @DeleteMapping("/deleteProfileImage/{username}")
+    public ResponseEntity<?> deleteProfileImage(@PathVariable("username") String username) {
+        try {
+            userService.deleteProfileImage(username);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not delete profile image: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{username}/rides")
+    public ResponseEntity<List<RideDto>> getRidesForUser(@PathVariable("username") String username) {
+        List<RideDto> rideDtos = userService.findRidesForUser(username);
+        return ResponseEntity.ok(rideDtos);
+    }
 }

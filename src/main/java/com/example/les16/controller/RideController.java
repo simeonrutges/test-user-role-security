@@ -161,8 +161,14 @@ public ResponseEntity<List<RideDto>> getRidesByCriteria(
 
 
 
+
+
 //    @PutMapping("/{id}/{username}")
 //    public void assignUserToRide(@PathVariable("id") Long id, @PathVariable("username") String username) {
 //        rideService.assignUserToRide(id, username);
 //    }
+
+    //test 24/4:
+
+
 }

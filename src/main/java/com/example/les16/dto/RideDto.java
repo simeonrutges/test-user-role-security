@@ -37,6 +37,8 @@ public class RideDto {
     @Future
     public LocalTime eta;
 
+    public String driverUsername;
+
 //    public List<UserDto> users;
 
 
@@ -173,7 +175,15 @@ public class RideDto {
         this.eta = eta;
     }
 
-//    public List<UserDto> getUsers() {
+    public String getDriverUsername() {
+        return driverUsername;
+    }
+
+    public void setDriverUsername(String driverUsername) {
+        this.driverUsername = driverUsername;
+    }
+
+    //    public List<UserDto> getUsers() {
 //        return users;
 //    }
 //
