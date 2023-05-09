@@ -1,5 +1,6 @@
 package com.example.les16.controller;
 import com.example.les16.FileUploadResponse.FileUploadResponse;
+import com.example.les16.dto.NotificationDto;
 import com.example.les16.dto.RideDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
@@ -32,6 +33,7 @@ import com.example.les16.security.JwtService;
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+
 
     public UserController(UserService userService, PasswordEncoder encoder) {
         this.userService = userService;
@@ -216,4 +218,6 @@ public class UserController {
         List<RideDto> rideDtos = userService.findRidesForUser(username);
         return ResponseEntity.ok(rideDtos);
     }
+
+
 }

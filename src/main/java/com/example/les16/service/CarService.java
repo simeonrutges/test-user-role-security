@@ -50,26 +50,42 @@ public class CarService {
 //    }
 
 //    deze werkt goed:
-public CarDto addCar(CarDto carDto) {
-    Car rc =  transferToCar(carDto);
-    carRepository.save(rc);
-    CarDto addedCar = transferToDto(rc);
-    return addedCar;
+//public CarDto addCar(CarDto carDto) {
+//    Car rc =  transferToCar(carDto);
+//    carRepository.save(rc);
+//    CarDto addedCar = transferToDto(rc);
+//    return addedCar;
+//}
+
+//    public CarDto addCar(CarDto carDto, String username) {
+//        Car rc =  transferToCar(carDto);
+//        rc = carRepository.save(rc);
+//        Optional<User> user = userRepository.findByUsername(username);
+//        if (user.isPresent()){
+//            User u = user.get();
+//            u.setCar(rc);
+//            userRepository.save(u);
+//        }
+//
+//        CarDto addedCar = transferToDto(rc);
+//        return addedCar;
+//    }
+    //hieronder wordt eerst de auto gekoppeld aan de uset
+public CarDto addCar(CarDto carDto, String username) {
+    Optional<User> userOptional = userRepository.findByUsername(username);
+    if (userOptional.isPresent()) {
+        User user = userOptional.get();
+        Car car = transferToCar(carDto);
+        car.setUser(user);  // koppel de auto aan de gebruiker
+        Car savedCar = carRepository.save(car);
+        user.setCar(savedCar); // dit is nodig om de bidirectionele relatie te behouden
+        userRepository.save(user);
+        return transferToDto(savedCar);
+    } else {
+        throw new EntityNotFoundException("User not found with username: " + username);
+    }
 }
 
-    public CarDto addCar(CarDto carDto, String username) {
-        Car rc =  transferToCar(carDto);
-        rc = carRepository.save(rc);
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent()){
-            User u = user.get();
-            u.setCar(rc);
-            userRepository.save(u);
-        }
-
-        CarDto addedCar = transferToDto(rc);
-        return addedCar;
-    }
 
 
 

@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -38,15 +39,25 @@ public class CarController {
         return dto;
     }
 //////
-    @GetMapping("/user/{username}")
-    public ResponseEntity<Car> getCarByUser(@PathVariable("username") String username) {
+//    @GetMapping("/user/{username}")
+//    public ResponseEntity<Car> getCarByUser(@PathVariable("username") String username) {
+//        Car car = carService.getCarByUser(username);
+//        if (car != null) {
+//            return new ResponseEntity<>(car, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//    }
+@GetMapping("/user/{username}")
+public ResponseEntity<?> getCarByUser(@PathVariable("username") String username) {
+    try {
         Car car = carService.getCarByUser(username);
-        if (car != null) {
-            return new ResponseEntity<>(car, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(car, HttpStatus.OK);
+    } catch (EntityNotFoundException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
+}
+
 //////
 
 //    @PostMapping("")

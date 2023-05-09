@@ -1,5 +1,7 @@
 package com.example.les16.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,6 +19,7 @@ public class Car {
 
     // cascade erbij gezet 3/4. als user delete wordt dan car ook: , cascade = CascadeType.ALL
     @OneToOne(mappedBy = "car")
+            @JsonIgnore
     User user;
 
     public Long getId() {
