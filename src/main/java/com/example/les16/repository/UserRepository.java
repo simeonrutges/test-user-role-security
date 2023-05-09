@@ -23,4 +23,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     User findByCarId(Long carId);
 
+    // deze erbij voor de systeem User
+    User findByUsernameIgnoreCase(String username);
+
+
 }

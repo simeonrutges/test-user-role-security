@@ -29,31 +29,34 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.les16.service.DtoMapperService.transferToDto;
+
 @Service
 public class UserService {
-//    @Autowired
-//    private static RideService rideService;
-
 
     private final UserRepository userRepository;
     private final CarRepository carRepository;
     private final CarService carService;
     private final RoleRepository roleRepos;
-    private final RideService rideService;
+//    private final RideService rideService;
+    private final DtoMapperService dtoMapperService;
     private final RideRepository rideRepository;
 
-    public UserService(UserRepository userRepository, CarRepository carRepository, CarService carService, RoleRepository roleRepos, RideService rideService, RideRepository rideRepository) {
+
+    public UserService(UserRepository userRepository, CarRepository carRepository, CarService carService, RoleRepository roleRepos, DtoMapperService dtoMapperService,  RideRepository rideRepository) {
         this.userRepository = userRepository;
         this.carRepository = carRepository;
         this.carService = carService;
         this.roleRepos = roleRepos;
-        this.rideService = rideService;
+//        this.rideService = rideService;
+        this.dtoMapperService = dtoMapperService;
         this.rideRepository = rideRepository;
     }
 
     public String createUser(UserDto userDto) {
 
-        User newUser = transferToUser(userDto);
+//        User newUser = transferToUser(userDto);
+        User newUser = dtoMapperService.transferToUser(userDto);
         userRepository.save(newUser);
 
         return "Done";
@@ -98,88 +101,93 @@ public class UserService {
 //    }
 
 
-    public static UserDto transferToDto(User user) {
-
-        var dto = new UserDto();
-
-        dto.username = user.getUsername();
-        dto.password = user.getPassword();
-        dto.enabled = user.isEnabled();
-        dto.firstname = user.getFirstname();
-        dto.lastname = user.getLastname();
-        dto.phoneNumber = user.getPhoneNumber();
-        dto.email = user.getEmail();
-        dto.bio = user.getBio();
+    //////////////////////////////////////// hieronder evt terug!!
 
 
-// als het niet meer werkt regel 101 en 116-121 weghalen. En uncommenten: r104 t/m 111!!!!
-        dto.setRoles(getRoleNames((List<Role>) user.getRoles()));
+//    public static UserDto transferToDto(User user) {
+//
+//        var dto = new UserDto();
+//
+//        dto.username = user.getUsername();
+//        dto.password = user.getPassword();
+//        dto.enabled = user.isEnabled();
+//        dto.firstname = user.getFirstname();
+//        dto.lastname = user.getLastname();
+//        dto.phoneNumber = user.getPhoneNumber();
+//        dto.email = user.getEmail();
+//        dto.bio = user.getBio();
+//
+//
+//// als het niet meer werkt regel 101 en 116-121 weghalen. En uncommenten: r104 t/m 111!!!!
+//        dto.setRoles(getRoleNames((List<Role>) user.getRoles()));
+//
+//////////////////
+////         nieuwe regel om roles in te stellen
+////        dto.roles = user.getRoles().stream()
+////                .map(Role::getRolename)
+////                .toArray(String[]::new);
+//        ////////////////
+//
+//// test 13/4
+////        dto.setRides(user.getRides().stream()
+////                .map(rideService::transferToDto) // gebruik de rideService om de methode aan te roepen
+////                .collect(Collectors.toList()));
+//
+//
+//
+//// 23/4 erbij
+//        dto.fileName = user.getFileName();
+//        dto.docFile = user.getDocFile();
+//
+//        return dto;
+//    }
 
-////////////////
-//         nieuwe regel om roles in te stellen
-//        dto.roles = user.getRoles().stream()
+//    private static String[] getRoleNames(List<Role> roles) {
+//        return roles.stream()
 //                .map(Role::getRolename)
 //                .toArray(String[]::new);
-        ////////////////
-
-// test 13/4
-//        dto.setRides(user.getRides().stream()
-//                .map(rideService::transferToDto) // gebruik de rideService om de methode aan te roepen
-//                .collect(Collectors.toList()));
+//    }
 
 
+//    public User transferToUser(UserDto userDto) {
+//
+//        var user = new User();
+////deze vandaag weggehaalt vanwege PUT
+//        user.setUsername(userDto.getUsername());
+//        user.setPassword(userDto.getPassword());
+//        user.setEnabled(userDto.isEnabled());
+//        user.setFirstname(userDto.getFirstname());
+//        user.setLastname(userDto.getLastname());
+//        user.setPhoneNumber(userDto.getPhoneNumber());
+//        user.setEmail(userDto.getEmail());
+//        user.setBio(userDto.getBio());
+//
+//        // 23/4 erbij
+//        user.setFileName(userDto.getFileName());
+//        user.setDocFile(user.getDocFile());
+//
+//        List<Role> userRoles = new ArrayList<>();
+//        for (String rolename : userDto.roles) {
+//            Optional<Role> or = roleRepos.findById(rolename);
+//
+//            userRoles.add(or.get());
+//        }
+//        user.setRoles(userRoles);
+//
+//        //test 13/4
+////        List<Ride> rides = userDto.getRides().stream()
+////                .map(rideService::transferToRide)
+////                .collect(Collectors.toList());
+////        user.setRides(rides);
+//        //
+//
+//        userRepository.save(user);
+//// moet deze laatste save erbij?
+//        return user;
+//    }
 
-// 23/4 erbij
-        dto.fileName = user.getFileName();
-        dto.docFile = user.getDocFile();
 
-        return dto;
-    }
-
-    private static String[] getRoleNames(List<Role> roles) {
-        return roles.stream()
-                .map(Role::getRolename)
-                .toArray(String[]::new);
-    }
-
-
-    //
-    public User transferToUser(UserDto userDto) {
-
-        var user = new User();
-//deze vandaag weggehaalt vanwege PUT
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setEnabled(userDto.isEnabled());
-        user.setFirstname(userDto.getFirstname());
-        user.setLastname(userDto.getLastname());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setEmail(userDto.getEmail());
-        user.setBio(userDto.getBio());
-
-        // 23/4 erbij
-        user.setFileName(userDto.getFileName());
-        user.setDocFile(user.getDocFile());
-
-        List<Role> userRoles = new ArrayList<>();
-        for (String rolename : userDto.roles) {
-            Optional<Role> or = roleRepos.findById(rolename);
-
-            userRoles.add(or.get());
-        }
-        user.setRoles(userRoles);
-
-        //test 13/4
-//        List<Ride> rides = userDto.getRides().stream()
-//                .map(rideService::transferToRide)
-//                .collect(Collectors.toList());
-//        user.setRides(rides);
-        //
-
-        userRepository.save(user);
-// moet deze laatste save erbij?
-        return user;
-    }
+    /////////////////////////  hierboven evt terug!
 
 // deze hieronder weer terugzetten:
     public void assignCarToUser(String username, Long carId) {
@@ -232,12 +240,7 @@ public class UserService {
         if (userRepository.findByUsername(username).isPresent()) {
             User user = userRepository.findByUsername(username).get();
             UserDto dto = transferToDto(user);
-//            if(ride.getPassengers() != null){
-//                dto.setPassengers(passengerService.transferToDto(ride.getPassengers().get()));
-//            }
-//            if(ride.getRemoteController() != null){
-//                dto.setRemoteControllerDto(remoteControllerService.transferToDto(ride.getRemoteController()));
-//            }
+
 
             return transferToDto(user);
         } else {
@@ -410,17 +413,42 @@ public class UserService {
         }
     }
 
-    public List<RideDto> findRidesForUser(String username) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if (!optionalUser.isPresent()) {
-            throw new UserNotFoundException("User not found with username: " + username);
-        }
-        User user = optionalUser.get();
-        List<Ride> rides = rideRepository.findRidesForUser(user);
-        return rides.stream().map(rideService::transferToDto).collect(Collectors.toList());
+//    public List<RideDto> findRidesForUser(String username) {
+//        Optional<User> optionalUser = userRepository.findByUsername(username);
+//        if (!optionalUser.isPresent()) {
+//            throw new UserNotFoundException("User not found with username: " + username);
+//        }
+//        User user = optionalUser.get();
+//        List<Ride> rides = rideRepository.findRidesForUser(user);
+//        return rides.stream().map(rideService::transferToDto).collect(Collectors.toList());
+//    }
+public List<RideDto> findRidesForUser(String username) {
+    Optional<User> optionalUser = userRepository.findByUsername(username);
+    if (!optionalUser.isPresent()) {
+        throw new UserNotFoundException("User not found with username: " + username);
     }
+    User user = optionalUser.get();
+    List<Ride> rides = rideRepository.findRidesForUser(user);
+//    return rides.stream().map(dtoMapperService::rideToRideDto).collect(Collectors.toList());
+    return rides.stream().map(dtoMapperService::transferToDto).collect(Collectors.toList());
+}
 
 
+    public void createSystemUserIfNotExists() {
+        String systemUsername = "System";
+        User systemUser = userRepository.findByUsernameIgnoreCase(systemUsername);
+
+        if (systemUser == null) {
+            systemUser = new User();
+            systemUser.setUsername(systemUsername);
+            systemUser.setFirstname("App");
+            systemUser.setLastname("System");
+            systemUser.setEmail("system@app.com");
+            systemUser.setEnabled(true);
+
+            userRepository.save(systemUser);
+        }
+    }
 }
 
 
