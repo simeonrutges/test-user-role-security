@@ -11,17 +11,19 @@ public class NotificationDto {
     private NotificationType type;
     private LocalDateTime sentDate;
     private boolean isRead;
+    private Long rideId;
 
     public NotificationDto() {
     }
 
-    public NotificationDto(Long id, UserDto sender, UserDto receiver, NotificationType type, LocalDateTime sentDate, boolean isRead) {
+    public NotificationDto(Long id, UserDto sender, UserDto receiver, NotificationType type, LocalDateTime sentDate, boolean isRead, Long rideId) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
         this.type = type;
         this.sentDate = sentDate;
         this.isRead = isRead;
+        this.rideId = rideId;
     }
 
     // Getters en setters
@@ -74,4 +76,11 @@ public class NotificationDto {
         isRead = read;
     }
 
+    public Long getRideId() {
+        return rideId;
+    }
+
+    public void setRideId(Long rideId) {
+        this.rideId = rideId;
+    }
 }

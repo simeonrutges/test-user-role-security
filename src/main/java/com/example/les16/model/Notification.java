@@ -22,17 +22,20 @@ public class Notification {
 
     private boolean isRead;
 
+    private Long rideId;
+
 
 
     public Notification() {
     }
 
-    public Notification(User sender, User receiver, NotificationType type, LocalDateTime sentDate, boolean isRead) {
+    public Notification(User sender, User receiver, NotificationType type, LocalDateTime sentDate, boolean isRead, Long rideId) {
         this.sender = sender;
         this.receiver = receiver;
         this.type = type;
         this.sentDate = sentDate;
         this.isRead = isRead;
+        this.rideId = rideId;
     }
 
 
@@ -82,5 +85,13 @@ public class Notification {
 
     public void setRead(boolean read) {
         isRead = read;
+    }
+
+    public Long getRideId() {
+        return rideId;
+    }
+
+    public void setRideId(Long rideId) {
+        this.rideId = rideId;
     }
 }

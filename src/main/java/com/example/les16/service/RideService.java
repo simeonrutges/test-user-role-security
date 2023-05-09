@@ -32,38 +32,68 @@ public class RideService {
         this.dtoMapperService = dtoMapperService;
     }
 
-    public RideDto addRide(RideDto rideDto) {
+//    public RideDto addRide(RideDto rideDto) {
+//
+////        Ride newRide = transferToRide(rideDto);
+//        Ride newRide = dtoMapperService.transferToRide(rideDto);
+//        rideRepository.save(newRide);
+//        rideDto.setId(newRide.getId());
+//////
+//        User sender = userRepository.findByUsernameIgnoreCase("System");
+//        Optional<User> receiverOptional = userRepository.findByUsername(rideDto.getDriverUsername());
+//        if (receiverOptional.isPresent()) {
+//            User receiver = receiverOptional.get();
+//            Notification notification = new Notification(
+//                    sender,
+//                    receiver,
+//                    NotificationType.RIDE_CONFIRMATION,
+//                    LocalDateTime.now(),
+//                    false
+//            );
+//
+//
+//            NotificationDto notificationDto = dtoMapperService.notificationConvertToDto(notification);
+//
+//            // Sla het bevestigingsbericht op
+//            notificationService.createNotification(notificationDto);
+//        } else {
+//            throw new UserNotFoundException("User not found with username: " + rideDto.getDriverUsername());
+//        }
+//////
+//
+//        return rideDto;
+//
+//    }
+public RideDto addRide(RideDto rideDto) {
+    Ride newRide = dtoMapperService.transferToRide(rideDto);
+    rideRepository.save(newRide);
+    rideDto.setId(newRide.getId());
 
-//        Ride newRide = transferToRide(rideDto);
-        Ride newRide = dtoMapperService.transferToRide(rideDto);
-        rideRepository.save(newRide);
-        rideDto.setId(newRide.getId());
-////
-        User sender = userRepository.findByUsernameIgnoreCase("System");
-        Optional<User> receiverOptional = userRepository.findByUsername(rideDto.getDriverUsername());
-        if (receiverOptional.isPresent()) {
-            User receiver = receiverOptional.get();
-            Notification notification = new Notification(
-                    sender,
-                    receiver,
-                    NotificationType.RIDE_CONFIRMATION,
-                    LocalDateTime.now(),
-                    false
-            );
+    User sender = userRepository.findByUsernameIgnoreCase("System");
+    Optional<User> receiverOptional = userRepository.findByUsername(rideDto.getDriverUsername());
+    if (receiverOptional.isPresent()) {
+        User receiver = receiverOptional.get();
 
+        Notification notification = new Notification(
+                sender,
+                receiver,
+                NotificationType.RIDE_CONFIRMATION,
+                LocalDateTime.now(),
+                false,
+                newRide.getId() // Voeg hier de rit ID toe
+        );
 
-            NotificationDto notificationDto = dtoMapperService.notificationConvertToDto(notification);
+        NotificationDto notificationDto = dtoMapperService.notificationConvertToDto(notification);
 
-            // Sla het bevestigingsbericht op
-            notificationService.createNotification(notificationDto);
-        } else {
-            throw new UserNotFoundException("User not found with username: " + rideDto.getDriverUsername());
-        }
-////
-
-        return rideDto;
-
+        // Sla het bevestigingsbericht op
+        notificationService.createNotification(notificationDto);
+    } else {
+        throw new UserNotFoundException("User not found with username: " + rideDto.getDriverUsername());
     }
+
+    return rideDto;
+}
+//////////
 
 
     public RideDto getRideById(Long id) {
