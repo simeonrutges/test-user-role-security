@@ -3,6 +3,7 @@ package com.example.les16.service;
 import com.example.les16.dto.NotificationDto;
 import com.example.les16.dto.RideDto;
 import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.exceptions.UserAlreadyAddedToRideException;
 import com.example.les16.exceptions.UserNotFoundException;
 import com.example.les16.model.Notification;
 import com.example.les16.model.NotificationType;
@@ -191,6 +192,25 @@ public RideDto addRide(RideDto rideDto) {
 
 
 // hieronder vanavond verder gegaan. is dit inderdaad nodig?
+//    public void addUserToRide(Long id, String username) {
+//        var optionalRide = rideRepository.findById(id);
+//        var optionalUser = userRepository.findByUsername(username);
+//
+//        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+//            var ride = optionalRide.get();
+//            var user = optionalUser.get();
+//
+//            user.getRides().add(ride);
+//            ride.getUsers().add(user);
+//
+//            userRepository.save(user);
+//            rideRepository.save(ride);
+//        } else {
+//            throw new RecordNotFoundException();
+//        }
+//    }
+
+//9-5:
     public void addUserToRide(Long id, String username) {
         var optionalRide = rideRepository.findById(id);
         var optionalUser = userRepository.findByUsername(username);
@@ -198,6 +218,11 @@ public RideDto addRide(RideDto rideDto) {
         if(optionalRide.isPresent() && optionalUser.isPresent()) {
             var ride = optionalRide.get();
             var user = optionalUser.get();
+
+            // Controleer of de gebruiker al aan de rit is toegevoegd
+            if (ride.getUsers().contains(user)) {
+                throw new UserAlreadyAddedToRideException("User already added to this ride");
+            }
 
             user.getRides().add(ride);
             ride.getUsers().add(user);
@@ -209,7 +234,9 @@ public RideDto addRide(RideDto rideDto) {
         }
     }
 
-//    public List<RideDto> getAllRidesByDestination(String destination) {
+
+
+    //    public List<RideDto> getAllRidesByDestination(String destination) {
 //        List<Ride> rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination);
 //        return transferRideListToDtoList(rideList);
 //    }

@@ -1,6 +1,8 @@
 package com.example.les16.controller;
 
 import com.example.les16.dto.RideDto;
+import com.example.les16.exceptions.RecordNotFoundException;
+import com.example.les16.exceptions.UserAlreadyAddedToRideException;
 import com.example.les16.service.RideService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,11 +61,27 @@ public class RideController {
         }
     }
 
+//    @PostMapping("/{rideId}/{username}")
+//    public ResponseEntity<Object> addUserToRide(@PathVariable Long rideId, @PathVariable String username){
+//        rideService.addUserToRide(rideId, username);
+//        return ResponseEntity.ok().build();
+//    }
+
+//9/5:
     @PostMapping("/{rideId}/{username}")
-    public ResponseEntity<Object> addUserToRide(@PathVariable Long rideId, @PathVariable String username){
-        rideService.addUserToRide(rideId, username);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username) {
+        try {
+            rideService.addUserToRide(rideId, username);
+            return ResponseEntity.ok().build();
+        } catch (UserAlreadyAddedToRideException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (RecordNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
+
+
+
 
 //    @GetMapping("")
 //    public ResponseEntity<List<RideDto>> getAllRides(@RequestParam(value = "destination", required = true) Optional<String> destination) {
