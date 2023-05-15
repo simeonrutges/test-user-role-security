@@ -39,7 +39,7 @@ public class RideDto {
 
     public String driverUsername;
 
-//    public List<UserDto> users;
+    public List<UserDto> users;
 
 
 // deze werkte perfect voor 13/4. Nu testen zonder
@@ -183,11 +183,11 @@ public class RideDto {
         this.driverUsername = driverUsername;
     }
 
-    //    public List<UserDto> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(List<UserDto> users) {
-//        this.users = users;
-//    }
+    public List<UserDto> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserDto> users) {
+        this.users = users;
+    }
 }

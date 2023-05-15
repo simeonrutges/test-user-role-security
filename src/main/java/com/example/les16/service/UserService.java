@@ -29,8 +29,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.les16.service.DtoMapperService.transferToDto;
-
 @Service
 public class UserService {
 
@@ -83,7 +81,7 @@ public class UserService {
         List<User> wallBracketList = userRepository.findAll();
         List<UserDto> dtos = new ArrayList<>();
         for (User wb : wallBracketList) {
-            dtos.add(transferToDto(wb));
+            dtos.add(dtoMapperService.transferToDto(wb));
         }
         return dtos;
     }
@@ -239,10 +237,10 @@ public class UserService {
     public UserDto getUserByUsername(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
             User user = userRepository.findByUsername(username).get();
-            UserDto dto = transferToDto(user);
+            UserDto dto = dtoMapperService.transferToDto(user);
 
 
-            return transferToDto(user);
+            return dtoMapperService.transferToDto(user);
         } else {
             throw new RecordNotFoundException("geen user gevonden");
         }
@@ -274,7 +272,7 @@ public class UserService {
 
             userRepository.save(user);
 
-            return transferToDto(user);
+            return dtoMapperService.transferToDto(user);
 
         } else {
 

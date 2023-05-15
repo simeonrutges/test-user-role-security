@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DtoMapperService {
@@ -31,7 +32,7 @@ public class DtoMapperService {
         this.userRepository = userRepository;
     }
 
-    public static UserDto transferToDto(User user) {
+    public UserDto transferToDto(User user) {
 
         var dto = new UserDto();
 
@@ -81,7 +82,10 @@ public class DtoMapperService {
         }
         user.setRoles(userRoles);
 
-
+//    DEZE SAFE MOET IK NOG WEGHALEN OMDAT: Dit is belangrijk om te voorkomen dat er onvolledige of incorrecte gegevens
+//    in de database worden opgeslagen. Bijvoorbeeld, in de methode transferToRide(RideDto rideDto), wordt de lijst met
+//    gebruikers aan de rit toegevoegd, maar deze gebruikers zijn mogelijk nog niet in de database opgeslagen. Dit kan tot
+//    problemen leiden als je probeert de rit op te slaan voordat de gebruikers zijn opgeslagen.
         userRepository.save(user);
 
         return user;
@@ -149,16 +153,12 @@ public class DtoMapperService {
         dto.availableSpots = ride.getAvailableSpots();
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
         dto.eta = ride.getEta();
-
-
         dto.driverUsername = ride.getDriverUsername();
 
 
-        // test 13/4: omzetten van de User objecten naar UserDto objecten
-//        List<UserDto> userDtos = ride.getUsers().stream()
-//                .map(UserService::transferToDto)
-//                .collect(Collectors.toList());
-//        dto.setUsers(userDtos);
+
+        List<UserDto> userDtos = ride.getUsers().stream().map(this::transferToDto).collect(Collectors.toList());
+        dto.setUsers(userDtos);
 
         return dto;
     }
