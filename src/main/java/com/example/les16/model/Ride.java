@@ -156,8 +156,6 @@ public class Ride {
         this.driverUsername = driverUsername;
     }
 
-    // deze na het eten erbij gezet
-
     public List<User> getUsers() {
         return users;
     }

@@ -25,6 +25,4 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     // deze erbij voor de systeem User
     User findByUsernameIgnoreCase(String username);
-
-
 }

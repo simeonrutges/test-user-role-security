@@ -3,6 +3,7 @@ package com.example.les16.controller;
 import com.example.les16.dto.RideDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.exceptions.UserAlreadyAddedToRideException;
+import com.example.les16.exceptions.UserNotInRideException;
 import com.example.les16.service.RideService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -168,6 +169,8 @@ public ResponseEntity<List<RideDto>> getRidesByCriteria(
 
     }
 
+
+
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateRide(@PathVariable Long id, @RequestBody RideDto newRide) {
 
@@ -187,6 +190,20 @@ public ResponseEntity<List<RideDto>> getRidesByCriteria(
 //    }
 
     //test 24/4:
+
+    ////10-5
+    @DeleteMapping("/{rideId}/users/{username}")
+    public ResponseEntity<?> removeUserFromRide(@PathVariable Long rideId, @PathVariable String username) {
+        try {
+            rideService.removeUserFromRide(rideId, username);
+            return ResponseEntity.ok().build();
+        } catch (UserNotInRideException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (RecordNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 
 }

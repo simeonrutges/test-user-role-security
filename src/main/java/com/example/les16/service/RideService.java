@@ -5,6 +5,7 @@ import com.example.les16.dto.RideDto;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.exceptions.UserAlreadyAddedToRideException;
 import com.example.les16.exceptions.UserNotFoundException;
+import com.example.les16.exceptions.UserNotInRideException;
 import com.example.les16.model.Notification;
 import com.example.les16.model.NotificationType;
 import com.example.les16.model.Ride;
@@ -367,5 +368,29 @@ public List<RideDto> getRidesByCriteria(
             throw new  RecordNotFoundException("geen rit gevonden");
 
         }
+    }
+
+    ///
+    public void removeUserFromRide(Long rideId, String username) {
+        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+        if (!rideOptional.isPresent()) {
+            throw new RecordNotFoundException("Ride not found");
+        }
+
+        Ride ride = rideOptional.get();
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (!userOptional.isPresent()) {
+            throw new RecordNotFoundException("User not found");
+        }
+
+        User user = userOptional.get();
+        if (!ride.getUsers().contains(user)) {
+            throw new UserNotInRideException("User is not part of this ride");
+        }
+
+        ride.getUsers().remove(user);
+        user.getRides().remove(ride);
+        rideRepository.save(ride);
+        userRepository.save(user);
     }
 }
