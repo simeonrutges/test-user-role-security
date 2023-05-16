@@ -102,7 +102,7 @@ public RideDto addRide(RideDto rideDto) {
         Optional<Ride> ride = rideRepository.findById(id);
         if(ride.isPresent()) {
 //            return transferToDto(ride.get());
-            return dtoMapperService.transferToDto(ride.get());
+            return dtoMapperService.userToDto(ride.get());
         } else {
             throw new RecordNotFoundException("Geen rit gevonden");
         }
@@ -317,7 +317,7 @@ public List<RideDto> getRidesByCriteria(
 
         for(Ride ride : rides) {
 //            RideDto dto = transferToDto(ride);
-            RideDto dto = dtoMapperService.transferToDto(ride);
+            RideDto dto = dtoMapperService.userToDto(ride);
 
             rideDtoList.add(dto);
         }
@@ -361,7 +361,7 @@ public List<RideDto> getRidesByCriteria(
             rideRepository.save(ride1);
 
 //            return transferToDto(ride1);
-            return dtoMapperService.transferToDto(ride1);
+            return dtoMapperService.userToDto(ride1);
 
         } else {
 

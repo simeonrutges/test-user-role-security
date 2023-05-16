@@ -5,15 +5,12 @@ import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.ExtensionNotSupportedException;
 import com.example.les16.exceptions.RecordNotFoundException;
 import com.example.les16.exceptions.UserNotFoundException;
-import com.example.les16.model.Car;
 import com.example.les16.model.Ride;
-import com.example.les16.model.Role;
 import com.example.les16.model.User;
 import com.example.les16.repository.CarRepository;
 import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,7 +76,7 @@ public class UserService {
         List<User> wallBracketList = userRepository.findAll();
         List<UserDto> dtos = new ArrayList<>();
         for (User wb : wallBracketList) {
-            dtos.add(dtoMapperService.transferToDto(wb));
+            dtos.add(dtoMapperService.userToDto(wb));
         }
         return dtos;
     }
@@ -237,10 +232,10 @@ public class UserService {
     public UserDto getUserByUsername(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
             User user = userRepository.findByUsername(username).get();
-            UserDto dto = dtoMapperService.transferToDto(user);
+            UserDto dto = dtoMapperService.userToDto(user);
 
 
-            return dtoMapperService.transferToDto(user);
+            return dtoMapperService.userToDto(user);
         } else {
             throw new RecordNotFoundException("geen user gevonden");
         }
@@ -272,7 +267,7 @@ public class UserService {
 
             userRepository.save(user);
 
-            return dtoMapperService.transferToDto(user);
+            return dtoMapperService.userToDto(user);
 
         } else {
 
@@ -428,7 +423,7 @@ public List<RideDto> findRidesForUser(String username) {
     User user = optionalUser.get();
     List<Ride> rides = rideRepository.findRidesForUser(user);
 //    return rides.stream().map(dtoMapperService::rideToRideDto).collect(Collectors.toList());
-    return rides.stream().map(dtoMapperService::transferToDto).collect(Collectors.toList());
+    return rides.stream().map(dtoMapperService::userToDto).collect(Collectors.toList());
 }
 
 

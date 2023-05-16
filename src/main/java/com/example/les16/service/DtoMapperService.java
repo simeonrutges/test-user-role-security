@@ -1,13 +1,11 @@
 package com.example.les16.service;
 
+import com.example.les16.dto.MessageDto;
 import com.example.les16.dto.NotificationDto;
 import com.example.les16.dto.RideDto;
 import com.example.les16.dto.UserDto;
 import com.example.les16.exceptions.UserNotFoundException;
-import com.example.les16.model.Notification;
-import com.example.les16.model.Ride;
-import com.example.les16.model.Role;
-import com.example.les16.model.User;
+import com.example.les16.model.*;
 import com.example.les16.repository.RideRepository;
 import com.example.les16.repository.RoleRepository;
 import com.example.les16.repository.UserRepository;
@@ -32,7 +30,7 @@ public class DtoMapperService {
         this.userRepository = userRepository;
     }
 
-    public UserDto transferToDto(User user) {
+    public UserDto userToDto(User user) {
 
         var dto = new UserDto();
 
@@ -136,7 +134,7 @@ public class DtoMapperService {
 
     }
 
-    public RideDto transferToDto(Ride ride){
+    public RideDto userToDto(Ride ride){
         var dto = new RideDto();
 
         dto.id = ride.getId();
@@ -157,7 +155,7 @@ public class DtoMapperService {
 
 
 
-        List<UserDto> userDtos = ride.getUsers().stream().map(this::transferToDto).collect(Collectors.toList());
+        List<UserDto> userDtos = ride.getUsers().stream().map(this::userToDto).collect(Collectors.toList());
         dto.setUsers(userDtos);
 
         return dto;
@@ -169,8 +167,8 @@ public class DtoMapperService {
 
 //        notificationDto.setSender(transferToDto(notification.getSender()));
 //        notificationDto.setReceiver(transferToDto(notification.getReceiver()));
-        notificationDto.setSender(transferToDto(notification.getSender()));
-        notificationDto.setReceiver(transferToDto(notification.getReceiver()));
+        notificationDto.setSender(userToDto(notification.getSender()));
+        notificationDto.setReceiver(userToDto(notification.getReceiver()));
 
         notificationDto.setType(notification.getType());
         notificationDto.setSentDate(notification.getSentDate());
@@ -198,4 +196,36 @@ public class DtoMapperService {
 
         return notification;
     }
+
+    ///message
+
+    public MessageDto messageToDto(Message message) {
+        MessageDto messageDto = new MessageDto();
+
+        messageDto.setId(message.getId());
+        messageDto.setSenderUsername(userToDto(message.getSender()));
+        messageDto.setReceiverUsername(userToDto(message.getReceiver()));
+        messageDto.setContent(message.getContent());
+        messageDto.setTimestamp(message.getTimestamp());
+        messageDto.setRead(message.isRead());
+
+        return messageDto;
+    }
+
+    public Message dtoToMessage(MessageDto messageDto) {
+        Message message = new Message();
+
+        message.setId(messageDto.getId());
+        message.setSender(transferToUser(messageDto.getSenderUsername()));
+        message.setReceiver(transferToUser(messageDto.getReceiverUsername()));
+        message.setContent(messageDto.getContent());
+        message.setTimestamp(messageDto.getTimestamp());
+        message.setRead(messageDto.isRead());
+
+        return message;
+    }
+
+
+
 }
+
