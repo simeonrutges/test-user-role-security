@@ -2,6 +2,7 @@ package com.example.les16.repository;
 
 import com.example.les16.model.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,11 +10,17 @@ import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    List<Message> findByReceiver_Username(String username);
+    List<Message> findByReceiverUsername(String username);
 
-    List<Message> findBySender_UsernameOrReceiver_Username(String senderUsername, String receiverUsername);
+    List<Message> findBySenderUsernameOrReceiverUsername(String senderUsername, String receiverUsername);
 
-    List<Message> findBySender_UsernameAndReceiver_Username(String senderUsername, String receiverUsername);
+//List<Message> findAllBySenderUsernameAndReceiverUsernameOrSenderUsernameAndReceiverUsername(String sender1, String receiver1, String sender2, String receiver2);
+
+    @Query("SELECT m FROM Message m WHERE (m.senderUsername = :sender AND m.receiverUsername = :receiver) OR (m.senderUsername = :receiver AND m.receiverUsername = :sender)")
+    List<Message> findAllBySenderUsernameAndReceiverUsername(String sender, String receiver);
+
+
 
 }
+
 

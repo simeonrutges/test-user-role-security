@@ -203,8 +203,8 @@ public class DtoMapperService {
         MessageDto messageDto = new MessageDto();
 
         messageDto.setId(message.getId());
-        messageDto.setSenderUsername(userToDto(message.getSender()));
-        messageDto.setReceiverUsername(userToDto(message.getReceiver()));
+        messageDto.setSenderUsername(message.getSenderUsername());
+        messageDto.setReceiverUsername(message.getReceiverUsername());
         messageDto.setContent(message.getContent());
         messageDto.setTimestamp(message.getTimestamp());
         messageDto.setRead(message.isRead());
@@ -216,8 +216,8 @@ public class DtoMapperService {
         Message message = new Message();
 
         message.setId(messageDto.getId());
-        message.setSender(transferToUser(messageDto.getSenderUsername()));
-        message.setReceiver(transferToUser(messageDto.getReceiverUsername()));
+        message.setSenderUsername(messageDto.getSenderUsername());
+        message.setReceiverUsername(messageDto.getReceiverUsername());
         message.setContent(messageDto.getContent());
         message.setTimestamp(messageDto.getTimestamp());
         message.setRead(messageDto.isRead());

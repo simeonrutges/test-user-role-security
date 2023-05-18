@@ -10,13 +10,11 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_username", referencedColumnName = "username")
-    private User sender;
+    @Column(name = "sender_username")
+    private String senderUsername;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_username", referencedColumnName = "username")
-    private User receiver;
+    @Column(name = "receiver_username")
+    private String receiverUsername;
 
     @Column(name = "content")
     private String content;
@@ -27,14 +25,15 @@ public class Message {
     @Column(name = "read")
     private boolean read;
 
-    public Message(Long id, User sender, User receiver, String content, LocalDateTime timestamp, boolean read) {
+    public Message(Long id, String senderUsername, String receiverUsername, String content, LocalDateTime timestamp, boolean read) {
         this.id = id;
-        this.sender = sender;
-        this.receiver = receiver;
+        this.senderUsername = senderUsername;
+        this.receiverUsername = receiverUsername;
         this.content = content;
         this.timestamp = timestamp;
         this.read = read;
     }
+
 
     public Message() {
 
@@ -48,20 +47,20 @@ public class Message {
         this.id = id;
     }
 
-    public User getSender() {
-        return sender;
+    public String getSenderUsername() {
+        return senderUsername;
     }
 
-    public void setSender(User sender) {
-        this.sender = sender;
+    public void setSenderUsername(String senderUsername) {
+        this.senderUsername = senderUsername;
     }
 
-    public User getReceiver() {
-        return receiver;
+    public String getReceiverUsername() {
+        return receiverUsername;
     }
 
-    public void setReceiver(User receiver) {
-        this.receiver = receiver;
+    public void setReceiverUsername(String receiverUsername) {
+        this.receiverUsername = receiverUsername;
     }
 
     public String getContent() {

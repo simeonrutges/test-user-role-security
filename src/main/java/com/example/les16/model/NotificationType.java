@@ -8,5 +8,5 @@ public enum NotificationType {
     REVIEW_REMINDER,
 
     NEW_MESSAGE,
-    NEW_REPLY
+//    NEW_REPLY
 }

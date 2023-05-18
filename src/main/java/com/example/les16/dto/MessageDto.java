@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public class MessageDto {
     public Long id;
-    public UserDto senderUsername;
-    public UserDto receiverUsername;
+    public String senderUsername;
+    public String receiverUsername;
     public String content;
     public LocalDateTime timestamp;
     public boolean read;
@@ -20,19 +20,19 @@ public class MessageDto {
         this.id = id;
     }
 
-    public UserDto getSenderUsername() {
+    public String getSenderUsername() {
         return senderUsername;
     }
 
-    public void setSenderUsername(UserDto senderUsername) {
+    public void setSenderUsername(String senderUsername) {
         this.senderUsername = senderUsername;
     }
 
-    public UserDto getReceiverUsername() {
+    public String getReceiverUsername() {
         return receiverUsername;
     }
 
-    public void setReceiverUsername(UserDto receiverUsername) {
+    public void setReceiverUsername(String receiverUsername) {
         this.receiverUsername = receiverUsername;
     }
 
