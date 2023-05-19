@@ -2,10 +2,7 @@ package com.example.les16.dto;
 
 import com.example.les16.model.User;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,16 +19,24 @@ public class RideDto {
     public String addRideInfo;
 
     public LocalTime departureTime;
-    @FutureOrPresent
+//    @FutureOrPresent
+@FutureOrPresent(message = "De vertrekdatum moet in de toekomst liggen")
     public LocalDate departureDate;
     @FutureOrPresent
     public LocalDateTime departureDateTime;
     @NotNull
+    @DecimalMin(value = "3.0", inclusive = true)
     public double pricePerPerson;
     @NotNull
+//    @Min(1)
+//    @Max(5)
+//@Min en @Max validatie annotaties kunnen niet worden toegepast op het primitieve int type. Dit komt omdat int geen null waarde kan hebben, en @Min en @Max worden genegeerd als de waarde null is.
+//    Om dit te corrigeren, moet je int vervangen door Integer
     public int pax;
     public double totalRitPrice;
     @NotNull
+//    @Min(1)
+//    @Max(5)
     public int availableSpots;
     public boolean automaticAcceptance;
     @Future
@@ -40,28 +45,6 @@ public class RideDto {
     public String driverUsername;
 
     public List<UserDto> users;
-
-
-// deze werkte perfect voor 13/4. Nu testen zonder
-//    public RideDto() {
-//    }
-//
-//    public RideDto(Long id, String pickUpLocation, String destination, String route, String addRideInfo, LocalTime departureTime, LocalDate departureDate, LocalDateTime departureDateTime, double pricePerPerson, int pax, double totalRitPrice, int availableSpots, boolean automaticAcceptance, LocalTime eta) {
-//        this.id = id;
-//        this.pickUpLocation = pickUpLocation;
-//        this.destination = destination;
-//        this.route = route;
-//        this.addRideInfo = addRideInfo;
-//        this.departureTime = departureTime;
-//        this.departureDate = departureDate;
-//        this.departureDateTime = departureDateTime;
-//        this.pricePerPerson = pricePerPerson;
-//        this.pax = pax;
-//        this.totalRitPrice = totalRitPrice;
-//        this.availableSpots = availableSpots;
-//        this.automaticAcceptance = automaticAcceptance;
-//        this.eta = eta;
-//    }
 
     public Long getId() {
         return id;

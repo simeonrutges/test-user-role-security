@@ -18,9 +18,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT m FROM Message m WHERE (m.senderUsername = :sender AND m.receiverUsername = :receiver) OR (m.senderUsername = :receiver AND m.receiverUsername = :sender)")
     List<Message> findAllBySenderUsernameAndReceiverUsername(String sender, String receiver);
-
-
-
 }
 
 

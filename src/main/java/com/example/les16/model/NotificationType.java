@@ -2,11 +2,11 @@ package com.example.les16.model;
 
 public enum NotificationType {
     RIDE_REQUEST,
-    CANCELLATION_CONFIRMATION,
     RIDE_CONFIRMATION,
+    RIDE_CANCELLED_BY_DRIVER,
+    PASSENGER_JOINED_RIDE,
+    PASSENGER_LEFT_RIDE,
     REVIEW_REQUEST,
     REVIEW_REMINDER,
-
     NEW_MESSAGE,
-//    NEW_REPLY
 }
