@@ -10,8 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -134,17 +138,45 @@ public class RideController {
 //        return ResponseEntity.ok().body(dtos);
 //    }
 
-@GetMapping("")
-public ResponseEntity<List<RideDto>> getRidesByCriteria(
-        @RequestParam(value = "destination", required = false) Optional<String> destination,
-        @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
-//        @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate)
-        @RequestParam(value = "departureDateTime", required = false) Optional<LocalDateTime> departureDateTime)
-{
-    List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
+//@GetMapping("")
+//public ResponseEntity<List<RideDto>> getRidesByCriteria(
+//        @RequestParam(value = "destination", required = false) Optional<String> destination,
+//        @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
+////        @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate)
+//        @RequestParam(value = "departureDateTime", required = false) Optional<LocalDateTime> departureDateTime)
+//{
+//    List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
+//
+//    return ResponseEntity.ok().body(dtos);
+//}
 
-    return ResponseEntity.ok().body(dtos);
-}
+    //hierboven was de originele!!!! 24-05!!!
+
+
+    @GetMapping("")
+    public ResponseEntity<List<RideDto>> getRidesByCriteria(
+            @RequestParam(value = "destination", required = false) Optional<String> destination,
+            @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
+            @RequestParam(value = "departureDateTime", required = false) Optional<String> departureDateTimeStr)
+    {
+        Optional<LocalDateTime> departureDateTime = Optional.empty();
+        if(departureDateTimeStr.isPresent()){
+            try{
+                departureDateTime = Optional.of(LocalDateTime.parse(departureDateTimeStr.get(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            }catch(DateTimeParseException e){
+                // handle invalid date-time format
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date-time format.");
+            }
+        }
+
+        List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
+
+        return ResponseEntity.ok().body(dtos);
+    }
+
+
+    ////// tot hier nieuw  24/05
+
 
 
 
