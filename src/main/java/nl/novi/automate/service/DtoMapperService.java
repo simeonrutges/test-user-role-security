@@ -6,9 +6,9 @@ import nl.novi.automate.dto.RideDto;
 import nl.novi.automate.dto.UserDto;
 import nl.novi.automate.exceptions.UserNotFoundException;
 import nl.novi.automate.model.*;
-import nl.novi.automate.repository.RideRepository;
 import nl.novi.automate.repository.RoleRepository;
 import nl.novi.automate.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,18 +19,14 @@ import java.util.stream.Collectors;
 @Service
 public class DtoMapperService {
     private final RoleRepository roleRepos;
-    private final RideService rideService;
-    private final RideRepository rideRepository;
     private final UserRepository userRepository;
 
-    public DtoMapperService(RoleRepository roleRepos, RideService rideService, RideRepository rideRepository, UserRepository userRepository) {
+    public DtoMapperService(RoleRepository roleRepos, UserRepository userRepository) {
         this.roleRepos = roleRepos;
-        this.rideService = rideService;
-        this.rideRepository = rideRepository;
         this.userRepository = userRepository;
     }
 
-    //User
+
     public UserDto userToDto(User user) {
         var dto = new UserDto();
 
@@ -74,12 +70,6 @@ public class DtoMapperService {
         }
         user.setRoles(userRoles);
 
-//    DEZE SAFE MOET IK NOG WEGHALEN OMDAT: Dit is belangrijk om te voorkomen dat er onvolledige of incorrecte gegevens
-//    in de database worden opgeslagen. Bijvoorbeeld, in de methode transferToRide(RideDto rideDto), wordt de lijst met
-//    gebruikers aan de rit toegevoegd, maar deze gebruikers zijn mogelijk nog niet in de database opgeslagen. Dit kan tot
-//    problemen leiden als je probeert de rit op te slaan voordat de gebruikers zijn opgeslagen.
-        userRepository.save(user);
-
         return user;
     }
 
@@ -90,7 +80,6 @@ public class DtoMapperService {
     }
 
 
-    //Ride
     public Ride dtoToRide(RideDto rideDto){
         var ride = new Ride();
 //deze hieronder vandaag weggehaalt vanwege de PUT
@@ -104,15 +93,13 @@ public class DtoMapperService {
         ride.setDepartureDateTime(rideDto.getDepartureDateTime());
         ride.setPricePerPerson(rideDto.getPricePerPerson());
         ride.setPax(rideDto.getPax());
-        ride.setTotalRitPrice(calculateTotalRitPrice(rideDto.getPricePerPerson(), ride.getPax()));
+//        ride.setTotalRitPrice(calculateTotalRitPrice(rideDto.getPricePerPerson(), ride.getPax()));
+        ride.setTotalRitPrice(rideDto.getPricePerPerson() * rideDto.getPax());
         ride.setAvailableSpots(rideDto.getAvailableSpots());
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
         ride.setEta(rideDto.getEta());
-
         ride.setDriverUsername(rideDto.getDriverUsername());
 
-        rideRepository.save(ride);
-        /// moet deze laatste save erbij???
         return ride;
     }
 
@@ -141,14 +128,14 @@ public class DtoMapperService {
         return dto;
     }
 
-    public double calculateTotalRitPrice(double pricePerPerson, int pax){
-        double totalPrice = pricePerPerson * pax;
+//    public double calculateTotalRitPrice(double pricePerPerson, int pax){
+//        double totalPrice = pricePerPerson * pax;
+//
+//        return totalPrice;
+//
+//    }
 
-        return totalPrice;
 
-    }
-
-    // Notification
     public NotificationDto notificationToDto(Notification notification) {
         NotificationDto notificationDto = new NotificationDto();
 
@@ -177,7 +164,6 @@ public class DtoMapperService {
         return notification;
     }
 
-    ///message
     public MessageDto messageToDto(Message message) {
         MessageDto messageDto = new MessageDto();
 
