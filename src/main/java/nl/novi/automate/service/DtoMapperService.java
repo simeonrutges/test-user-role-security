@@ -160,6 +160,7 @@ public class DtoMapperService {
 
         return dto;
     }
+
     public NotificationDto notificationConvertToDto(Notification notification) {
         NotificationDto notificationDto = new NotificationDto();
 
