@@ -55,6 +55,12 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.12.5</version> <!-- dit is de juiste competible versie. Dit tijdens testen toegevoegd vanwege ondersteuning biedt voor Java 8 datum/tijd types zoals LocalTime standaard. 'mvn clean install veilig"??  -->
+		</dependency>
+
 	</dependencies>
 
 	<build>
