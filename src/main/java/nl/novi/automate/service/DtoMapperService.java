@@ -30,8 +30,8 @@ public class DtoMapperService {
         this.userRepository = userRepository;
     }
 
+    //User
     public UserDto userToDto(User user) {
-
         var dto = new UserDto();
 
         dto.username = user.getUsername();
@@ -51,15 +51,9 @@ public class DtoMapperService {
         return dto;
     }
 
-    private static String[] getRoleNames(List<Role> roles) {
-        return roles.stream()
-                .map(Role::getRolename)
-                .toArray(String[]::new);
-    }
-
-    public User transferToUser(UserDto userDto) {
-
+    public User dtoToUser(UserDto userDto) {
         var user = new User();
+
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
         user.setEnabled(userDto.isEnabled());
@@ -89,7 +83,15 @@ public class DtoMapperService {
         return user;
     }
 
-    public Ride transferToRide(RideDto rideDto){
+    private static String[] getRoleNames(List<Role> roles) {
+        return roles.stream()
+                .map(Role::getRolename)
+                .toArray(String[]::new);
+    }
+
+
+    //Ride
+    public Ride dtoToRide(RideDto rideDto){
         var ride = new Ride();
 //deze hieronder vandaag weggehaalt vanwege de PUT
         ride.setId(rideDto.getId());
@@ -107,34 +109,14 @@ public class DtoMapperService {
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
         ride.setEta(rideDto.getEta());
 
-
         ride.setDriverUsername(rideDto.getDriverUsername());
-
-
-
-        //test 13/4?
-        // gebruikers omzetten van UserDto naar User
-//        List<User> users = rideDto.getUsers().stream()
-//                .map(userDto -> userService.transferToUser(userDto))
-//                .collect(Collectors.toList());
-//        ride.setUsers(users);
-        //
-
-
 
         rideRepository.save(ride);
         /// moet deze laatste save erbij???
         return ride;
     }
 
-    public double calculateTotalRitPrice(double pricePerPerson, int pax){
-        double totalPrice = pricePerPerson * pax;
-
-        return totalPrice;
-
-    }
-
-    public RideDto userToDto(Ride ride){
+    public RideDto rideToDto(Ride ride){
         var dto = new RideDto();
 
         dto.id = ride.getId();
@@ -153,24 +135,26 @@ public class DtoMapperService {
         dto.eta = ride.getEta();
         dto.driverUsername = ride.getDriverUsername();
 
-
-
         List<UserDto> userDtos = ride.getUsers().stream().map(this::userToDto).collect(Collectors.toList());
         dto.setUsers(userDtos);
 
         return dto;
     }
 
-    public NotificationDto notificationConvertToDto(Notification notification) {
+    public double calculateTotalRitPrice(double pricePerPerson, int pax){
+        double totalPrice = pricePerPerson * pax;
+
+        return totalPrice;
+
+    }
+
+    // Notification
+    public NotificationDto notificationToDto(Notification notification) {
         NotificationDto notificationDto = new NotificationDto();
 
         notificationDto.setId(notification.getId());
-
-//        notificationDto.setSender(transferToDto(notification.getSender()));
-//        notificationDto.setReceiver(transferToDto(notification.getReceiver()));
         notificationDto.setSender(userToDto(notification.getSender()));
         notificationDto.setReceiver(userToDto(notification.getReceiver()));
-
         notificationDto.setType(notification.getType());
         notificationDto.setSentDate(notification.getSentDate());
         notificationDto.setRead(notification.isRead());
@@ -179,17 +163,12 @@ public class DtoMapperService {
         return notificationDto;
     }
 
-    public Notification notificationDtoConvertToEntity(NotificationDto notificationDto) {
+    public Notification dtoToNotification(NotificationDto notificationDto) {
         Notification notification = new Notification();
 
         notification.setId(notificationDto.getId());
-//        notification.setSender(userService.transferToUser(notificationDto.getSender()));
-//        notification.setReceiver(userService.transferToUser(notificationDto.getReceiver()));
-//        notification.setSender(transferToUser(notificationDto.getSender()));
-//        notification.setReceiver(transferToUser(notificationDto.getReceiver()));
         notification.setSender(userRepository.findByUsername(notificationDto.getSender().getUsername()).orElseThrow(() -> new UserNotFoundException("Sender not found")));
         notification.setReceiver(userRepository.findByUsername(notificationDto.getReceiver().getUsername()).orElseThrow(() -> new UserNotFoundException("Receiver not found")));
-
         notification.setType(notificationDto.getType());
         notification.setSentDate(notificationDto.getSentDate());
         notification.setRead(notificationDto.isRead());
@@ -199,7 +178,6 @@ public class DtoMapperService {
     }
 
     ///message
-
     public MessageDto messageToDto(Message message) {
         MessageDto messageDto = new MessageDto();
 
@@ -225,8 +203,5 @@ public class DtoMapperService {
 
         return message;
     }
-
-
-
 }
 

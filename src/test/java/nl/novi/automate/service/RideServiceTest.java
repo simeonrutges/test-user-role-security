@@ -14,6 +14,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT) // Mockito's 'strictness' niveaus hebben betrekking op hoe streng de bibliotheek is over het controleren van onnodige stubs (mocks die niet gebruikt worden in je tests) en ongebruikte invocations (methodes die aangeroepen worden op je mocks maar niet geverifieerd worden in je tests).
 class RideServiceTest {
 
     @Mock

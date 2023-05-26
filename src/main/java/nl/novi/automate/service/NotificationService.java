@@ -25,20 +25,20 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findAll();
         return notifications.stream()
 //                .map(this::notificationConvertToDto)
-                .map(dtoMapperService::notificationConvertToDto)
+                .map(dtoMapperService::notificationToDto)
                 .collect(Collectors.toList());
     }
 
     public NotificationDto getNotificationById(Long id) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found with id: " + id));
-        return dtoMapperService.notificationConvertToDto(notification);
+        return dtoMapperService.notificationToDto(notification);
     }
 
     public NotificationDto createNotification(NotificationDto notificationDto) {
-        Notification notification = dtoMapperService.notificationDtoConvertToEntity(notificationDto);
+        Notification notification = dtoMapperService.dtoToNotification(notificationDto);
         Notification savedNotification = notificationRepository.save(notification);
-        return dtoMapperService.notificationConvertToDto(savedNotification);
+        return dtoMapperService.notificationToDto(savedNotification);
     }
     // In NotificationService.java
 //    public List<NotificationDto> getNotificationsForUser(String username) {
@@ -52,7 +52,7 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findByReceiverUsername(username);
         System.out.println("Fetched notifications for user " + username + ": " + notifications);
         List<NotificationDto> notificationDtos = notifications.stream()
-                .map(dtoMapperService::notificationConvertToDto)
+                .map(dtoMapperService::notificationToDto)
                 .collect(Collectors.toList());
         System.out.println("Converted notifications to DTOs: " + notificationDtos);
         return notificationDtos;
