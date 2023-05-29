@@ -21,21 +21,21 @@ public class CarController {
     }
 
 
-    @GetMapping("")
-    public List<CarDto> getAllCars() {
+//    @GetMapping("")
+//    public List<CarDto> getAllCars() {
+//
+//        List<CarDto> dtos = carService.getAllCars();
+//
+//        return dtos;
+//    }
 
-        List<CarDto> dtos = carService.getAllCars();
-
-        return dtos;
-    }
-
-    @GetMapping("/{id}")
-    public CarDto getCar(@PathVariable("id") Long id) {
-
-        CarDto dto = carService.getCar(id);
-
-        return dto;
-    }
+//    @GetMapping("/{id}")
+//    public CarDto getCar(@PathVariable("id") Long id) {
+//
+//        CarDto dto = carService.getCar(id);
+//
+//        return dto;
+//    }
 //////
 //    @GetMapping("/user/{username}")
 //    public ResponseEntity<Car> getCarByUser(@PathVariable("username") String username) {
@@ -104,11 +104,11 @@ public ResponseEntity<?> getCarByUser(@PathVariable("username") String username)
 
 
 
-    //    ALles werkt behalvde de PUT
-    @PutMapping("/{id}")
-    public CarDto updateCar(@PathVariable("id") Long id, @RequestBody CarDto dto) {
-        carService.updateCar(id, dto);
-        return dto;
-    }
-    // car was "remoteController"
+//    //    ALles werkt behalvde de PUT
+//    @PutMapping("/{id}")
+//    public CarDto updateCar(@PathVariable("id") Long id, @RequestBody CarDto dto) {
+//        carService.updateCar(id, dto);
+//        return dto;
+//    }
+//    // car was "remoteController"
 }
