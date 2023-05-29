@@ -7,10 +7,8 @@ import nl.novi.automate.model.User;
 import nl.novi.automate.repository.CarRepository;
 import nl.novi.automate.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -23,77 +21,34 @@ public class CarService {
         this.userRepository = userRepository;
     }
 
-
-    public List<CarDto> getAllCars() {
-        List<CarDto> dtos = new ArrayList<>();
-        List<Car> cars = carRepository.findAll();
-        for (Car rc : cars) {
-            dtos.add(transferToDto(rc));
-        }
-        return dtos;
-    }
-
-    public CarDto getCar(long id) {
-        Optional<Car> car = carRepository.findById(id);
-        if(car.isPresent()) {
-            return transferToDto(car.get());
-        } else {
-            throw new RecordNotFoundException("No car found");
-        }
-    }
-
-//    public CarDto addCar(CarDto carDto) {
-//        Car rc =  transferToCar(carDto);
-//        carRepository.save(rc);
-//        return carDto;
+public CarDto addCar(CarDto carDto, String username) {
+//    Optional<User> userOptional = userRepository.findByUsername(username);
+//    if (userOptional.isPresent()) {
+//        User user = userOptional.get();
+//        Car car = transferToCar(carDto);
+//        car.setUser(user);  // koppel de auto aan de gebruiker
+//        Car savedCar = carRepository.save(car);
+//        user.setCar(savedCar); // dit is nodig om de bidirectionele relatie te behouden
+//        userRepository.save(user);
+//        return transferToDto(savedCar);
+//    } else {
+//        throw new EntityNotFoundException("User not found with username: " + username);
 //    }
-
-//    deze werkt goed:
-//public CarDto addCar(CarDto carDto) {
-//    Car rc =  transferToCar(carDto);
-//    carRepository.save(rc);
-//    CarDto addedCar = transferToDto(rc);
-//    return addedCar;
 //}
 
-//    public CarDto addCar(CarDto carDto, String username) {
-//        Car rc =  transferToCar(carDto);
-//        rc = carRepository.save(rc);
-//        Optional<User> user = userRepository.findByUsername(username);
-//        if (user.isPresent()){
-//            User u = user.get();
-//            u.setCar(rc);
-//            userRepository.save(u);
-//        }
-//
-//        CarDto addedCar = transferToDto(rc);
-//        return addedCar;
-//    }
-    //hieronder wordt eerst de auto gekoppeld aan de uset
-public CarDto addCar(CarDto carDto, String username) {
-    Optional<User> userOptional = userRepository.findByUsername(username);
-    if (userOptional.isPresent()) {
-        User user = userOptional.get();
-        Car car = transferToCar(carDto);
-        car.setUser(user);  // koppel de auto aan de gebruiker
-        Car savedCar = carRepository.save(car);
-        user.setCar(savedCar); // dit is nodig om de bidirectionele relatie te behouden
-        userRepository.save(user);
-        return transferToDto(savedCar);
-    } else {
-        throw new EntityNotFoundException("User not found with username: " + username);
-    }
+    // 29/5 hieronder de nieuwe code. Was de code hierboven die goed werkte. testen
+    User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+
+    Car car = transferToCar(carDto);
+    car.setUser(user);
+    Car savedCar = carRepository.save(car);
+    user.setCar(savedCar);
+    userRepository.save(user);
+
+    return transferToDto(savedCar);
 }
 
-
-
-
-// de orineel werkende:
-//    public void deleteCar(Long id) {
-//        carRepository.deleteById(id);
-//    }
-
-    ///////////
     // nu mee bezig: werkt wek, maar niet de juiste timing met FE:
     public void removeCarFromUser(Long carId) {
         User user = userRepository.findByCarId(carId);
@@ -102,10 +57,34 @@ public CarDto addCar(CarDto carDto, String username) {
             userRepository.save(user);
         }
     }
+
+    @Transactional
     public void deleteCar(Long carId) {
         removeCarFromUser(carId);
         carRepository.deleteById(carId);
     }
+
+//public void deleteCar(Long carId) {
+//    var optionalCar = carRepository.findById(carId);
+//
+//    if (optionalCar.isPresent()) {
+//        var car = optionalCar.get();
+//        var user = car.getUser();
+//
+//        if (user != null) {
+//            user.setCar(null);
+//            userRepository.save(user);
+//        }
+//
+//        carRepository.deleteById(carId);
+//    } else {
+//        throw new RecordNotFoundException();
+//    }
+//}
+
+
+
+
     public Car getCarByUser(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {
@@ -114,23 +93,6 @@ public CarDto addCar(CarDto carDto, String username) {
         } else {
             throw new EntityNotFoundException("User not found with username: " + username);
         }
-    }
-
-///////////////
-
-
-
-    public void updateCar(Long id, CarDto carDto) {
-        if(!carRepository.existsById(id)) {
-            throw new RecordNotFoundException("No car found");
-        }
-        Car storedCar = carRepository.findById(id).orElse(null);
-        // deze weggehaalt met Mark. Anders werkte de put niet
-//        storedCar.setId(carDto.getId());
-        storedCar.setLicensePlate(carDto.getLicensePlate());
-        storedCar.setModel(carDto.getModel());
-        storedCar.setBrand(carDto.getBrand());
-        carRepository.save(storedCar);
     }
 
     public Car transferToCar(CarDto carDto){
@@ -143,6 +105,7 @@ public CarDto addCar(CarDto carDto, String username) {
 
         return car;
     }
+
     public CarDto transferToDto(Car car){
         var dto = new CarDto();
 
