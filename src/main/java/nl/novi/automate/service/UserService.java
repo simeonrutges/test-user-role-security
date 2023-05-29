@@ -49,7 +49,7 @@ public class UserService {
     public String createUser(UserDto userDto) {
 
 //        User newUser = transferToUser(userDto);
-        User newUser = dtoMapperService.transferToUser(userDto);
+        User newUser = dtoMapperService.dtoToUser(userDto);
         userRepository.save(newUser);
 
         return "Done";
@@ -423,7 +423,7 @@ public List<RideDto> findRidesForUser(String username) {
     User user = optionalUser.get();
     List<Ride> rides = rideRepository.findRidesForUser(user);
 //    return rides.stream().map(dtoMapperService::rideToRideDto).collect(Collectors.toList());
-    return rides.stream().map(dtoMapperService::userToDto).collect(Collectors.toList());
+    return rides.stream().map(dtoMapperService::rideToDto).collect(Collectors.toList());
 }
 
 

@@ -58,15 +58,12 @@ public class User {
     @OneToMany(mappedBy = "reviewedUser")
     private List<Review> reviewsReceived = new ArrayList<>();
 
+//deze 26/5 erbij gezet! test
+    public User() {
+        this.rides = new ArrayList<>();
+    }
+///
 
-
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 
     public String getUsername() {
         return username;
@@ -153,9 +150,17 @@ public class User {
         return rides;
     }
 
-    public void setRides(List<Ride> rides) {
+//    public void setRides(List<Ride> rides) {
+//        this.rides = rides;
+//    }
+public void setRides(List<Ride> rides) {
+    if (rides == null) {
+        this.rides = new ArrayList<>();
+    } else {
         this.rides = rides;
     }
+}
+/// hierboven hoort bij test 26-05
 
     public List<Review> getReviewsWritten() {
         return reviewsWritten;

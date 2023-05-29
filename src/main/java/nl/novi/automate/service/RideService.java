@@ -67,7 +67,7 @@ public class RideService {
 //
 //    }
 public RideDto addRide(RideDto rideDto) {
-    Ride newRide = dtoMapperService.transferToRide(rideDto);
+    Ride newRide = dtoMapperService.dtoToRide(rideDto);
     rideRepository.save(newRide);
     rideDto.setId(newRide.getId());
 
@@ -85,7 +85,7 @@ public RideDto addRide(RideDto rideDto) {
                 newRide.getId() // Voeg hier de rit ID toe
         );
 
-        NotificationDto notificationDto = dtoMapperService.notificationConvertToDto(notification);
+        NotificationDto notificationDto = dtoMapperService.notificationToDto(notification);
 
         // Sla het bevestigingsbericht op
         notificationService.createNotification(notificationDto);
@@ -102,7 +102,7 @@ public RideDto addRide(RideDto rideDto) {
         Optional<Ride> ride = rideRepository.findById(id);
         if(ride.isPresent()) {
 //            return transferToDto(ride.get());
-            return dtoMapperService.userToDto(ride.get());
+            return dtoMapperService.rideToDto(ride.get());
         } else {
             throw new RecordNotFoundException("Geen rit gevonden");
         }
@@ -317,7 +317,7 @@ public List<RideDto> getRidesByCriteria(
 
         for(Ride ride : rides) {
 //            RideDto dto = transferToDto(ride);
-            RideDto dto = dtoMapperService.userToDto(ride);
+            RideDto dto = dtoMapperService.rideToDto(ride);
 
             rideDtoList.add(dto);
         }
@@ -355,13 +355,13 @@ public List<RideDto> getRidesByCriteria(
             Ride ride = rideRepository.findById(id).get();
 
 //            Ride ride1 = transferToRide(newRide);
-            Ride ride1 = dtoMapperService.transferToRide(newRide);
+            Ride ride1 = dtoMapperService.dtoToRide(newRide);
             ride1.setId(ride.getId());
 
             rideRepository.save(ride1);
 
 //            return transferToDto(ride1);
-            return dtoMapperService.userToDto(ride1);
+            return dtoMapperService.rideToDto(ride1);
 
         } else {
 
