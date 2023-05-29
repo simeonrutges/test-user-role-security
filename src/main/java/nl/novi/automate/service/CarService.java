@@ -8,6 +8,7 @@ import nl.novi.automate.repository.CarRepository;
 import nl.novi.automate.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -57,6 +58,7 @@ public CarDto addCar(CarDto carDto, String username) {
         }
     }
 
+    @Transactional
     public void deleteCar(Long carId) {
         removeCarFromUser(carId);
         carRepository.deleteById(carId);
