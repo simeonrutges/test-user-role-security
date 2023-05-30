@@ -71,12 +71,8 @@ public class UserController {
 
     @GetMapping(value = "/{username}")
     public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
-
         UserDto optionalUser = userService.getUserByUsername(username);
-
-
         return ResponseEntity.ok().body(optionalUser);
-
     }
 
     @DeleteMapping("/{username}")
@@ -86,7 +82,6 @@ public class UserController {
         userService.deleteUser(username);
 
         return ResponseEntity.noContent().build();
-
     }
 
     @PutMapping("/{username}")
@@ -96,10 +91,6 @@ public class UserController {
 
         return ResponseEntity.ok().body(dto);
     }
-
-
-    // tot hier!
-
 
     @PostMapping("/{username}/{rideId}")
     public ResponseEntity<Object> addRideToUser(@PathVariable String username, @PathVariable Long rideId){
@@ -122,22 +113,6 @@ public class UserController {
 //    }
     // bovenstaande is het probleem. Heeft met de security te maken?
 
-
-    // hieronder toegevoegd voor het uploaden van de profielfoto:
-//////////////////////
-//    @PostMapping("/single/uploadDb")
-//    public FileUploadResponse singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) throws IOException {
-//
-//        // next line makes url. example "http://localhost:8080/download/naam.jpg"
-//        User fileDocument = userService.uploadFileDocument(username, file);
-//        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFromDB/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
-//
-//        String contentType = file.getContentType();
-//
-//        return new FileUploadResponse(fileDocument.getFileName(), url, contentType );
-//    }
-    ////////////////////
-
     @PostMapping("/single/uploadDb")
     public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
         try {
@@ -152,48 +127,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not upload file: " + e.getMessage());
         }
     }
-    ///werkt
-////////////////////
 
-    //    get for single download
-//    @GetMapping("/downloadFromDB/{fileName}/{username}")
-//    ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, @PathVariable String username, HttpServletRequest request) {
-//// dit hierboven erbij gezet:  @RequestParam("username") String username. Zie ook UserService
-//        return userService.singleFileDownload(fileName, username, request);
-//    }
-/////////////
     @GetMapping("/downloadFromDB/{fileName}")
     ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
         //Marc heeft in HW klas staan <Resource>
 
         return userService.singleFileDownload(fileName, request);
     }
-
-    ////////////
-
-//    //    post for multiple uploads to database
-//    @PostMapping("/multiple/upload/db")
-//    List<FileUploadResponse> multipleUpload(@RequestParam("files") MultipartFile [] files) {
-//
-//        if(files.length > 7) {
-//            throw new RuntimeException("to many files selected");
-//        }
-//
-//        return userService.createMultipleUpload(files);
-//
-//    }
-
-//    @GetMapping("/zipDownload/db")
-//    public void zipDownload(@RequestParam("fileName") String[] files, HttpServletResponse response) throws IOException {
-//
-//        userService.getZipDownload(files, response);
-//
-//    }
-
-//    @GetMapping("/getAll/db")
-//    public Collection<User> getAllFromDB(){
-//        return userService.getALlFromDB();
-//    }
 
     @DeleteMapping("/deleteProfileImage/{username}")
     public ResponseEntity<?> deleteProfileImage(@PathVariable("username") String username) {
@@ -210,6 +150,4 @@ public class UserController {
         List<RideDto> rideDtos = userService.findRidesForUser(username);
         return ResponseEntity.ok(rideDtos);
     }
-
-
 }
