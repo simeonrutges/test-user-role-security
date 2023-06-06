@@ -2,10 +2,7 @@ package nl.novi.automate.service;
 
 import nl.novi.automate.dto.NotificationDto;
 import nl.novi.automate.dto.RideDto;
-import nl.novi.automate.exceptions.RecordNotFoundException;
-import nl.novi.automate.exceptions.UserAlreadyAddedToRideException;
-import nl.novi.automate.exceptions.UserNotFoundException;
-import nl.novi.automate.exceptions.UserNotInRideException;
+import nl.novi.automate.exceptions.*;
 import nl.novi.automate.model.Notification;
 import nl.novi.automate.model.NotificationType;
 import nl.novi.automate.model.Ride;
@@ -15,6 +12,7 @@ import nl.novi.automate.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -212,105 +210,135 @@ public RideDto addRide(RideDto rideDto) {
 //    }
 
 //9-5:
-    public void addUserToRide(Long id, String username) {
-        var optionalRide = rideRepository.findById(id);
-        var optionalUser = userRepository.findByUsername(username);
-
-        if(optionalRide.isPresent() && optionalUser.isPresent()) {
-            var ride = optionalRide.get();
-            var user = optionalUser.get();
-
-            // Controleer of de gebruiker al aan de rit is toegevoegd
-            if (ride.getUsers().contains(user)) {
-                throw new UserAlreadyAddedToRideException("User already added to this ride");
-            }
-
-            user.getRides().add(ride);
-            ride.getUsers().add(user);
-
-            userRepository.save(user);
-            rideRepository.save(ride);
-        } else {
-            throw new RecordNotFoundException();
-        }
-    }
-
-
-
-    //    public List<RideDto> getAllRidesByDestination(String destination) {
-//        List<Ride> rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination);
-//        return transferRideListToDtoList(rideList);
+//    public void addUserToRide(Long id, String username) {
+//        var optionalRide = rideRepository.findById(id);
+//        var optionalUser = userRepository.findByUsername(username);
+//
+//        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+//            var ride = optionalRide.get();
+//            var user = optionalUser.get();
+//
+//            // Controleer of de gebruiker al aan de rit is toegevoegd
+//            if (ride.getUsers().contains(user)) {
+//                throw new UserAlreadyAddedToRideException("User already added to this ride");
+//            }
+//
+//            user.getRides().add(ride);
+//            ride.getUsers().add(user);
+//
+//            userRepository.save(user);
+//            rideRepository.save(ride);
+//        } else {
+//            throw new RecordNotFoundException();
+//        }
 //    }
-public List<RideDto> getRidesByCriteria(
-        Optional<String> destination,
-        Optional<String> pickUpLocation,
-//        Optional<LocalDate> departureDate)
-        Optional<LocalDateTime> departureDateTime)
 
-{
+//    31/5 hierboven was goed hieronder werkt goed met postman
+public void addUserToRide(Long id, String username, int pax) {
+    var optionalRide = rideRepository.findById(id);
+    var optionalUser = userRepository.findByUsername(username);
 
-    List<Ride> rideList;
-
-    if (destination.isPresent() && pickUpLocation.isPresent() && departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                destination.get(),
-                pickUpLocation.get(),
-                departureDateTime.get()
-        );
-    } else if (destination.isPresent() && pickUpLocation.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
-                destination.get(),
-                pickUpLocation.get()
-        );
-    } else if (destination.isPresent() && departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                destination.get(),
-                departureDateTime.get()
-        );
-    } else if (pickUpLocation.isPresent() && departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                pickUpLocation.get(),
-                departureDateTime.get()
-        );
-    } else if (destination.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination.get());
-    } else if (pickUpLocation.isPresent()) {
-        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase(pickUpLocation.get());
-    } else if (departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByDepartureDateTimeEquals(departureDateTime.get());
-    } else {
-        rideList = rideRepository.findAll();
+    if(!optionalRide.isPresent()) {
+        throw new RecordNotFoundException("Ride with id " + id + " not found.");
     }
 
-    return transferRideListToDtoList(rideList);
+    if(!optionalUser.isPresent()) {
+        throw new RecordNotFoundException("User with username " + username + " not found.");
+    }
+
+    var ride = optionalRide.get();
+    var user = optionalUser.get();
+
+    // Controleer of er voldoende plekken beschikbaar zijn
+    if (ride.getAvailableSpots() < pax) {
+        throw new ExceededCapacityException("The number of passengers exceeds the available spots");
+    }
+
+    // Controleer of de gebruiker al aan de rit is toegevoegd
+    if (ride.getUsers().contains(user)) {
+        throw new UserAlreadyAddedToRideException("User already added to this ride");
+    }
+
+    user.getRides().add(ride);
+    ride.getUsers().add(user);
+
+    // Verminder het aantal beschikbare plekken
+    ride.setAvailableSpots(ride.getAvailableSpots() - pax);
+
+    userRepository.save(user);
+    rideRepository.save(ride);
 }
 
 
-//    public List<RideDto> getRidesByCriteria(
-//            Optional<String> destination,
-//            Optional<String> pickUpLocation,
-//            Optional<LocalDate> departureDate) {
+
+//public List<RideDto> getRidesByCriteria(
+//        Optional<String> destination,
+//        Optional<String> pickUpLocation,
+////        Optional<LocalDate> departureDate)
+//        Optional<LocalDateTime> departureDateTime)
 //
-//        Specification<Ride> spec = Specification.where(null);
+//{
 //
-//        if (destination.isPresent()) {
-//            spec = spec.and(RideSpecifications.destinationEqualsIgnoreCase(destination.get()));
-//        }
+//    List<Ride> rideList;
 //
-//        if (pickUpLocation.isPresent()) {
-//            spec = spec.and(RideSpecifications.pickUpLocationEqualsIgnoreCase(pickUpLocation.get()));
-//        }
-//
-//        if (departureDate.isPresent()) {
-//            spec = spec.and(RideSpecifications.departureDateEquals(departureDate.get()));
-//        }
-//
-//        List<Ride> rideList = rideRepository.findAll(spec);
-//        return transferRideListToDtoList(rideList);
+//    if (destination.isPresent() && pickUpLocation.isPresent() && departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+//                destination.get(),
+//                pickUpLocation.get(),
+//                departureDateTime.get()
+//        );
+//    } else if (destination.isPresent() && pickUpLocation.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
+//                destination.get(),
+//                pickUpLocation.get()
+//        );
+//    } else if (destination.isPresent() && departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+//                destination.get(),
+//                departureDateTime.get()
+//        );
+//    } else if (pickUpLocation.isPresent() && departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+//                pickUpLocation.get(),
+//                departureDateTime.get()
+//        );
+//    } else if (destination.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination.get());
+//    } else if (pickUpLocation.isPresent()) {
+//        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase(pickUpLocation.get());
+//    } else if (departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDepartureDateTimeEquals(departureDateTime.get());
+//    } else {
+//        rideList = rideRepository.findAll();
 //    }
+//
+//    return transferRideListToDtoList(rideList);
+//}
 
+    public List<RideDto> getRidesByCriteria(
+            String destination,
+            String pickUpLocation,
+            LocalDate departureDate,
+            int pax)
+    {
+        List<Ride> rideList;
 
+        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
+                destination,
+                pickUpLocation
+        );
 
+        List<Ride> availableRideList = new ArrayList<>();
+        for (Ride ride : rideList) {
+            if (departureDate == null || ride.getDepartureDateTime().toLocalDate().equals(departureDate)) {
+                if (ride.getAvailableSpots() >= pax) {
+                    availableRideList.add(ride);
+                }
+            }
+        }
+
+        return transferRideListToDtoList(availableRideList);
+    }
 
     public List<RideDto> transferRideListToDtoList(List<Ride> rides){
         List<RideDto> rideDtoList = new ArrayList<>();
