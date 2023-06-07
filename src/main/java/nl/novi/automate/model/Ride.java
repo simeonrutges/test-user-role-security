@@ -27,6 +27,9 @@ public class Ride {
     private LocalTime eta;
 
     private String driverUsername;
+    @Column(columnDefinition = "TEXT")
+    private String reservedSpotsByUser = "{}";
+
 
 
     @ManyToMany(mappedBy = "rides")
@@ -168,6 +171,15 @@ public class Ride {
     public void setUsers(List<User> users) {
         this.users = users;
     }
+
+    public String getReservedSpotsByUser() {
+        return this.reservedSpotsByUser;
+    }
+
+    public void setReservedSpotsByUser(String reservedSpotsByUser) {
+        this.reservedSpotsByUser = reservedSpotsByUser;
+    }
+
 
 
 

@@ -1,11 +1,10 @@
 package nl.novi.automate.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.novi.automate.dto.NotificationDto;
 import nl.novi.automate.dto.RideDto;
-import nl.novi.automate.exceptions.RecordNotFoundException;
-import nl.novi.automate.exceptions.UserAlreadyAddedToRideException;
-import nl.novi.automate.exceptions.UserNotFoundException;
-import nl.novi.automate.exceptions.UserNotInRideException;
+import nl.novi.automate.exceptions.*;
 import nl.novi.automate.model.Notification;
 import nl.novi.automate.model.NotificationType;
 import nl.novi.automate.model.Ride;
@@ -15,9 +14,12 @@ import nl.novi.automate.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -212,105 +214,187 @@ public RideDto addRide(RideDto rideDto) {
 //    }
 
 //9-5:
-    public void addUserToRide(Long id, String username) {
+//    public void addUserToRide(Long id, String username) {
+//        var optionalRide = rideRepository.findById(id);
+//        var optionalUser = userRepository.findByUsername(username);
+//
+//        if(optionalRide.isPresent() && optionalUser.isPresent()) {
+//            var ride = optionalRide.get();
+//            var user = optionalUser.get();
+//
+//            // Controleer of de gebruiker al aan de rit is toegevoegd
+//            if (ride.getUsers().contains(user)) {
+//                throw new UserAlreadyAddedToRideException("User already added to this ride");
+//            }
+//
+//            user.getRides().add(ride);
+//            ride.getUsers().add(user);
+//
+//            userRepository.save(user);
+//            rideRepository.save(ride);
+//        } else {
+//            throw new RecordNotFoundException();
+//        }
+//    }
+
+//    31/5 hierboven was goed hieronder werkt goed met postman
+//public void addUserToRide(Long id, String username, int pax) {
+//    var optionalRide = rideRepository.findById(id);
+//    var optionalUser = userRepository.findByUsername(username);
+//
+//    if(!optionalRide.isPresent()) {
+//        throw new RecordNotFoundException("Ride with id " + id + " not found.");
+//    }
+//
+//    if(!optionalUser.isPresent()) {
+//        throw new RecordNotFoundException("User with username " + username + " not found.");
+//    }
+//
+//    var ride = optionalRide.get();
+//    var user = optionalUser.get();
+//
+//    // Controleer of er voldoende plekken beschikbaar zijn
+//    if (ride.getAvailableSpots() < pax) {
+//        throw new ExceededCapacityException("The number of passengers exceeds the available spots");
+//    }
+//
+//    // Controleer of de gebruiker al aan de rit is toegevoegd
+//    if (ride.getUsers().contains(user)) {
+//        throw new UserAlreadyAddedToRideException("User already added to this ride");
+//    }
+//
+//    user.getRides().add(ride);
+//    ride.getUsers().add(user);
+//
+//    // Verminder het aantal beschikbare plekken
+//    ride.setAvailableSpots(ride.getAvailableSpots() - pax);
+//
+//    userRepository.save(user);
+//    rideRepository.save(ride);
+//}
+    //de code hierboven was goed 6-6
+
+    public void addUserToRide(Long id, String username, int pax) {
         var optionalRide = rideRepository.findById(id);
         var optionalUser = userRepository.findByUsername(username);
 
-        if(optionalRide.isPresent() && optionalUser.isPresent()) {
-            var ride = optionalRide.get();
-            var user = optionalUser.get();
-
-            // Controleer of de gebruiker al aan de rit is toegevoegd
-            if (ride.getUsers().contains(user)) {
-                throw new UserAlreadyAddedToRideException("User already added to this ride");
-            }
-
-            user.getRides().add(ride);
-            ride.getUsers().add(user);
-
-            userRepository.save(user);
-            rideRepository.save(ride);
-        } else {
-            throw new RecordNotFoundException();
+        if(!optionalRide.isPresent()) {
+            throw new RecordNotFoundException("Ride with id " + id + " not found.");
         }
+
+        if(!optionalUser.isPresent()) {
+            throw new RecordNotFoundException("User with username " + username + " not found.");
+        }
+
+        var ride = optionalRide.get();
+        var user = optionalUser.get();
+
+        // Controleer of er voldoende plekken beschikbaar zijn
+        if (ride.getAvailableSpots() < pax) {
+            throw new ExceededCapacityException("The number of passengers exceeds the available spots");
+        }
+
+        // Controleer of de gebruiker al aan de rit is toegevoegd
+        if (ride.getUsers().contains(user)) {
+            throw new UserAlreadyAddedToRideException("User already added to this ride");
+        }
+
+        user.getRides().add(ride);
+        ride.getUsers().add(user);
+
+        // Verminder het aantal beschikbare plekken
+        ride.setAvailableSpots(ride.getAvailableSpots() - pax);
+
+        // Verhoog het aantal reserveringen
+        ride.setPax(ride.getPax() + pax);
+
+        // Update het aantal gereserveerde plekken per gebruiker
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+            reservedSpotsByUser.put(username, pax);
+            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
+        } catch (IOException e) {
+            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+            throw new RuntimeException(e);
+        }
+
+        userRepository.save(user);
+        rideRepository.save(ride);
     }
+/////
 
 
 
-    //    public List<RideDto> getAllRidesByDestination(String destination) {
-//        List<Ride> rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination);
-//        return transferRideListToDtoList(rideList);
+//public List<RideDto> getRidesByCriteria(
+//        Optional<String> destination,
+//        Optional<String> pickUpLocation,
+////        Optional<LocalDate> departureDate)
+//        Optional<LocalDateTime> departureDateTime)
+//
+//{
+//
+//    List<Ride> rideList;
+//
+//    if (destination.isPresent() && pickUpLocation.isPresent() && departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+//                destination.get(),
+//                pickUpLocation.get(),
+//                departureDateTime.get()
+//        );
+//    } else if (destination.isPresent() && pickUpLocation.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
+//                destination.get(),
+//                pickUpLocation.get()
+//        );
+//    } else if (destination.isPresent() && departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+//                destination.get(),
+//                departureDateTime.get()
+//        );
+//    } else if (pickUpLocation.isPresent() && departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
+//                pickUpLocation.get(),
+//                departureDateTime.get()
+//        );
+//    } else if (destination.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination.get());
+//    } else if (pickUpLocation.isPresent()) {
+//        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase(pickUpLocation.get());
+//    } else if (departureDateTime.isPresent()) {
+//        rideList = rideRepository.findAllRidesByDepartureDateTimeEquals(departureDateTime.get());
+//    } else {
+//        rideList = rideRepository.findAll();
 //    }
-public List<RideDto> getRidesByCriteria(
-        Optional<String> destination,
-        Optional<String> pickUpLocation,
-//        Optional<LocalDate> departureDate)
-        Optional<LocalDateTime> departureDateTime)
+//
+//    return transferRideListToDtoList(rideList);
+//}
 
-{
+    public List<RideDto> getRidesByCriteria(
+            String destination,
+            String pickUpLocation,
+            LocalDate departureDate,
+            int pax)
+    {
+        List<Ride> rideList;
 
-    List<Ride> rideList;
-
-    if (destination.isPresent() && pickUpLocation.isPresent() && departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                destination.get(),
-                pickUpLocation.get(),
-                departureDateTime.get()
-        );
-    } else if (destination.isPresent() && pickUpLocation.isPresent()) {
         rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
-                destination.get(),
-                pickUpLocation.get()
+                destination,
+                pickUpLocation
         );
-    } else if (destination.isPresent() && departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                destination.get(),
-                departureDateTime.get()
-        );
-    } else if (pickUpLocation.isPresent() && departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                pickUpLocation.get(),
-                departureDateTime.get()
-        );
-    } else if (destination.isPresent()) {
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination.get());
-    } else if (pickUpLocation.isPresent()) {
-        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase(pickUpLocation.get());
-    } else if (departureDateTime.isPresent()) {
-        rideList = rideRepository.findAllRidesByDepartureDateTimeEquals(departureDateTime.get());
-    } else {
-        rideList = rideRepository.findAll();
+
+        List<Ride> availableRideList = new ArrayList<>();
+        for (Ride ride : rideList) {
+            if (departureDate == null || ride.getDepartureDateTime().toLocalDate().equals(departureDate)) {
+                if (ride.getAvailableSpots() >= pax) {
+                    availableRideList.add(ride);
+                }
+            }
+        }
+
+        return transferRideListToDtoList(availableRideList);
     }
-
-    return transferRideListToDtoList(rideList);
-}
-
-
-//    public List<RideDto> getRidesByCriteria(
-//            Optional<String> destination,
-//            Optional<String> pickUpLocation,
-//            Optional<LocalDate> departureDate) {
-//
-//        Specification<Ride> spec = Specification.where(null);
-//
-//        if (destination.isPresent()) {
-//            spec = spec.and(RideSpecifications.destinationEqualsIgnoreCase(destination.get()));
-//        }
-//
-//        if (pickUpLocation.isPresent()) {
-//            spec = spec.and(RideSpecifications.pickUpLocationEqualsIgnoreCase(pickUpLocation.get()));
-//        }
-//
-//        if (departureDate.isPresent()) {
-//            spec = spec.and(RideSpecifications.departureDateEquals(departureDate.get()));
-//        }
-//
-//        List<Ride> rideList = rideRepository.findAll(spec);
-//        return transferRideListToDtoList(rideList);
-//    }
-
-
-
 
     public List<RideDto> transferRideListToDtoList(List<Ride> rides){
         List<RideDto> rideDtoList = new ArrayList<>();
@@ -371,6 +455,29 @@ public List<RideDto> getRidesByCriteria(
     }
 
     ///
+//    public void removeUserFromRide(Long rideId, String username) {
+//        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+//        if (!rideOptional.isPresent()) {
+//            throw new RecordNotFoundException("Ride not found");
+//        }
+//
+//        Ride ride = rideOptional.get();
+//        Optional<User> userOptional = userRepository.findByUsername(username);
+//        if (!userOptional.isPresent()) {
+//            throw new RecordNotFoundException("User not found");
+//        }
+//
+//        User user = userOptional.get();
+//        if (!ride.getUsers().contains(user)) {
+//            throw new UserNotInRideException("User is not part of this ride");
+//        }
+//
+//        ride.getUsers().remove(user);
+//        user.getRides().remove(ride);
+//        rideRepository.save(ride);
+//        userRepository.save(user);
+//    }
+    //nieuwe 6-6:
     public void removeUserFromRide(Long rideId, String username) {
         Optional<Ride> rideOptional = rideRepository.findById(rideId);
         if (!rideOptional.isPresent()) {
@@ -388,9 +495,45 @@ public List<RideDto> getRidesByCriteria(
             throw new UserNotInRideException("User is not part of this ride");
         }
 
-        ride.getUsers().remove(user);
-        user.getRides().remove(ride);
-        rideRepository.save(ride);
-        userRepository.save(user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Converteer de JSON string naar een Map
+            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+
+            // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
+            Integer reservedSpots = reservedSpotsByUser.get(username);
+            if (reservedSpots == null) {
+                throw new UserNotInRideException("User is not part of this ride");
+            }
+
+            if (ride.getPax() < reservedSpots) {
+                throw new IllegalStateException("The number of reserved spots exceeds the total number of reservations");
+            }
+
+            // Update het aantal beschikbare zitplaatsen
+            ride.setAvailableSpots(ride.getAvailableSpots() + reservedSpots);
+
+            // Verminder het totale aantal reserveringen (pax)
+            ride.setPax(ride.getPax() - reservedSpots);
+
+
+            // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
+            ride.getUsers().remove(user);
+            user.getRides().remove(ride);
+
+            // Verwijder de vermelding voor deze gebruiker uit de Map van gereserveerde zitplaatsen
+            reservedSpotsByUser.remove(username);
+            // Converteer de Map weer naar een JSON String
+            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
+
+            rideRepository.save(ride);
+            userRepository.save(user);
+
+        } catch (IOException e) {
+            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+            throw new RuntimeException(e);
+        }
     }
+
 }

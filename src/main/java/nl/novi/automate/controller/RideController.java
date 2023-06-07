@@ -1,6 +1,7 @@
 package nl.novi.automate.controller;
 
 import nl.novi.automate.dto.RideDto;
+import nl.novi.automate.exceptions.ExceededCapacityException;
 import nl.novi.automate.exceptions.RecordNotFoundException;
 import nl.novi.automate.exceptions.UserAlreadyAddedToRideException;
 import nl.novi.automate.exceptions.UserNotInRideException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -71,18 +73,34 @@ public class RideController {
 //        return ResponseEntity.ok().build();
 //    }
 
-//9/5:
-    @PostMapping("/{rideId}/{username}")
-    public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username) {
+////9/5
+//    @PostMapping("/{rideId}/{username}")
+//    public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username) {
+//        try {
+//            rideService.addUserToRide(rideId, username);
+//            return ResponseEntity.ok().build();
+//        } catch (UserAlreadyAddedToRideException e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+//        } catch (RecordNotFoundException e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+//        }
+//    }
+
+    //31/5 test. hierboven was het! hieronder werkt goed met Postman
+    @PostMapping("/{rideId}/{username}/{pax}")
+    public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username, @PathVariable int pax) {
         try {
-            rideService.addUserToRide(rideId, username);
+            rideService.addUserToRide(rideId, username, pax);
             return ResponseEntity.ok().build();
         } catch (UserAlreadyAddedToRideException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (ExceededCapacityException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (RecordNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
 
 
 
@@ -152,30 +170,59 @@ public class RideController {
 
     //hierboven was de originele!!!! 24-05!!!
 
+////
+//    @GetMapping("")
+//    public ResponseEntity<List<RideDto>> getRidesByCriteria(
+//            @RequestParam(value = "destination", required = false) Optional<String> destination,
+//            @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
+//            @RequestParam(value = "departureDateTime", required = false) Optional<String> departureDateTimeStr)
+//    {
+//        Optional<LocalDateTime> departureDateTime = Optional.empty();
+//        if(departureDateTimeStr.isPresent()){
+//            try{
+//                departureDateTime = Optional.of(LocalDateTime.parse(departureDateTimeStr.get(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+//            }catch(DateTimeParseException e){
+//                // handle invalid date-time format
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date-time format.");
+//            }
+//        }
+//
+//        List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
+//
+//        return ResponseEntity.ok().body(dtos);
+//    }
 
+
+    ////// tot hier nieuw  24/05. hierboven zonder required = false weer gaan gebruiken als ik weer helemaal een rolback moet maken!!!
+// hieronder werkt nu in postman
     @GetMapping("")
     public ResponseEntity<List<RideDto>> getRidesByCriteria(
-            @RequestParam(value = "destination", required = false) Optional<String> destination,
-            @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
-            @RequestParam(value = "departureDateTime", required = false) Optional<String> departureDateTimeStr)
-    {
-        Optional<LocalDateTime> departureDateTime = Optional.empty();
-        if(departureDateTimeStr.isPresent()){
-            try{
-                departureDateTime = Optional.of(LocalDateTime.parse(departureDateTimeStr.get(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            }catch(DateTimeParseException e){
-                // handle invalid date-time format
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date-time format.");
+            @RequestParam(value = "destination", required = true) String destination,
+            @RequestParam(value = "pickUpLocation", required = true) String pickUpLocation,
+            @RequestParam(value = "departureDate", required = true) String departureDateStr,
+            @RequestParam(value = "pax", required = true) Integer pax) {
+        LocalDate departureDate = null;
+        if (departureDateStr != null && !departureDateStr.isEmpty()) {
+            try {
+                departureDate = LocalDate.parse(departureDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+            } catch (DateTimeParseException e) {
+                // handle invalid date format
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format.");
             }
         }
 
-        List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
+            List<RideDto> dtos = rideService.getRidesByCriteria(
+                    destination,
+                    pickUpLocation,
+                    departureDate,
+                    pax);
 
-        return ResponseEntity.ok().body(dtos);
-    }
+            return ResponseEntity.ok().body(dtos);
+        }
 
 
-    ////// tot hier nieuw  24/05
+
+
 
 
 
