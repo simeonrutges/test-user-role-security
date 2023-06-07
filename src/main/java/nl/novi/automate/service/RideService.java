@@ -305,6 +305,9 @@ public RideDto addRide(RideDto rideDto) {
         // Verminder het aantal beschikbare plekken
         ride.setAvailableSpots(ride.getAvailableSpots() - pax);
 
+        // Verhoog het totale ritprijs op basis van het aantal passagiers en de prijs per persoon
+        ride.setTotalRitPrice(ride.getTotalRitPrice() + (ride.getPricePerPerson() * pax));
+
         // Verhoog het aantal reserveringen
         ride.setPax(ride.getPax() + pax);
 
@@ -516,6 +519,8 @@ public RideDto addRide(RideDto rideDto) {
             // Verminder het totale aantal reserveringen (pax)
             ride.setPax(ride.getPax() - reservedSpots);
 
+            // Verminder het totale ritprijs op basis van het aantal gereserveerde plekken voor de gebruiker en de prijs per persoon
+            ride.setTotalRitPrice(ride.getTotalRitPrice() - (ride.getPricePerPerson() * reservedSpots));
 
             // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
             ride.getUsers().remove(user);
