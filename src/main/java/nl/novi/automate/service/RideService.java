@@ -1,5 +1,7 @@
 package nl.novi.automate.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.novi.automate.dto.NotificationDto;
 import nl.novi.automate.dto.RideDto;
 import nl.novi.automate.exceptions.*;
@@ -12,10 +14,12 @@ import nl.novi.automate.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -234,40 +238,89 @@ public RideDto addRide(RideDto rideDto) {
 //    }
 
 //    31/5 hierboven was goed hieronder werkt goed met postman
-public void addUserToRide(Long id, String username, int pax) {
-    var optionalRide = rideRepository.findById(id);
-    var optionalUser = userRepository.findByUsername(username);
+//public void addUserToRide(Long id, String username, int pax) {
+//    var optionalRide = rideRepository.findById(id);
+//    var optionalUser = userRepository.findByUsername(username);
+//
+//    if(!optionalRide.isPresent()) {
+//        throw new RecordNotFoundException("Ride with id " + id + " not found.");
+//    }
+//
+//    if(!optionalUser.isPresent()) {
+//        throw new RecordNotFoundException("User with username " + username + " not found.");
+//    }
+//
+//    var ride = optionalRide.get();
+//    var user = optionalUser.get();
+//
+//    // Controleer of er voldoende plekken beschikbaar zijn
+//    if (ride.getAvailableSpots() < pax) {
+//        throw new ExceededCapacityException("The number of passengers exceeds the available spots");
+//    }
+//
+//    // Controleer of de gebruiker al aan de rit is toegevoegd
+//    if (ride.getUsers().contains(user)) {
+//        throw new UserAlreadyAddedToRideException("User already added to this ride");
+//    }
+//
+//    user.getRides().add(ride);
+//    ride.getUsers().add(user);
+//
+//    // Verminder het aantal beschikbare plekken
+//    ride.setAvailableSpots(ride.getAvailableSpots() - pax);
+//
+//    userRepository.save(user);
+//    rideRepository.save(ride);
+//}
+    //de code hierboven was goed 6-6
 
-    if(!optionalRide.isPresent()) {
-        throw new RecordNotFoundException("Ride with id " + id + " not found.");
+    public void addUserToRide(Long id, String username, int pax) {
+        var optionalRide = rideRepository.findById(id);
+        var optionalUser = userRepository.findByUsername(username);
+
+        if(!optionalRide.isPresent()) {
+            throw new RecordNotFoundException("Ride with id " + id + " not found.");
+        }
+
+        if(!optionalUser.isPresent()) {
+            throw new RecordNotFoundException("User with username " + username + " not found.");
+        }
+
+        var ride = optionalRide.get();
+        var user = optionalUser.get();
+
+        // Controleer of er voldoende plekken beschikbaar zijn
+        if (ride.getAvailableSpots() < pax) {
+            throw new ExceededCapacityException("The number of passengers exceeds the available spots");
+        }
+
+        // Controleer of de gebruiker al aan de rit is toegevoegd
+        if (ride.getUsers().contains(user)) {
+            throw new UserAlreadyAddedToRideException("User already added to this ride");
+        }
+
+        user.getRides().add(ride);
+        ride.getUsers().add(user);
+
+        // Verminder het aantal beschikbare plekken
+        ride.setAvailableSpots(ride.getAvailableSpots() - pax);
+
+        // Update het aantal gereserveerde plekken per gebruiker
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+            reservedSpotsByUser.put(username, pax);
+            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
+        } catch (IOException e) {
+            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+            throw new RuntimeException(e);
+        }
+
+        userRepository.save(user);
+        rideRepository.save(ride);
     }
-
-    if(!optionalUser.isPresent()) {
-        throw new RecordNotFoundException("User with username " + username + " not found.");
-    }
-
-    var ride = optionalRide.get();
-    var user = optionalUser.get();
-
-    // Controleer of er voldoende plekken beschikbaar zijn
-    if (ride.getAvailableSpots() < pax) {
-        throw new ExceededCapacityException("The number of passengers exceeds the available spots");
-    }
-
-    // Controleer of de gebruiker al aan de rit is toegevoegd
-    if (ride.getUsers().contains(user)) {
-        throw new UserAlreadyAddedToRideException("User already added to this ride");
-    }
-
-    user.getRides().add(ride);
-    ride.getUsers().add(user);
-
-    // Verminder het aantal beschikbare plekken
-    ride.setAvailableSpots(ride.getAvailableSpots() - pax);
-
-    userRepository.save(user);
-    rideRepository.save(ride);
-}
+/////
 
 
 
@@ -399,6 +452,29 @@ public void addUserToRide(Long id, String username, int pax) {
     }
 
     ///
+//    public void removeUserFromRide(Long rideId, String username) {
+//        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+//        if (!rideOptional.isPresent()) {
+//            throw new RecordNotFoundException("Ride not found");
+//        }
+//
+//        Ride ride = rideOptional.get();
+//        Optional<User> userOptional = userRepository.findByUsername(username);
+//        if (!userOptional.isPresent()) {
+//            throw new RecordNotFoundException("User not found");
+//        }
+//
+//        User user = userOptional.get();
+//        if (!ride.getUsers().contains(user)) {
+//            throw new UserNotInRideException("User is not part of this ride");
+//        }
+//
+//        ride.getUsers().remove(user);
+//        user.getRides().remove(ride);
+//        rideRepository.save(ride);
+//        userRepository.save(user);
+//    }
+    //nieuwe 6-6:
     public void removeUserFromRide(Long rideId, String username) {
         Optional<Ride> rideOptional = rideRepository.findById(rideId);
         if (!rideOptional.isPresent()) {
@@ -416,9 +492,37 @@ public void addUserToRide(Long id, String username, int pax) {
             throw new UserNotInRideException("User is not part of this ride");
         }
 
-        ride.getUsers().remove(user);
-        user.getRides().remove(ride);
-        rideRepository.save(ride);
-        userRepository.save(user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Converteer de JSON string naar een Map
+            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+
+            // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
+            Integer reservedSpots = reservedSpotsByUser.get(username);
+            if (reservedSpots == null) {
+                throw new UserNotInRideException("User is not part of this ride");
+            }
+
+            // Update het aantal beschikbare zitplaatsen
+            ride.setAvailableSpots(ride.getAvailableSpots() + reservedSpots);
+
+            // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
+            ride.getUsers().remove(user);
+            user.getRides().remove(ride);
+
+            // Verwijder de vermelding voor deze gebruiker uit de Map van gereserveerde zitplaatsen
+            reservedSpotsByUser.remove(username);
+            // Converteer de Map weer naar een JSON String
+            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
+
+            rideRepository.save(ride);
+            userRepository.save(user);
+
+        } catch (IOException e) {
+            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+            throw new RuntimeException(e);
+        }
     }
+
 }
