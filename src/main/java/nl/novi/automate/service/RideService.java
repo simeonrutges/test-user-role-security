@@ -305,6 +305,9 @@ public RideDto addRide(RideDto rideDto) {
         // Verminder het aantal beschikbare plekken
         ride.setAvailableSpots(ride.getAvailableSpots() - pax);
 
+        // Verhoog het aantal reserveringen
+        ride.setPax(ride.getPax() + pax);
+
         // Update het aantal gereserveerde plekken per gebruiker
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -503,8 +506,16 @@ public RideDto addRide(RideDto rideDto) {
                 throw new UserNotInRideException("User is not part of this ride");
             }
 
+            if (ride.getPax() < reservedSpots) {
+                throw new IllegalStateException("The number of reserved spots exceeds the total number of reservations");
+            }
+
             // Update het aantal beschikbare zitplaatsen
             ride.setAvailableSpots(ride.getAvailableSpots() + reservedSpots);
+
+            // Verminder het totale aantal reserveringen (pax)
+            ride.setPax(ride.getPax() - reservedSpots);
+
 
             // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
             ride.getUsers().remove(user);
