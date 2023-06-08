@@ -5,6 +5,7 @@ import nl.novi.automate.exceptions.ExceededCapacityException;
 import nl.novi.automate.exceptions.RecordNotFoundException;
 import nl.novi.automate.exceptions.UserAlreadyAddedToRideException;
 import nl.novi.automate.exceptions.UserNotInRideException;
+import nl.novi.automate.model.ReservationInfo;
 import nl.novi.automate.service.RideService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,6 +102,29 @@ public class RideController {
         }
     }
 
+//    @GetMapping("/{rideId}/users/{username}/reservedSpots")
+//    public ResponseEntity<Integer> getReservedSpotsForUser(@PathVariable Long rideId, @PathVariable String username) {
+//        try {
+//            int reservedSpots = rideService.getReservedSpotsForUser(rideId, username);
+//            return new ResponseEntity<>(reservedSpots, HttpStatus.OK);
+//        } catch (RecordNotFoundException e) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        } catch (UserNotInRideException e) {
+//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//        }
+//    }
+
+        @GetMapping("/{rideId}/users/{username}/reservationInfo")
+        public ResponseEntity<ReservationInfo> getReservationInfoForUser(@PathVariable Long rideId, @PathVariable String username) {
+            try {
+                ReservationInfo reservationInfo = rideService.getReservationInfoForUser(rideId, username);
+                return new ResponseEntity<>(reservationInfo, HttpStatus.OK);
+            } catch (RecordNotFoundException e) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (UserNotInRideException e) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }
 
 
 

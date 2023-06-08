@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.novi.automate.dto.NotificationDto;
 import nl.novi.automate.dto.RideDto;
 import nl.novi.automate.exceptions.*;
-import nl.novi.automate.model.Notification;
-import nl.novi.automate.model.NotificationType;
-import nl.novi.automate.model.Ride;
-import nl.novi.automate.model.User;
+import nl.novi.automate.model.*;
 import nl.novi.automate.repository.RideRepository;
 import nl.novi.automate.repository.UserRepository;
 import org.springframework.context.annotation.Lazy;
@@ -305,6 +302,9 @@ public RideDto addRide(RideDto rideDto) {
         // Verminder het aantal beschikbare plekken
         ride.setAvailableSpots(ride.getAvailableSpots() - pax);
 
+        // Verhoog het totale ritprijs op basis van het aantal passagiers en de prijs per persoon
+        ride.setTotalRitPrice(ride.getTotalRitPrice() + (ride.getPricePerPerson() * pax));
+
         // Verhoog het aantal reserveringen
         ride.setPax(ride.getPax() + pax);
 
@@ -323,6 +323,82 @@ public RideDto addRide(RideDto rideDto) {
         userRepository.save(user);
         rideRepository.save(ride);
     }
+
+//    public int getReservedSpotsForUser(Long rideId, String username) {
+//        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+//        if (!rideOptional.isPresent()) {
+//            throw new RecordNotFoundException("Ride not found");
+//        }
+//
+//        Ride ride = rideOptional.get();
+//        Optional<User> userOptional = userRepository.findByUsername(username);
+//        if (!userOptional.isPresent()) {
+//            throw new RecordNotFoundException("User not found");
+//        }
+//
+//        User user = userOptional.get();
+//        if (!ride.getUsers().contains(user)) {
+//            throw new UserNotInRideException("User is not part of this ride");
+//        }
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            // Converteer de JSON string naar een Map
+//            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+//
+//            // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
+//            Integer reservedSpots = reservedSpotsByUser.get(username);
+//            if (reservedSpots == null) {
+//                throw new UserNotInRideException("User is not part of this ride");
+//            }
+//
+//            return reservedSpots;
+//        } catch (IOException e) {
+//            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+//            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+
+        public ReservationInfo getReservationInfoForUser(Long rideId, String username) {
+            Optional<Ride> rideOptional = rideRepository.findById(rideId);
+            if (!rideOptional.isPresent()) {
+                throw new RecordNotFoundException("Ride not found");
+            }
+
+            Ride ride = rideOptional.get();
+            Optional<User> userOptional = userRepository.findByUsername(username);
+            if (!userOptional.isPresent()) {
+                throw new RecordNotFoundException("User not found");
+            }
+
+            User user = userOptional.get();
+            if (!ride.getUsers().contains(user)) {
+                throw new UserNotInRideException("User is not part of this ride");
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                // Converteer de JSON string naar een Map
+                Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+
+                // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
+                Integer reservedSpots = reservedSpotsByUser.get(username);
+                if (reservedSpots == null) {
+                    throw new UserNotInRideException("User is not part of this ride");
+                }
+
+                // Bereken de totale prijs die de gebruiker moet betalen voor zijn gereserveerde plekken
+                double totalPrice = ride.getPricePerPerson() * reservedSpots;
+
+                return new ReservationInfo(reservedSpots, totalPrice);
+            } catch (IOException e) {
+                // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+                // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+                throw new RuntimeException(e);
+            }
+        }
 /////
 
 
@@ -516,6 +592,8 @@ public RideDto addRide(RideDto rideDto) {
             // Verminder het totale aantal reserveringen (pax)
             ride.setPax(ride.getPax() - reservedSpots);
 
+            // Verminder het totale ritprijs op basis van het aantal gereserveerde plekken voor de gebruiker en de prijs per persoon
+            ride.setTotalRitPrice(ride.getTotalRitPrice() - (ride.getPricePerPerson() * reservedSpots));
 
             // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
             ride.getUsers().remove(user);
