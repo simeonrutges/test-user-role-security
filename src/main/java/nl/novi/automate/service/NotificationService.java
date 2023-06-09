@@ -58,41 +58,5 @@ public class NotificationService {
         return notificationDtos;
     }
 
-
-    // Conversiemethoden
-
-//    public NotificationDto notificationConvertToDto(Notification notification) {
-//        NotificationDto notificationDto = new NotificationDto();
-//
-//        notificationDto.setId(notification.getId());
-//
-////        notificationDto.setSender(transferToDto(notification.getSender()));
-////        notificationDto.setReceiver(transferToDto(notification.getReceiver()));
-//        notificationDto.setSender(dtoMapperService.transferToDto(notification.getSender()));
-//        notificationDto.setReceiver(dtoMapperService.transferToDto(notification.getReceiver()));
-//
-//        notificationDto.setType(notification.getType());
-//        notificationDto.setSentDate(notification.getSentDate());
-//        notificationDto.setRead(notification.isRead());
-//
-//        return notificationDto;
-//    }
-//
-//    private Notification notificationDtoConvertToEntity(NotificationDto notificationDto) {
-//        Notification notification = new Notification();
-//
-//        notification.setId(notificationDto.getId());
-////        notification.setSender(userService.transferToUser(notificationDto.getSender()));
-////        notification.setReceiver(userService.transferToUser(notificationDto.getReceiver()));
-//        notification.setSender(dtoMapperService.transferToUser(notificationDto.getSender()));
-//        notification.setReceiver(dtoMapperService.transferToUser(notificationDto.getReceiver()));
-//
-//        notification.setType(notificationDto.getType());
-//        notification.setSentDate(notificationDto.getSentDate());
-//        notification.setRead(notificationDto.isRead());
-//
-//        return notification;
-//    }
-
     // Andere service methoden indien nodig (bijv. update, delete)
 }
