@@ -1,5 +1,7 @@
 package nl.novi.automate.model;
 
+import nl.novi.automate.timeValidation.ValidETA;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
+@ValidETA
 @Table(name = "rides")
 public class Ride {
     @Id
