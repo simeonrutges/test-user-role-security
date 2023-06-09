@@ -12,6 +12,7 @@ import nl.novi.automate.repository.RideRepository;
 import nl.novi.automate.repository.RoleRepository;
 import nl.novi.automate.repository.UserRepository;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -160,21 +161,43 @@ public class UserService {
         }
     }
 
+//    public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request) {
+//        User userFile = userRepository.findByFileName(fileName);
+//
+////        this mediaType decides witch type you accept if you only accept 1 type
+////        MediaType contentType = MediaType.IMAGE_JPEG;
+////        this is going to accept multiple types
+//
+//        String mimeType = request.getServletContext().getMimeType(userFile.getFileName());
+//
+////        for download attachment use next line
+////        return ResponseEntity.ok().contentType(contentType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=" + resource.getFilename()).body(resource);
+////        for showing image in browser
+//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + userFile.getFileName()).body(userFile.getDocFile());
+//
+//    }
+
+    // 9/6 de methode hierboven was goed. De twee methoden hieronder nieuw om de error status te verwijderen
+
+    public Optional<User> findImage(String fileName) {
+        return Optional.ofNullable(userRepository.findByFileName(fileName));
+    }
+
     public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request) {
         User userFile = userRepository.findByFileName(fileName);
 
-//        this mediaType decides witch type you accept if you only accept 1 type
-//        MediaType contentType = MediaType.IMAGE_JPEG;
-//        this is going to accept multiple types
+        if (userFile == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
         String mimeType = request.getServletContext().getMimeType(userFile.getFileName());
 
-//        for download attachment use next line
-//        return ResponseEntity.ok().contentType(contentType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=" + resource.getFilename()).body(resource);
-//        for showing image in browser
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + userFile.getFileName()).body(userFile.getDocFile());
-
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(mimeType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + userFile.getFileName())
+                .body(userFile.getDocFile());
     }
+/////
 
     public void deleteProfileImage(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);

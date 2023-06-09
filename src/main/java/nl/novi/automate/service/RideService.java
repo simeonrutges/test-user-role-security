@@ -94,7 +94,6 @@ public RideDto addRide(RideDto rideDto) {
 
     return rideDto;
 }
-//////////
 
 
     public RideDto getRideById(Long id) {
