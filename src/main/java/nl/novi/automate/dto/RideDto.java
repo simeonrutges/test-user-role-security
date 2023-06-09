@@ -21,6 +21,7 @@ public class RideDto {
 @FutureOrPresent(message = "De vertrekdatum moet in de toekomst liggen")
     public LocalDate departureDate;
     @FutureOrPresent
+    @NotNull
     public LocalDateTime departureDateTime;
     @NotNull
     @DecimalMin(value = "3.0", inclusive = true)
@@ -37,7 +38,8 @@ public class RideDto {
 //    @Max(5)
     public int availableSpots;
     public boolean automaticAcceptance;
-    @Future
+//    @Future
+    @NotNull
     public LocalTime eta;
 
     public String driverUsername;
