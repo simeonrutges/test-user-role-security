@@ -3,6 +3,7 @@ package nl.novi.automate.service;
 import nl.novi.automate.dto.NotificationDto;
 import nl.novi.automate.exceptions.ResourceNotFoundException;
 import nl.novi.automate.model.Notification;
+import nl.novi.automate.model.Ride;
 import nl.novi.automate.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
@@ -59,4 +60,26 @@ public class NotificationService {
     }
 
     // Andere service methoden indien nodig (bijv. update, delete)
+    public NotificationDto createNotification(NotificationDto notificationDto, Ride ride) {
+        Notification notification = dtoMapperService.dtoToNotification(notificationDto);
+        notification.setRideDetails(rideDetails(ride));
+        Notification savedNotification = notificationRepository.save(notification);
+        return dtoMapperService.notificationToDto(savedNotification);
+    }
+
+    public String rideDetails(Ride ride) {
+        String rideDetails = "Rit details: Driver - " + ride.getDriverUsername() +
+                ", Pick Up Location - " + ride.getPickUpLocation() +
+                ", Destination - " + ride.getDestination() +
+//                ", Route - " + ride.getRoute() +
+//                ", Departure Time - " + ride.getDepartureTime() +
+//                ", Departure Date - " + ride.getDepartureDate() +
+                ", Departure DateTime - " + ride.getDepartureDateTime() +
+//                ", Price per Person - " + ride.getPricePerPerson() +
+                ", Pax - " + ride.getPax() +
+//                ", Total Rit Price - " + ride.getTotalRitPrice() +
+                ", Estimated Arrival Time - " + ride.getEta();
+        return rideDetails;
+    }
+
 }
