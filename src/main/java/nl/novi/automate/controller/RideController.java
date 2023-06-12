@@ -46,12 +46,6 @@ public class RideController {
         }
     }
 
-//    @PostMapping("/{rideId}/{username}")
-//    public ResponseEntity<Object> addUserToRide(@PathVariable Long rideId, @PathVariable String username){
-//        rideService.addUserToRide(rideId, username);
-//        return ResponseEntity.ok().build();
-//    }
-
 ////9/5
 //    @PostMapping("/{rideId}/{username}")
 //    public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username) {
@@ -80,18 +74,6 @@ public class RideController {
         }
     }
 
-//    @GetMapping("/{rideId}/users/{username}/reservedSpots")
-//    public ResponseEntity<Integer> getReservedSpotsForUser(@PathVariable Long rideId, @PathVariable String username) {
-//        try {
-//            int reservedSpots = rideService.getReservedSpotsForUser(rideId, username);
-//            return new ResponseEntity<>(reservedSpots, HttpStatus.OK);
-//        } catch (RecordNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        } catch (UserNotInRideException e) {
-//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//        }
-//    }
-
         @GetMapping("/{rideId}/users/{username}/reservationInfo")
         public ResponseEntity<ReservationInfo> getReservationInfoForUser(@PathVariable Long rideId, @PathVariable String username) {
             try {
@@ -103,29 +85,6 @@ public class RideController {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
         }
-
-//    @GetMapping("")
-//    public ResponseEntity<List<RideDto>> getAllRides(@RequestParam(value = "destination", required = true) Optional<String> destination) {
-//
-//        List<RideDto> dtos;
-//        dtos = rideService.getAllRidesByDestination(destination.get());
-//
-//        return ResponseEntity.ok().body(dtos);
-//    }
-
-//@GetMapping("")
-//public ResponseEntity<List<RideDto>> getRidesByCriteria(
-//        @RequestParam(value = "destination", required = false) Optional<String> destination,
-//        @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
-////        @RequestParam(value = "departureDate", required = false) Optional<LocalDate> departureDate)
-//        @RequestParam(value = "departureDateTime", required = false) Optional<LocalDateTime> departureDateTime)
-//{
-//    List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
-//
-//    return ResponseEntity.ok().body(dtos);
-//}
-
-    //hierboven was de originele!!!! 24-05!!!
 
 ////
 //    @GetMapping("")

@@ -675,6 +675,67 @@ public RideDto addRide(RideDto rideDto) {
 //        userRepository.save(user);
 //    }
     //nieuwe 6-6:
+//    public void removeUserFromRide(Long rideId, String username) {
+//        Optional<Ride> rideOptional = rideRepository.findById(rideId);
+//        if (!rideOptional.isPresent()) {
+//            throw new RecordNotFoundException("Ride not found");
+//        }
+//
+//        Ride ride = rideOptional.get();
+//        Optional<User> userOptional = userRepository.findByUsername(username);
+//        if (!userOptional.isPresent()) {
+//            throw new RecordNotFoundException("User not found");
+//        }
+//
+//        User user = userOptional.get();
+//        if (!ride.getUsers().contains(user)) {
+//            throw new UserNotInRideException("User is not part of this ride");
+//        }
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            // Converteer de JSON string naar een Map
+//            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
+//
+//            // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
+//            Integer reservedSpots = reservedSpotsByUser.get(username);
+//            if (reservedSpots == null) {
+//                throw new UserNotInRideException("User is not part of this ride");
+//            }
+//
+//            if (ride.getPax() < reservedSpots) {
+//                throw new IllegalStateException("The number of reserved spots exceeds the total number of reservations");
+//            }
+//
+//            // Update het aantal beschikbare zitplaatsen
+//            ride.setAvailableSpots(ride.getAvailableSpots() + reservedSpots);
+//
+//            // Verminder het totale aantal reserveringen (pax)
+//            ride.setPax(ride.getPax() - reservedSpots);
+//
+//            // Verminder het totale ritprijs op basis van het aantal gereserveerde plekken voor de gebruiker en de prijs per persoon
+//            ride.setTotalRitPrice(ride.getTotalRitPrice() - (ride.getPricePerPerson() * reservedSpots));
+//
+//            // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
+//            ride.getUsers().remove(user);
+//            user.getRides().remove(ride);
+//
+//            // Verwijder de vermelding voor deze gebruiker uit de Map van gereserveerde zitplaatsen
+//            reservedSpotsByUser.remove(username);
+//            // Converteer de Map weer naar een JSON String
+//            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
+//
+//            rideRepository.save(ride);
+//            userRepository.save(user);
+//
+//        } catch (IOException e) {
+//            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
+//            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+//            throw new RuntimeException(e);
+//        }
+//    }
+//    hieronder11/6 aangepast
+
     public void removeUserFromRide(Long rideId, String username) {
         Optional<Ride> rideOptional = rideRepository.findById(rideId);
         if (!rideOptional.isPresent()) {
@@ -694,10 +755,10 @@ public RideDto addRide(RideDto rideDto) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Converteer de JSON string naar een Map
+            // Convert the JSON string to a Map
             Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
 
-            // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
+            // Get the number of reserved spots for the user
             Integer reservedSpots = reservedSpotsByUser.get(username);
             if (reservedSpots == null) {
                 throw new UserNotInRideException("User is not part of this ride");
@@ -707,30 +768,40 @@ public RideDto addRide(RideDto rideDto) {
                 throw new IllegalStateException("The number of reserved spots exceeds the total number of reservations");
             }
 
-            // Update het aantal beschikbare zitplaatsen
+            // Update the number of available spots
             ride.setAvailableSpots(ride.getAvailableSpots() + reservedSpots);
 
-            // Verminder het totale aantal reserveringen (pax)
+            // Decrease the total number of reservations (pax)
             ride.setPax(ride.getPax() - reservedSpots);
 
-            // Verminder het totale ritprijs op basis van het aantal gereserveerde plekken voor de gebruiker en de prijs per persoon
+            // Decrease the total ride price based on the number of reserved spots for the user and the price per person
             ride.setTotalRitPrice(ride.getTotalRitPrice() - (ride.getPricePerPerson() * reservedSpots));
 
-            // Verwijder de gebruiker uit de rit en de rit uit de gebruiker
+            // Remove the user from the ride and the ride from the user
             ride.getUsers().remove(user);
             user.getRides().remove(ride);
 
-            // Verwijder de vermelding voor deze gebruiker uit de Map van gereserveerde zitplaatsen
+            // Remove the entry for this user from the Map of reserved spots
             reservedSpotsByUser.remove(username);
-            // Converteer de Map weer naar een JSON String
+            // Convert the Map back to a JSON String
             ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
 
             rideRepository.save(ride);
             userRepository.save(user);
 
+            // Get the User object of the driver
+            Optional<User> driverOptional = userRepository.findByUsername(ride.getDriverUsername());
+            if (!driverOptional.isPresent()) {
+                throw new RecordNotFoundException("Driver not found");
+            }
+            User driver = driverOptional.get();
+
+            // Create and send a notification to the driver of the ride
+            notificationService.createAndSendPassengerLeftRideNotification(driver, username, ride);
+
         } catch (IOException e) {
-            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
-            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+            // This is a RuntimeException because ObjectMapper.readValue can throw IOException.
+            // This would only happen if something is wrong with the JSON String we are getting from the database.
             throw new RuntimeException(e);
         }
     }
