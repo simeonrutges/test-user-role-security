@@ -145,6 +145,7 @@ public class DtoMapperService {
         notificationDto.setType(notification.getType());
         notificationDto.setSentDate(notification.getSentDate());
         notificationDto.setRead(notification.isRead());
+        notificationDto.setRideDetails(notification.getRideDetails());
         notificationDto.setRideId(notification.getRideId());
 
         return notificationDto;
@@ -159,6 +160,7 @@ public class DtoMapperService {
         notification.setType(notificationDto.getType());
         notification.setSentDate(notificationDto.getSentDate());
         notification.setRead(notificationDto.isRead());
+        notification.setRideDetails(notificationDto.getRideDetails());
         notification.setRideId(notificationDto.getRideId());
 
         return notification;

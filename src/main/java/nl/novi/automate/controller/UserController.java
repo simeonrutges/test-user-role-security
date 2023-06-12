@@ -15,10 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -128,12 +130,35 @@ public class UserController {
         }
     }
 
+//    @GetMapping("/downloadFromDB/{fileName}")
+//    ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
+//        //Marc heeft in HW klas staan <Resource>
+//
+//        return userService.singleFileDownload(fileName, request);
+//    }
+
+
+    // 9/6 de methode hierboven was goed. Hier beneden is gedaan om de errorstatus in de FE
     @GetMapping("/downloadFromDB/{fileName}")
     ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
-        //Marc heeft in HW klas staan <Resource>
 
+        // Probeer de afbeelding te vinden
+        Optional<User> userWithImage = userService.findImage(fileName);
+
+        // Als de afbeelding niet bestaat, geef dan een 404-statuscode terug
+        if (!userWithImage.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        // Als de afbeelding bestaat, ga dan verder met de download
         return userService.singleFileDownload(fileName, request);
     }
+
+
+
+
+
+
 
     @DeleteMapping("/deleteProfileImage/{username}")
     public ResponseEntity<?> deleteProfileImage(@PathVariable("username") String username) {

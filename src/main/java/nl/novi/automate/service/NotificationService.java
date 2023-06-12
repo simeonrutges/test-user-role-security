@@ -1,23 +1,31 @@
 package nl.novi.automate.service;
 
 import nl.novi.automate.dto.NotificationDto;
+import nl.novi.automate.dto.UserDto;
 import nl.novi.automate.exceptions.ResourceNotFoundException;
+import nl.novi.automate.exceptions.UserNotFoundException;
 import nl.novi.automate.model.Notification;
+import nl.novi.automate.model.NotificationType;
+import nl.novi.automate.model.Ride;
+import nl.novi.automate.model.User;
 import nl.novi.automate.repository.NotificationRepository;
+import nl.novi.automate.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
     private final NotificationRepository notificationRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final DtoMapperService dtoMapperService;
 
-    public NotificationService(NotificationRepository notificationRepository, UserService userService, DtoMapperService dtoMapperService) {
+
+    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository, DtoMapperService dtoMapperService) {
         this.notificationRepository = notificationRepository;
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.dtoMapperService = dtoMapperService;
     }
 
@@ -35,19 +43,6 @@ public class NotificationService {
         return dtoMapperService.notificationToDto(notification);
     }
 
-    public NotificationDto createNotification(NotificationDto notificationDto) {
-        Notification notification = dtoMapperService.dtoToNotification(notificationDto);
-        Notification savedNotification = notificationRepository.save(notification);
-        return dtoMapperService.notificationToDto(savedNotification);
-    }
-    // In NotificationService.java
-//    public List<NotificationDto> getNotificationsForUser(String username) {
-//        List<Notification> notifications = notificationRepository.findByReceiverUsername(username);
-//        return notifications.stream()
-////                .map(this::notificationConvertToDto)
-//                .map(dtoMapperService::notificationConvertToDto)
-//                .collect(Collectors.toList());
-//    }
     public List<NotificationDto> getNotificationsForUser(String username) {
         List<Notification> notifications = notificationRepository.findByReceiverUsername(username);
         System.out.println("Fetched notifications for user " + username + ": " + notifications);
@@ -58,41 +53,54 @@ public class NotificationService {
         return notificationDtos;
     }
 
-
-    // Conversiemethoden
-
-//    public NotificationDto notificationConvertToDto(Notification notification) {
-//        NotificationDto notificationDto = new NotificationDto();
-//
-//        notificationDto.setId(notification.getId());
-//
-////        notificationDto.setSender(transferToDto(notification.getSender()));
-////        notificationDto.setReceiver(transferToDto(notification.getReceiver()));
-//        notificationDto.setSender(dtoMapperService.transferToDto(notification.getSender()));
-//        notificationDto.setReceiver(dtoMapperService.transferToDto(notification.getReceiver()));
-//
-//        notificationDto.setType(notification.getType());
-//        notificationDto.setSentDate(notification.getSentDate());
-//        notificationDto.setRead(notification.isRead());
-//
-//        return notificationDto;
-//    }
-//
-//    private Notification notificationDtoConvertToEntity(NotificationDto notificationDto) {
-//        Notification notification = new Notification();
-//
-//        notification.setId(notificationDto.getId());
-////        notification.setSender(userService.transferToUser(notificationDto.getSender()));
-////        notification.setReceiver(userService.transferToUser(notificationDto.getReceiver()));
-//        notification.setSender(dtoMapperService.transferToUser(notificationDto.getSender()));
-//        notification.setReceiver(dtoMapperService.transferToUser(notificationDto.getReceiver()));
-//
-//        notification.setType(notificationDto.getType());
-//        notification.setSentDate(notificationDto.getSentDate());
-//        notification.setRead(notificationDto.isRead());
-//
-//        return notification;
-//    }
+    public NotificationDto createNotification(NotificationDto notificationDto) {
+        Notification notification = dtoMapperService.dtoToNotification(notificationDto);
+        Notification savedNotification = notificationRepository.save(notification);
+        return dtoMapperService.notificationToDto(savedNotification);
+    }
 
     // Andere service methoden indien nodig (bijv. update, delete)
+    public NotificationDto createNotification(NotificationDto notificationDto, Ride ride) {
+        //        voor DELETE RDIE
+        Notification notification = dtoMapperService.dtoToNotification(notificationDto);
+        notification.setRideDetails(rideDetails(ride));
+        Notification savedNotification = notificationRepository.save(notification);
+        return dtoMapperService.notificationToDto(savedNotification);
+    }
+
+    public String rideDetails(Ride ride) {
+        String rideDetails = "Rit details: Driver - " + ride.getDriverUsername() +
+                ", Pick Up Location - " + ride.getPickUpLocation() +
+                ", Destination - " + ride.getDestination() +
+//                ", Route - " + ride.getRoute() +
+//                ", Departure Time - " + ride.getDepartureTime() +
+//                ", Departure Date - " + ride.getDepartureDate() +
+                ", Departure DateTime - " + ride.getDepartureDateTime() +
+//                ", Price per Person - " + ride.getPricePerPerson() +
+                ", Pax - " + ride.getPax() +
+//                ", Total Rit Price - " + ride.getTotalRitPrice() +
+                ", Estimated Arrival Time - " + ride.getEta();
+        return rideDetails;
+    }
+
+    public void createAndSendPassengerLeftRideNotification(User driver, String passengerUsername, Ride ride) {
+        NotificationDto notificationDto = new NotificationDto();
+
+        // Maak UserDto voor de ontvanger
+        UserDto receiverDto = dtoMapperService.userToDto(driver);
+
+        // Maak UserDto voor de afzender
+        User systemUser = userRepository.findByUsername("System").orElseThrow(() -> new UserNotFoundException("System user not found"));
+        UserDto senderDto = dtoMapperService.userToDto(systemUser);
+
+        notificationDto.setReceiver(receiverDto);
+        notificationDto.setSender(senderDto);
+        notificationDto.setType(NotificationType.PASSENGER_LEFT_RIDE);
+        notificationDto.setSentDate(LocalDateTime.now()); // Zorg dat deze tijdzone correct is voor uw toepassing
+        notificationDto.setRead(false);
+        notificationDto.setRideDetails("Passenger username: " + passengerUsername + "\n" + rideDetails(ride));
+        notificationDto.setRideId(ride.getId());
+
+        createNotification(notificationDto, ride);
+    }
 }
