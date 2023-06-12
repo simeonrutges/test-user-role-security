@@ -383,9 +383,13 @@ public RideDto addRide(RideDto rideDto) {
             notificationDto.setType(NotificationType.PASSENGER_JOINED_RIDE);
             notificationDto.setSentDate(LocalDateTime.now()); // Set the date and time to now
             notificationDto.setRead(false); // The notification has not been read yet
+
+            String rideDetails = notificationService.rideDetails(ride);
+            notificationDto.setRideDetails(rideDetails);
+
             notificationDto.setRideId(ride.getId()); // Set the rideId
 
-            notificationService.createNotification(notificationDto); // Send the notification
+            notificationService.createNotification(notificationDto,ride); // Send the notification
         }
 
         if (!ride.getDriverUsername().equals(user.getUsername())) {
@@ -398,9 +402,13 @@ public RideDto addRide(RideDto rideDto) {
             passengerNotificationDto.setType(NotificationType.RIDE_CONFIRMATION);
             passengerNotificationDto.setSentDate(LocalDateTime.now()); // Set the date and time to now
             passengerNotificationDto.setRead(false); // The notification has not been read yet
+
+            String rideDetails = notificationService.rideDetails(ride);
+            passengerNotificationDto.setRideDetails(rideDetails);
+
             passengerNotificationDto.setRideId(ride.getId()); // Set the rideId
 
-            notificationService.createNotification(passengerNotificationDto); // Send the notification
+            notificationService.createNotification(passengerNotificationDto, ride); // Send the notification
         }
 
         userRepository.save(user);
