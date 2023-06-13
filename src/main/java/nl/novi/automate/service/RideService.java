@@ -33,38 +33,6 @@ public class RideService {
         this.dtoMapperService = dtoMapperService;
     }
 
-//    public RideDto addRide(RideDto rideDto) {
-//
-////        Ride newRide = transferToRide(rideDto);
-//        Ride newRide = dtoMapperService.transferToRide(rideDto);
-//        rideRepository.save(newRide);
-//        rideDto.setId(newRide.getId());
-//////
-//        User sender = userRepository.findByUsernameIgnoreCase("System");
-//        Optional<User> receiverOptional = userRepository.findByUsername(rideDto.getDriverUsername());
-//        if (receiverOptional.isPresent()) {
-//            User receiver = receiverOptional.get();
-//            Notification notification = new Notification(
-//                    sender,
-//                    receiver,
-//                    NotificationType.RIDE_CONFIRMATION,
-//                    LocalDateTime.now(),
-//                    false
-//            );
-//
-//
-//            NotificationDto notificationDto = dtoMapperService.notificationConvertToDto(notification);
-//
-//            // Sla het bevestigingsbericht op
-//            notificationService.createNotification(notificationDto);
-//        } else {
-//            throw new UserNotFoundException("User not found with username: " + rideDto.getDriverUsername());
-//        }
-//////
-//
-//        return rideDto;
-//
-//    }
 public RideDto addRide(RideDto rideDto) {
     Ride newRide = dtoMapperService.dtoToRide(rideDto);
     rideRepository.save(newRide);
@@ -102,36 +70,11 @@ public RideDto addRide(RideDto rideDto) {
     public RideDto getRideById(Long id) {
         Optional<Ride> ride = rideRepository.findById(id);
         if(ride.isPresent()) {
-//            return transferToDto(ride.get());
             return dtoMapperService.rideToDto(ride.get());
         } else {
             throw new RecordNotFoundException("Geen rit gevonden");
         }
     }
-
-//        if (rideRepository.findById(id).isPresent()){
-//            Ride tv = rideRepository.findById(id).get();
-//            RideDto dto =transferToDto(tv);
-//            if(tv.getDriverProfile() != null){
-//                dto.setDriverProfileDto(driverProfileService.transferToDto(tv.getDriverProfile()));
-//            }
-////            if(tv.getRemoteController() != null){
-////                dto.setRemoteControllerDto(remoteControllerService.transferToDto(tv.getRemoteController()));
-////            }
-//
-//            return transferToDto(tv);
-//        } else {
-//            throw new RecordNotFoundException("geen rit gevonden");
-//        }
-//    }
-
-
-//    public RideDto addUserToRide(String username, Long rideId)  {
-//        UserRide userRide = new UserRide(username, rideId);
-//        UserRideRepository.save(userRide);
-//
-//        return
-//    }
 
     public double calculateTotalRitPrice(double pricePerPerson, int pax){
         double totalPrice = pricePerPerson * pax;
@@ -139,189 +82,6 @@ public RideDto addRide(RideDto rideDto) {
         return totalPrice;
 
     }
-
-//9-5:
-//    public void addUserToRide(Long id, String username) {
-//        var optionalRide = rideRepository.findById(id);
-//        var optionalUser = userRepository.findByUsername(username);
-//
-//        if(optionalRide.isPresent() && optionalUser.isPresent()) {
-//            var ride = optionalRide.get();
-//            var user = optionalUser.get();
-//
-//            // Controleer of de gebruiker al aan de rit is toegevoegd
-//            if (ride.getUsers().contains(user)) {
-//                throw new UserAlreadyAddedToRideException("User already added to this ride");
-//            }
-//
-//            user.getRides().add(ride);
-//            ride.getUsers().add(user);
-//
-//            userRepository.save(user);
-//            rideRepository.save(ride);
-//        } else {
-//            throw new RecordNotFoundException();
-//        }
-//    }
-
-//    31/5 hierboven was goed hieronder werkt goed met postman
-//public void addUserToRide(Long id, String username, int pax) {
-//    var optionalRide = rideRepository.findById(id);
-//    var optionalUser = userRepository.findByUsername(username);
-//
-//    if(!optionalRide.isPresent()) {
-//        throw new RecordNotFoundException("Ride with id " + id + " not found.");
-//    }
-//
-//    if(!optionalUser.isPresent()) {
-//        throw new RecordNotFoundException("User with username " + username + " not found.");
-//    }
-//
-//    var ride = optionalRide.get();
-//    var user = optionalUser.get();
-//
-//    // Controleer of er voldoende plekken beschikbaar zijn
-//    if (ride.getAvailableSpots() < pax) {
-//        throw new ExceededCapacityException("The number of passengers exceeds the available spots");
-//    }
-//
-//    // Controleer of de gebruiker al aan de rit is toegevoegd
-//    if (ride.getUsers().contains(user)) {
-//        throw new UserAlreadyAddedToRideException("User already added to this ride");
-//    }
-//
-//    user.getRides().add(ride);
-//    ride.getUsers().add(user);
-//
-//    // Verminder het aantal beschikbare plekken
-//    ride.setAvailableSpots(ride.getAvailableSpots() - pax);
-//
-//    userRepository.save(user);
-//    rideRepository.save(ride);
-//}
-    //de code hierboven was goed 6-6
-
-//    public void addUserToRide(Long id, String username, int pax) {
-//        var optionalRide = rideRepository.findById(id);
-//        var optionalUser = userRepository.findByUsername(username);
-//
-//        if(!optionalRide.isPresent()) {
-//            throw new RecordNotFoundException("Ride with id " + id + " not found.");
-//        }
-//
-//        if(!optionalUser.isPresent()) {
-//            throw new RecordNotFoundException("User with username " + username + " not found.");
-//        }
-//
-//        var ride = optionalRide.get();
-//        var user = optionalUser.get();
-//
-//        // Controleer of er voldoende plekken beschikbaar zijn
-//        if (ride.getAvailableSpots() < pax) {
-//            throw new ExceededCapacityException("The number of passengers exceeds the available spots");
-//        }
-//
-//        // Controleer of de gebruiker al aan de rit is toegevoegd
-//        if (ride.getUsers().contains(user)) {
-//            throw new UserAlreadyAddedToRideException("User already added to this ride");
-//        }
-//
-//        user.getRides().add(ride);
-//        ride.getUsers().add(user);
-//
-//        // Verminder het aantal beschikbare plekken
-//        ride.setAvailableSpots(ride.getAvailableSpots() - pax);
-//
-//        // Verhoog het totale ritprijs op basis van het aantal passagiers en de prijs per persoon
-//        ride.setTotalRitPrice(ride.getTotalRitPrice() + (ride.getPricePerPerson() * pax));
-//
-//        // Verhoog het aantal reserveringen
-//        ride.setPax(ride.getPax() + pax);
-//
-//        // Update het aantal gereserveerde plekken per gebruiker
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        try {
-//            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
-//            reservedSpotsByUser.put(username, pax);
-//            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
-//        } catch (IOException e) {
-//            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
-//            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
-//            throw new RuntimeException(e);
-//        }
-//
-//        userRepository.save(user);
-//        rideRepository.save(ride);
-//    }
-    //deze code was goed 9/6!
-
-//    public void addUserToRide(Long id, String username, int pax) {
-//        var optionalRide = rideRepository.findById(id);
-//        var optionalUser = userRepository.findByUsername(username);
-//
-//        if (!optionalRide.isPresent()) {
-//            throw new RecordNotFoundException("Ride with id " + id + " not found.");
-//        }
-//
-//        if (!optionalUser.isPresent()) {
-//            throw new RecordNotFoundException("User with username " + username + " not found.");
-//        }
-//
-//        var ride = optionalRide.get();
-//        var user = optionalUser.get();
-//
-//        // Controleer of er voldoende plekken beschikbaar zijn
-//        if (ride.getAvailableSpots() < pax) {
-//            throw new ExceededCapacityException("The number of passengers exceeds the available spots");
-//        }
-//
-//        // Controleer of de gebruiker al aan de rit is toegevoegd
-//        if (ride.getUsers().contains(user)) {
-//            throw new UserAlreadyAddedToRideException("User already added to this ride");
-//        }
-//
-//        user.getRides().add(ride);
-//        ride.getUsers().add(user);
-//
-//        // Verminder het aantal beschikbare plekken
-//        ride.setAvailableSpots(ride.getAvailableSpots() - pax);
-//
-//        // Verhoog het totale ritprijs op basis van het aantal passagiers en de prijs per persoon
-//        ride.setTotalRitPrice(ride.getTotalRitPrice() + (ride.getPricePerPerson() * pax));
-//
-//        // Verhoog het aantal reserveringen
-//        ride.setPax(ride.getPax() + pax);
-//
-//        // Update het aantal gereserveerde plekken per gebruiker
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        try {
-//            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
-//            reservedSpotsByUser.put(username, pax);
-//            ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
-//        } catch (IOException e) {
-//            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
-//            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
-//            throw new RuntimeException(e);
-//        }
-//
-//        if (!ride.getDriverUsername().equals(user.getUsername())) {
-//            // Verstuur een notificatie naar de bestuurder van de rit na het toevoegen van de passagier
-//            User sender = userRepository.findByUsername("System").orElseThrow(() -> new UserNotFoundException("System user not found")); // Systeem is de afzender van de notificatie
-//            User receiver = userRepository.findByUsername(ride.getDriverUsername()).orElseThrow(() -> new UserNotFoundException("Driver not found")); // Je moet een manier hebben om de bestuurder van de rit te krijgen
-//
-//            NotificationDto notificationDto = new NotificationDto();
-//            notificationDto.setSender(dtoMapperService.userToDto(sender));
-//            notificationDto.setReceiver(dtoMapperService.userToDto(receiver));
-//            notificationDto.setType(NotificationType.PASSENGER_JOINED_RIDE);
-//            notificationDto.setSentDate(LocalDateTime.now()); // Stel de datum en tijd in op nu
-//            notificationDto.setRead(false); // De notificatie is nog niet gelezen
-//            notificationDto.setRideId(ride.getId()); // Stel het rideId in
-//
-//            notificationService.createNotification(notificationDto); // Verstuur de notificatie
-//        }
-//        userRepository.save(user);
-//        rideRepository.save(ride);
-//    }
 
     public void addUserToRide(Long id, String username, int pax) {
         var optionalRide = rideRepository.findById(id);
@@ -495,53 +255,6 @@ public RideDto addRide(RideDto rideDto) {
                 throw new RuntimeException(e);
             }
         }
-/////
-
-
-
-//public List<RideDto> getRidesByCriteria(
-//        Optional<String> destination,
-//        Optional<String> pickUpLocation,
-////        Optional<LocalDate> departureDate)
-//        Optional<LocalDateTime> departureDateTime)
-//
-//{
-//
-//    List<Ride> rideList;
-//
-//    if (destination.isPresent() && pickUpLocation.isPresent() && departureDateTime.isPresent()) {
-//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-//                destination.get(),
-//                pickUpLocation.get(),
-//                departureDateTime.get()
-//        );
-//    } else if (destination.isPresent() && pickUpLocation.isPresent()) {
-//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
-//                destination.get(),
-//                pickUpLocation.get()
-//        );
-//    } else if (destination.isPresent() && departureDateTime.isPresent()) {
-//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-//                destination.get(),
-//                departureDateTime.get()
-//        );
-//    } else if (pickUpLocation.isPresent() && departureDateTime.isPresent()) {
-//        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-//                pickUpLocation.get(),
-//                departureDateTime.get()
-//        );
-//    } else if (destination.isPresent()) {
-//        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCase(destination.get());
-//    } else if (pickUpLocation.isPresent()) {
-//        rideList = rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase(pickUpLocation.get());
-//    } else if (departureDateTime.isPresent()) {
-//        rideList = rideRepository.findAllRidesByDepartureDateTimeEquals(departureDateTime.get());
-//    } else {
-//        rideList = rideRepository.findAll();
-//    }
-//
-//    return transferRideListToDtoList(rideList);
-//}
 
     public List<RideDto> getRidesByCriteria(
             String destination,
