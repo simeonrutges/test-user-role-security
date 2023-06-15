@@ -35,7 +35,6 @@ INSERT INTO users_roles (users_username, roles_rolename)
 VALUES ('Jack', 'PASSAGIER'),
        ('Joe', 'PASSAGIER'),
        ('Livia', 'PASSAGIER'),
-       ('Livia', 'BESTUURDER'),
        ('Eline', 'BESTUURDER');
 
 

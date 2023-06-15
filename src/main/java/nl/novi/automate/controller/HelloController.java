@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 //@CrossOrigin
 @RestController
 public class HelloController {
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello!";
-    }
-
-    @GetMapping("/secret")
-    public String getSecret() {
-        return" This is very secret...";
-    }
+//    @GetMapping("/hello")
+//    public String sayHello() {
+//        return "Hello!";
+//    }
+//
+//    @GetMapping("/secret")
+//    public String getSecret() {
+//        return" This is very secret...";
+//    }
 }
