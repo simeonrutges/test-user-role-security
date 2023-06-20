@@ -28,10 +28,11 @@ public class Ride {
     private int availableSpots;
     private boolean automaticAcceptance;
     private LocalTime eta;
-
     private String driverUsername;
     @Column(columnDefinition = "TEXT")
     private String reservedSpotsByUser = "{}";
+
+
 
 
 
