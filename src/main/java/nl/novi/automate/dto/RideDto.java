@@ -41,8 +41,12 @@ public class RideDto {
 //    @Future
     @NotNull
     public LocalTime eta;
-
     public String driverUsername;
+
+    @NotBlank
+    public String pickUpAddress;
+    @NotBlank
+    public String destinationAddress;
 
     public List<UserDto> users;
 
@@ -172,5 +176,21 @@ public class RideDto {
 
     public void setUsers(List<UserDto> users) {
         this.users = users;
+    }
+
+    public String getPickUpAddress() {
+        return pickUpAddress;
+    }
+
+    public void setPickUpAddress(String pickUpAddress) {
+        this.pickUpAddress = pickUpAddress;
+    }
+
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
     }
 }

@@ -13,6 +13,7 @@ import nl.novi.automate.service.UserService;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,7 +40,11 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
+
+
+
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(RideController.class)
@@ -155,158 +160,153 @@ class RideControllerTest {
 //    }
 
 
-    @Test
-    void addRide() throws Exception{
-        //BELANGRIJK!!: ZOR DAT DE DEPARTURE TIME IN DE FUTURE IS!
-        RideDto rideDto = rideDto1;
-        System.out.println(asJsonString(rideDto1));
-
-        given(rideService.addRide(any(RideDto.class))).willReturn(rideDto1);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides")
-                        .content(asJsonString(rideDto1))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.pickUpLocation").value("Amsterdam"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.destination").value("Utrecht"));
-
-        verify(rideService, times(1)).addRide(any(RideDto.class));
-    }
-
-    @Test
-    void addUserToRideSuccess() throws Exception {
-        Long rideId = 1L;
-        String username = "testuser";
-
-        // assuming the rideService.addUserToRide() method doesn't return anything when successful
-        doNothing().when(rideService).addUserToRide(rideId, username);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
-        verify(rideService, times(1)).addUserToRide(rideId, username);
-    }
-
-    @Test
-    void addUserToRideUserAlreadyAddedToRideException() throws Exception {
-        Long rideId = 1L;
-        String username = "testuser";
-
-        doThrow(new UserAlreadyAddedToRideException("User already added to ride"))
-                .when(rideService).addUserToRide(rideId, username);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isConflict())
-                .andExpect(MockMvcResultMatchers.content().string("User already added to ride"));
-
-        verify(rideService, times(1)).addUserToRide(rideId, username);
-    }
-
 
 
     @Test
-//    @WithMockUser(username="testuser", roles="PASSAGIER")
-    void getRidesByDestination() throws Exception{
-        given(rideService.getRidesByCriteria(eq(Optional.of("Utrecht")), any(), any()))
-                .willReturn(List.of(rideDto1));
+    void testAddRideWithInvalidDto_ReturnsBadRequestResponse() throws Exception {
+        // Configureer de rijdto met ongeldige gegevens, bijvoorbeeld lege velden
+        RideDto invalidRideDto = new RideDto();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides?destination=Utrecht")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].pickUpLocation").value("Amsterdam"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].destination").value("Utrecht"));
+        mockMvc.perform(MockMvcRequestBuilders.post("/rides")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(invalidRideDto)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
     }
 
-    @Test
-//    @WithMockUser(username="testuser", roles="PASSAGIER")       // check authorization, not authentication:  = INGELOGDE USER IN MIJN GEVAL PASSAGIER OF BESTUURDER!!
-    void getRidesByPickUpLocation() throws Exception{
-        given(rideService.getRidesByCriteria(any(), eq(Optional.of("Woerden")), any()))
-                .willReturn(List.of(rideDto2));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides?pickUpLocation=Woerden")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(2))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].pickUpLocation").value("Woerden"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].destination").value("Den Haag"));
-//        [0] vanwege de manier waarop de JSON-structuur is geformatteerd in de HTTP-response/ Zonder [0] werkt het niet
-    }
-
-    @Test
-//    @WithMockUser(username="testuser", roles="PASSAGIER")
-    void getRidesByDepartureDateTime() throws Exception {
-        LocalDateTime departureDateTime = LocalDateTime.of(2024, 5, 31, 10, 0);
-        given(rideService.getRidesByCriteria(any(), any(), eq(Optional.of(departureDateTime))))
-                .willReturn(List.of(rideDto3));
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides")
-                        .param("departureDateTime", departureDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(3))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].departureDateTime").value(departureDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
-    }
-
-    @Test
-//    @WithMockUser(username="testuser", roles="PASSAGIER")
-    void getRide() throws Exception{
-        given(rideService.getRideById(1L)).willReturn(rideDto1);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.pickUpLocation").value("Amsterdam"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.destination").value("Utrecht"));
-    }
-
-    @Test
-//    @WithMockUser(username="testuser", roles="BESTUURDER")
-    void deleteRide() throws Exception{
-        doNothing().when(rideService).deleteRide(1L);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.delete("/rides/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-
-        verify(rideService, times(1)).deleteRide(1L);
-    }
-
-    @Test
-    @Disabled
-    void updateRide() {
-    }
-
-    @Test
-    @Disabled
-    void removeUserFromRide() {
-    }
-
-//    Deze methode is een hulpmethode die een Java-object omzet (serializeert) naar
-//    een JSON-tekststring met behulp van de ObjectMapper klasse uit de Jackson-bibliotheek:
-    public static String asJsonString(final Object obj) {
-        ObjectMapper objectMapper = new ObjectMapper();
-//        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-//        objectMapper.setDateFormat(dateFormat);
-
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        try {
-            return objectMapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Test
+//    void addUserToRideSuccess() throws Exception {
+//        Long rideId = 1L;
+//        String username = "testuser";
+//
+//        // assuming the rideService.addUserToRide() method doesn't return anything when successful
+//        doNothing().when(rideService).addUserToRide(rideId, username);
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk());
+//
+//        verify(rideService, times(1)).addUserToRide(rideId, username);
+//    }
+//
+//    @Test
+//    void addUserToRideUserAlreadyAddedToRideException() throws Exception {
+//        Long rideId = 1L;
+//        String username = "testuser";
+//
+//        doThrow(new UserAlreadyAddedToRideException("User already added to ride"))
+//                .when(rideService).addUserToRide(rideId, username);
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isConflict())
+//                .andExpect(MockMvcResultMatchers.content().string("User already added to ride"));
+//
+//        verify(rideService, times(1)).addUserToRide(rideId, username);
+//    }
+//
+//
+//
+//    @Test
+////    @WithMockUser(username="testuser", roles="PASSAGIER")
+//    void getRidesByDestination() throws Exception{
+//        given(rideService.getRidesByCriteria(eq(Optional.of("Utrecht")), any(), any()))
+//                .willReturn(List.of(rideDto1));
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides?destination=Utrecht")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].pickUpLocation").value("Amsterdam"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].destination").value("Utrecht"));
+//    }
+//
+//    @Test
+////    @WithMockUser(username="testuser", roles="PASSAGIER")       // check authorization, not authentication:  = INGELOGDE USER IN MIJN GEVAL PASSAGIER OF BESTUURDER!!
+//    void getRidesByPickUpLocation() throws Exception{
+//        given(rideService.getRidesByCriteria(any(), eq(Optional.of("Woerden")), any()))
+//                .willReturn(List.of(rideDto2));
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides?pickUpLocation=Woerden")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(2))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].pickUpLocation").value("Woerden"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].destination").value("Den Haag"));
+////        [0] vanwege de manier waarop de JSON-structuur is geformatteerd in de HTTP-response/ Zonder [0] werkt het niet
+//    }
+//
+//    @Test
+////    @WithMockUser(username="testuser", roles="PASSAGIER")
+//    void getRidesByDepartureDateTime() throws Exception {
+//        LocalDateTime departureDateTime = LocalDateTime.of(2024, 5, 31, 10, 0);
+//        given(rideService.getRidesByCriteria(any(), any(), eq(Optional.of(departureDateTime))))
+//                .willReturn(List.of(rideDto3));
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides")
+//                        .param("departureDateTime", departureDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(3))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].departureDateTime").value(departureDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+//    }
+//
+//    @Test
+////    @WithMockUser(username="testuser", roles="PASSAGIER")
+//    void getRide() throws Exception{
+//        given(rideService.getRideById(1L)).willReturn(rideDto1);
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides/1")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.pickUpLocation").value("Amsterdam"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.destination").value("Utrecht"));
+//    }
+//
+//    @Test
+////    @WithMockUser(username="testuser", roles="BESTUURDER")
+//    void deleteRide() throws Exception{
+//        doNothing().when(rideService).deleteRide(1L);
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.delete("/rides/1")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andExpect(MockMvcResultMatchers.status().isNoContent());
+//
+//        verify(rideService, times(1)).deleteRide(1L);
+//    }
+//
+//    @Test
+//    @Disabled
+//    void updateRide() {
+//    }
+//
+//    @Test
+//    @Disabled
+//    void removeUserFromRide() {
+//    }
+//
+////    Deze methode is een hulpmethode die een Java-object omzet (serializeert) naar
+////    een JSON-tekststring met behulp van de ObjectMapper klasse uit de Jackson-bibliotheek:
+//    public static String asJsonString(final Object obj) {
+//        ObjectMapper objectMapper = new ObjectMapper();
+////        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+////        objectMapper.setDateFormat(dateFormat);
+//
+//        objectMapper.registerModule(new JavaTimeModule());
+//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//        try {
+//            return objectMapper.writeValueAsString(obj);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

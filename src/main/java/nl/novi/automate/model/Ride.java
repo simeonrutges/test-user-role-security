@@ -28,10 +28,12 @@ public class Ride {
     private int availableSpots;
     private boolean automaticAcceptance;
     private LocalTime eta;
-
     private String driverUsername;
     @Column(columnDefinition = "TEXT")
     private String reservedSpotsByUser = "{}";
+
+    private String pickUpAddress;
+    private String destinationAddress;
 
 
 
@@ -183,7 +185,19 @@ public class Ride {
         this.reservedSpotsByUser = reservedSpotsByUser;
     }
 
+    public String getPickUpAddress() {
+        return pickUpAddress;
+    }
 
+    public void setPickUpAddress(String pickUpAddress) {
+        this.pickUpAddress = pickUpAddress;
+    }
 
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
 
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
 }
