@@ -100,6 +100,9 @@ public class DtoMapperService {
         ride.setEta(rideDto.getEta());
         ride.setDriverUsername(rideDto.getDriverUsername());
 
+        ride.setPickUpAddress(rideDto.getPickUpAddress());
+        ride.setDestinationAddress(rideDto.getDestinationAddress());
+
         return ride;
     }
 
@@ -121,6 +124,9 @@ public class DtoMapperService {
         dto.automaticAcceptance = ride.isAutomaticAcceptance();
         dto.eta = ride.getEta();
         dto.driverUsername = ride.getDriverUsername();
+
+        dto.pickUpAddress = ride.getPickUpAddress();
+        dto.destinationAddress = ride.getDestinationAddress();
 
         List<UserDto> userDtos = ride.getUsers().stream().map(this::userToDto).collect(Collectors.toList());
         dto.setUsers(userDtos);
