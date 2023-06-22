@@ -1,14 +1,14 @@
 package nl.novi.automate.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.novi.automate.dto.NotificationDto;
 import nl.novi.automate.dto.RideDto;
 import nl.novi.automate.dto.UserDto;
 import nl.novi.automate.exceptions.RecordNotFoundException;
 import nl.novi.automate.exceptions.UserAlreadyAddedToRideException;
-import nl.novi.automate.model.Notification;
-import nl.novi.automate.model.NotificationType;
-import nl.novi.automate.model.Ride;
-import nl.novi.automate.model.User;
+import nl.novi.automate.exceptions.UserNotInRideException;
+import nl.novi.automate.model.*;
 import nl.novi.automate.repository.RideRepository;
 import nl.novi.automate.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -27,15 +27,11 @@ import org.mockito.quality.Strictness;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +55,7 @@ class RideServiceTest {
 
     @Captor
     ArgumentCaptor<Ride>captor;
+//    Dit geeft ons later de mogelijkheid om een save of update methode te testen
 
     Ride ride1;
     Ride ride2;
@@ -72,8 +69,12 @@ class RideServiceTest {
 
     UserDto userDto1;
 
-    @BeforeEach //Arrange
+    @BeforeEach
     void setUp() {
+        User systemUser = new User();
+        systemUser.setUsername("System");
+        when(userRepository.findByUsername("System")).thenReturn(Optional.of(systemUser));
+
         ride1 = new Ride();
         ride1.setId(1L);
         ride1.setPickUpLocation("Amsterdam");
@@ -104,6 +105,10 @@ class RideServiceTest {
         ride3.setDestination("Maastricht");
         ride3.setDepartureDateTime(LocalDateTime.of(2024, 5, 31, 10, 0));
         ride3.setUsers(new ArrayList<>());
+
+        UserDto systemUserDto = new UserDto();
+        systemUserDto.setUsername("System");
+        when(dtoMapperService.userToDto(systemUser)).thenReturn(systemUserDto);
 
         rideDto1 = new RideDto();
         rideDto1.setId(1L);
@@ -165,8 +170,14 @@ class RideServiceTest {
         userDto1.setRoles(new String[]{"ROLE_USER"});  // Initialiseer de 'roles' lijst
 //        userDto1.setCar(new CarDto());  // Initialiseer de 'car' veld
 
+//        ride1.setUsers(new ArrayList<>(Arrays.asList(user1)));
+//        user1.setRides(new ArrayList<>(Arrays.asList(ride1)));
+        ride1.setUsers(new ArrayList<>(Collections.singletonList(user1)));
+        user1.setRides(new ArrayList<>(Collections.singletonList(ride1)));
 
+        when(rideRepository.findById(1L)).thenReturn(Optional.of(ride1));
     }
+
 
     @AfterEach
     void tearDown() {
@@ -282,161 +293,154 @@ class RideServiceTest {
         assertEquals(rideDto1, result);
     }
 
-    //  31/5 opnieuw aanpassen!
-//    @Test
-//    void shouldAddUserToRideSuccessfully() {
-//        // Gegeven
-//        Long rideId = ride1.getId();
-//        String username = "username1";
-//
-//        User user = new User();
-//        user.setUsername(username);
-//        // Initialiseren van andere gebruikersvelden...
-//
-//        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride1));
-//        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-//
-//        // Wanneer
-//        rideService.addUserToRide(rideId, username);
-//
-//        // Dan
-//        verify(userRepository).save(user);
-//        verify(rideRepository).save(ride1);
-//        assertTrue(ride1.getUsers().contains(user));
-//        assertTrue(user.getRides().contains(ride1));
-//    }
-
-//    @Test
-//    void shouldThrowUserAlreadyAddedToRideException() {
-//        // Gegeven
-//        Long rideId = ride1.getId();
-//        String username = "username1";
-//
-//        User user = new User();
-//        user.setUsername(username);
-//        // Initialiseren van andere gebruikersvelden...
-//
-//        ride1.getUsers().add(user);
-//        user.getRides().add(ride1);
-//
-//        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride1));
-//        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-//
-//        // Wanneer
-//        Exception exception = assertThrows(UserAlreadyAddedToRideException.class, () -> {
-//            rideService.addUserToRide(rideId, username);
-//        });
-//
-//        // Dan
-//        assertEquals("User already added to this ride", exception.getMessage());
-//    }
-//
-//    @Test
-//    void shouldThrowRecordNotFoundException() {
-//        // Gegeven
-//        Long rideId = ride1.getId();
-//        String username = "username1";
-//
-//        when(rideRepository.findById(rideId)).thenReturn(Optional.empty());
-//        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-//
-//        // Wanneer
-//        Exception exception = assertThrows(RecordNotFoundException.class, () -> {
-//            rideService.addUserToRide(rideId, username);
-//        });
-//
-//        // Dan
-//        // Hier kan je een specifieke foutmelding controleren als je deze hebt ingesteld in de RecordNotFoundException
-//        // assertEquals("Expected exception message", exception.getMessage());
-//    }
-
 
     @Test
-    void getRidesByDestination() {
-        // Maak een lijst met één rit die overeenkomt met ride3
-        List<Ride> rideList = Collections.singletonList(ride3);
-        when(rideRepository.findAllRidesByDestinationEqualsIgnoreCase("Maastricht")).thenReturn(rideList);
+    void testAddUserToRide() throws JsonProcessingException {
+        // setup
+        String username = "username1";
+        Long rideId = 1L;
+        int pax = 1;
 
-        // Stel de RideDto in om overeen te komen met ride3
-        RideDto rideDto = new RideDto();
-        rideDto.setId(3L);
-        rideDto.setPickUpLocation("Arnhem");
-        rideDto.setDestination("Maastricht");
-        rideDto.setDepartureDateTime(LocalDateTime.of(2024, 5, 31, 10, 0));
-        // Andere eigenschappen van rideDto hier instellen ...
+        Ride ride = new Ride();
+        ride.setAvailableSpots(2);
+        ride.setPricePerPerson(10.0);
+        ride.setTotalRitPrice(0.0);
+        ride.setPax(0);
+        ride.setReservedSpotsByUser("{}");
+        ride.setDriverUsername("driver");
+        ride.setUsers(new ArrayList<>());
 
-        when(dtoMapperService.rideToDto(ride3)).thenReturn(rideDto);
+        User user = new User();
+        user.setUsername(username);
+        user.setRides(new ArrayList<>());
 
-        // Nu de methode aanroepen die je wilt testen
-        List<RideDto> ridesFound = rideService.getRidesByCriteria(Optional.of("Maastricht"), Optional.empty(), Optional.empty());
+        User driver = new User();
+        driver.setUsername("driver");
 
-        assertFalse(ridesFound.isEmpty(), "No rides found");
-        assertEquals(ride3.getDestination(), ridesFound.get(0).getDestination());
+        when(rideRepository.findById(rideId)).thenReturn(Optional.of(ride));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(ride.getDriverUsername())).thenReturn(Optional.of(driver));
+
+        UserDto driverDto = new UserDto();
+        driverDto.setUsername("driver");
+
+        UserDto userDto = new UserDto();
+        userDto.setUsername(username);
+
+        when(dtoMapperService.userToDto(driver)).thenReturn(driverDto);
+        when(dtoMapperService.userToDto(user)).thenReturn(userDto);
+
+        // act
+        rideService.addUserToRide(rideId, username, pax);
+
+        // assert
+        assertEquals(ride.getAvailableSpots(), 1);
+        assertEquals(ride.getTotalRitPrice(), 10.0);
+        assertEquals(ride.getPax(), 1);
+        assertTrue(ride.getUsers().contains(user));
+        assertTrue(user.getRides().contains(ride));
+        assertTrue(ride.getReservedSpotsByUser().contains(username));
+
+        verify(userRepository).save(user);
+        verify(rideRepository).save(ride);
+
+        verify(notificationService, times(2)).createNotification(any(), any());
     }
 
+
     @Test
-    void getRidesByPickUpLocation() {
-        // Maak een lijst met één rit die overeenkomt met ride2
-        List<Ride> rideList = Collections.singletonList(ride2);
-        when(rideRepository.findAllRidesByPickUpLocationEqualsIgnoreCase("Woerden")).thenReturn(rideList);
+    void testTransferRideListToDtoList() {
+        // Prepare test data
+        List<Ride> rides = Arrays.asList(ride1, ride2, ride3);
 
-        // Stel de RideDto in om overeen te komen met ride2
-        RideDto rideDto = new RideDto();
-        rideDto.setId(ride2.getId());
-        rideDto.setPickUpLocation(ride2.getPickUpLocation());
-        rideDto.setDestination(ride2.getDestination());
-        // Vul de overige velden van rideDto in, indien nodig...
+        when(dtoMapperService.rideToDto(ride1)).thenReturn(rideDto1);
+        when(dtoMapperService.rideToDto(ride2)).thenReturn(rideDto2);
+        when(dtoMapperService.rideToDto(ride3)).thenReturn(rideDto3);
 
-        when(dtoMapperService.rideToDto(ride2)).thenReturn(rideDto);
+        // Execute the method to test
+        List<RideDto> result = rideService.transferRideListToDtoList(rides);
 
-        List<RideDto> ridesFound = rideService.getRidesByCriteria(Optional.empty(), Optional.of("Woerden"), Optional.empty());
+        // Verify the result
+        assertEquals(3, result.size());
+        assertSame(rideDto1, result.get(0));
+        assertSame(rideDto2, result.get(1));
+        assertSame(rideDto3, result.get(2));
 
-        assertFalse(ridesFound.isEmpty(), "No rides found");
-        assertEquals(ride2.getPickUpLocation(), ridesFound.get(0).getPickUpLocation());
+        // Verify the interactions with the mocked DtoMapperService
+        verify(dtoMapperService, times(1)).rideToDto(ride1);
+        verify(dtoMapperService, times(1)).rideToDto(ride2);
+        verify(dtoMapperService, times(1)).rideToDto(ride3);
     }
 
+@Test
+void getRidesByCriteria_shouldReturnRidesMatchingCriteria() {
+    // Arrange
+    List<Ride> rideList = Arrays.asList(ride1, ride2, ride3);
+    List<RideDto> rideDtoList = Arrays.asList(rideDto1, rideDto2, rideDto3);
+
+    // Stel het verwachte gedrag van de mocks in
+    when(rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase("Utrecht", "Amsterdam"))
+            .thenReturn(Arrays.asList(ride1));
+    when(dtoMapperService.rideToDto(ride1)).thenReturn(rideDto1);
+
+    // Act
+    List<RideDto> result = rideService.getRidesByCriteria("Utrecht", "Amsterdam", LocalDate.of(2024, 6, 1), 2);
+
+    // Assert
+    assertEquals(1, result.size());
+    assertEquals(rideDto1, result.get(0));
+}
+
     @Test
-    void getRidesByDepartureDateTime() {
-        LocalDateTime testDateTime = LocalDateTime.of(2024, 5, 31, 10, 0);
-        List<Ride> rideList = Collections.singletonList(ride3);
-        when(rideRepository.findAllRidesByDepartureDateTimeEquals(testDateTime)).thenReturn(rideList);
+    void calculateTotalRitPrice_shouldReturnCorrectTotalPrice() {
+        // Arrange
+        double pricePerPerson = 10.0;
+        int pax = 3;
+        double expectedTotalPrice = 30.0;
 
-        // Stel de RideDto in om overeen te komen met ride3
-        RideDto rideDto = new RideDto();
-        rideDto.setId(ride3.getId());
-        rideDto.setPickUpLocation(ride3.getPickUpLocation());
-        rideDto.setDestination(ride3.getDestination());
-        rideDto.setDepartureDateTime(ride3.getDepartureDateTime());
-        // Vul de overige velden van rideDto in, indien nodig...
+        // Act
+        double result = rideService.calculateTotalRitPrice(pricePerPerson, pax);
 
-        when(dtoMapperService.rideToDto(ride3)).thenReturn(rideDto);
-
-        List<RideDto> ridesFound = rideService.getRidesByCriteria(Optional.empty(), Optional.empty(), Optional.of(testDateTime));
-
-        assertFalse(ridesFound.isEmpty(), "No rides found");
-        assertEquals(ride3.getDepartureDateTime(), ridesFound.get(0).getDepartureDateTime());
+        // Assert
+        assertEquals(expectedTotalPrice, result, 0.01);
     }
 
+@Test
+@Disabled
+void getReservationInfoForUser_shouldReturnCorrectReservationInfo() throws Exception {
+    // Arrange
+    Long rideId = 1L;
+    String username = "username1";
+
+    // Maak een map van de gebruikersnaam naar het aantal gereserveerde zitplaatsen
+    Map<String, Integer> reservedSpotsByUserMap = new HashMap<>();
+    reservedSpotsByUserMap.put(username, 2);
+    String reservedSpotsByUserJson;
+    try {
+        reservedSpotsByUserJson = new ObjectMapper().writeValueAsString(reservedSpotsByUserMap);
+    } catch (JsonProcessingException e) {
+        throw new RuntimeException("Fout bij het omzetten van JSON naar String", e);
+    }
+    ride1.setReservedSpotsByUser(reservedSpotsByUserJson);
+
+    // Act
+    ReservationInfo result = rideService.getReservationInfoForUser(rideId, username);
+
+    // Assert
+    assertNotNull(result);
+    assertEquals(2, result.getReservedSpots());
+    assertEquals(20.0, result.getTotalPrice());
+}
+
     @Test
-    void getRidesByAllCriteria() {
-        String destination = "destination";
-        String pickUpLocation = "pickUpLocation";
-        LocalDateTime departureDateTime = LocalDateTime.now();
+    void deleteRide() {
+        // Act
+        rideService.deleteRide(1L);
 
-        List<Ride> rideList = Collections.singletonList(ride1);
-        when(rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCaseAndDepartureDateTimeEquals(
-                destination, pickUpLocation, departureDateTime)).thenReturn(rideList);
-
-        // Stel de RideDto in om overeen te komen met ride1
-        RideDto rideDto = new RideDto();
-        rideDto.setId(ride1.getId());
-        rideDto.setPickUpLocation(ride1.getPickUpLocation());
-        rideDto.setDestination(ride1.getDestination());
-        rideDto.setDepartureDateTime(ride1.getDepartureDateTime());
-        // Vul de overige velden van rideDto in, indien nodig...
-
-        when(dtoMapperService.rideToDto(ride1)).thenReturn(rideDto);
-
-        List<RideDto> ridesFound = rideService.getRidesByCriteria(Optional.of(destination), Optional.of(pickUpLocation), Optional.of(departureDateTime));
+        // Assert
+        verify(rideRepository).findById(1L);
+        verify(rideRepository).deleteById(1L);
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(notificationService, times(1)).createNotification(any(NotificationDto.class), eq(ride1));
     }
 }
