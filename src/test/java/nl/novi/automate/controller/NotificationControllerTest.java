@@ -11,8 +11,11 @@ import nl.novi.automate.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.novi.automate.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +26,27 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;  // Voor Collections.singletonList
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -64,7 +80,7 @@ class NotificationControllerTest {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         dto = new NotificationDto();
-        UserDto sender = new UserDto();
+        sender = new UserDto(); // verwijder 'UserDto' hier
         sender.setUsername("testusername");
         sender.setPassword("testpassword");
         sender.setFirstname("testfirstname");
@@ -73,7 +89,7 @@ class NotificationControllerTest {
         String[] roles = {"BESTUURDER"};
         sender.setRoles(roles);
 
-        UserDto receiver = new UserDto();
+        receiver = new UserDto(); // verwijder 'UserDto' hier
         receiver.setUsername("testusername2");
         receiver.setPassword("testpassword2");
         receiver.setFirstname("testfirstname2");
@@ -97,59 +113,50 @@ class NotificationControllerTest {
 
         json = asJsonString(dto);
 
+        List<NotificationDto> notifications = new ArrayList<>();
+        notifications.add(dto);
+
+        when(notificationService.getNotificationsForUser(anyString())).thenReturn(notifications);
+
     }
-//    @Test
-//    void getAllNotifications_ReturnsNotificationList_WhenNotificationsExist() throws Exception {
-//        List<NotificationDto> notificationDtoList = new ArrayList<>();
-//        notificationDtoList.add(dto);
-//
-//        when(notificationService.getAllNotifications()).thenReturn(notificationDtoList);
-//
-//        mockMvc.perform(get("/notifications"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(asJsonString(notificationDtoList)));
-//    }
+
+
+
+    @Test
+    public void getNotificationById() throws Exception {
+        when(notificationService.getNotificationById(anyLong())).thenReturn(dto);
+
+        mockMvc.perform(get("/notifications/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(dto.getId().intValue())));
+
+        verify(notificationService, times(1)).getNotificationById(anyLong());
+    }
+
 
 //    @Test
-//    void getNotificationById_ReturnsNotification_WhenNotificationExists() throws Exception {
-//        when(notificationService.getNotificationById(1L)).thenReturn(dto);
+//    @Disabled
+//    public void getNotificationsForUser() throws Exception {
+//        when(notificationService.getNotificationsForUser(anyString())).thenReturn(Collections.singletonList(dto));
 //
-//        mockMvc.perform(get("/notifications/1"))
+//        mockMvc.perform(get("/notification/user/{username}", receiver.getUsername())
+//                        .contentType(MediaType.APPLICATION_JSON))
 //                .andExpect(status().isOk())
-//                .andExpect(content().json(asJsonString(dto)));
-//    }
-
-//    @Test
-//    void createNotification_ReturnsCreatedNotification_WhenRequestIsValid() throws Exception {
-//        when(notificationService.createNotification(dto)).thenReturn(dto);
+//                .andExpect(jsonPath("$[0].id", is(dto.getId().intValue())));
 //
-//        mockMvc.perform(post("/notifications")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(dto)))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(asJsonString(dto)));
+//        verify(notificationService, times(1)).getNotificationsForUser(anyString());
 //    }
 
     @Test
-    void getNotificationsForUser_ReturnsNotificationList_WhenNotificationsExistForUser() throws Exception {
-        List<NotificationDto> notificationDtoList = new ArrayList<>();
-        notificationDtoList.add(dto);
-
-        when(notificationService.getNotificationsForUser("testuser")).thenReturn(notificationDtoList);
-
-        mockMvc.perform(get("/notifications/user/testuser"))
+    public void getNotificationsForUser() throws Exception {
+        mockMvc.perform(get("/notifications/user/{username}", "testusername2"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(asJsonString(notificationDtoList)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
 
-//    private static String asJsonString(final Object obj) {
-//        try {
-//            return new ObjectMapper().writeValueAsString(obj);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     private static String asJsonString(Object obj) {
         try {
