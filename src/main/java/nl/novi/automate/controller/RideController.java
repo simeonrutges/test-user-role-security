@@ -46,20 +46,6 @@ public class RideController {
         }
     }
 
-////9/5
-//    @PostMapping("/{rideId}/{username}")
-//    public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username) {
-//        try {
-//            rideService.addUserToRide(rideId, username);
-//            return ResponseEntity.ok().build();
-//        } catch (UserAlreadyAddedToRideException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-//        } catch (RecordNotFoundException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        }
-//    }
-
-    //31/5 test. hierboven was het! hieronder werkt goed met Postman
     @PostMapping("/{rideId}/{username}/{pax}")
     public ResponseEntity<?> addUserToRide(@PathVariable Long rideId, @PathVariable String username, @PathVariable int pax) {
         try {
@@ -86,31 +72,7 @@ public class RideController {
             }
         }
 
-////
-//    @GetMapping("")
-//    public ResponseEntity<List<RideDto>> getRidesByCriteria(
-//            @RequestParam(value = "destination", required = false) Optional<String> destination,
-//            @RequestParam(value = "pickUpLocation", required = false) Optional<String> pickUpLocation,
-//            @RequestParam(value = "departureDateTime", required = false) Optional<String> departureDateTimeStr)
-//    {
-//        Optional<LocalDateTime> departureDateTime = Optional.empty();
-//        if(departureDateTimeStr.isPresent()){
-//            try{
-//                departureDateTime = Optional.of(LocalDateTime.parse(departureDateTimeStr.get(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-//            }catch(DateTimeParseException e){
-//                // handle invalid date-time format
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date-time format.");
-//            }
-//        }
-//
-//        List<RideDto> dtos = rideService.getRidesByCriteria(destination, pickUpLocation, departureDateTime);
-//
-//        return ResponseEntity.ok().body(dtos);
-//    }
 
-
-    ////// tot hier nieuw  24/05. hierboven zonder required = false weer gaan gebruiken als ik weer helemaal een rolback moet maken!!!
-// hieronder werkt nu in postman
     @GetMapping("")
     public ResponseEntity<List<RideDto>> getRidesByCriteria(
             @RequestParam(value = "destination", required = true) String destination,

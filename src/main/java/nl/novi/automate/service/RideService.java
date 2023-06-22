@@ -175,48 +175,6 @@ public RideDto addRide(RideDto rideDto) {
         rideRepository.save(ride);
     }
 
-
-
-
-
-
-//    public int getReservedSpotsForUser(Long rideId, String username) {
-//        Optional<Ride> rideOptional = rideRepository.findById(rideId);
-//        if (!rideOptional.isPresent()) {
-//            throw new RecordNotFoundException("Ride not found");
-//        }
-//
-//        Ride ride = rideOptional.get();
-//        Optional<User> userOptional = userRepository.findByUsername(username);
-//        if (!userOptional.isPresent()) {
-//            throw new RecordNotFoundException("User not found");
-//        }
-//
-//        User user = userOptional.get();
-//        if (!ride.getUsers().contains(user)) {
-//            throw new UserNotInRideException("User is not part of this ride");
-//        }
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        try {
-//            // Converteer de JSON string naar een Map
-//            Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
-//
-//            // Haal het aantal gereserveerde zitplaatsen voor de gebruiker op
-//            Integer reservedSpots = reservedSpotsByUser.get(username);
-//            if (reservedSpots == null) {
-//                throw new UserNotInRideException("User is not part of this ride");
-//            }
-//
-//            return reservedSpots;
-//        } catch (IOException e) {
-//            // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
-//            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-
         public ReservationInfo getReservationInfoForUser(Long rideId, String username) {
             Optional<Ride> rideOptional = rideRepository.findById(rideId);
             if (!rideOptional.isPresent()) {
