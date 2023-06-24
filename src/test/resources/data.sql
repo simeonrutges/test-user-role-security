@@ -7,5 +7,10 @@ VALUES ('PASSAGIER'), ('BESTUURDER');
 INSERT INTO users_roles (users_username, roles_rolename)
 VALUES ('testuser', 'BESTUURDER');
 
+-- INSERT INTO cars (id, model, brand, license_plate)
+-- VALUES (1, 'Capture', 'Renault', '8HHG-98');
+--
+-- INSERT INTO cars (id, model, brand, license_plate)
+-- VALUES (2, 'Megane', 'Renault', '7GGH-77');
 
 -- DEZE KLASSE ERBIJ GEZET EVT WEGHALEN
