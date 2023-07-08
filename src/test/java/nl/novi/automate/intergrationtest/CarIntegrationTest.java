@@ -137,7 +137,7 @@ class CarIntegrationTest {
         carRepository.save(car1);
         userRepository.save(user2);
         carRepository.save(car2);
-
+///////hieronder er snel bijgezet
 //        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 //        Authentication authentication = new TestingAuthenticationToken("testUser", "password", "BESTUURDER");
 //        securityContext.setAuthentication(authentication);
@@ -148,11 +148,15 @@ class CarIntegrationTest {
 //                .addFilters(this.springSecurityFilterChain)
 //                .build();
 
-        Authentication authentication = Mockito.mock(Authentication.class);
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(authentication.getName()).thenReturn("testUser");
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+
+////tot hier. Hieronder was goed!
+
+
+//        Authentication authentication = Mockito.mock(Authentication.class);
+//        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+//        Mockito.when(authentication.getName()).thenReturn("testUser");
+//        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+//        SecurityContextHolder.setContext(securityContext);
     }
 
 //    @AfterEach
@@ -216,6 +220,7 @@ class CarIntegrationTest {
     }
 
 
+//    Op dit moment niet nodig:
     public static String asJsonString(final CarDto obj) {
         try {
             ObjectMapper mapper = new ObjectMapper();

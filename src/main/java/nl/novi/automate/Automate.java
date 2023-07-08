@@ -13,10 +13,8 @@ public class Automate {
 		SpringApplication.run(Automate.class, args);
 	}
 
-	// test hieronder voor aanmaken systemUser
 	@Bean
 	public CommandLineRunner initSystemUser(UserService userService) {
 		return (args) -> userService.createSystemUserIfNotExists();
 	}
-
 }
