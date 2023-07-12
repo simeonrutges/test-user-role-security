@@ -17,7 +17,7 @@ public class RideDto {
     public String addRideInfo;
 
     public LocalTime departureTime;
-//    @FutureOrPresent
+
 @FutureOrPresent(message = "De vertrekdatum moet in de toekomst liggen")
     public LocalDate departureDate;
     @FutureOrPresent
@@ -30,7 +30,7 @@ public class RideDto {
 //    @Min(1)
 //    @Max(5)
 //@Min en @Max validatie annotaties kunnen niet worden toegepast op het primitieve int type. Dit komt omdat int geen null waarde kan hebben, en @Min en @Max worden genegeerd als de waarde null is.
-//    Om dit te corrigeren, moet je int vervangen door Integer
+//    Om dit te corrigeren, moet int vervangen worden door Integer
     public int pax;
     public double totalRitPrice;
     @NotNull
@@ -38,7 +38,7 @@ public class RideDto {
 //    @Max(5)
     public int availableSpots;
     public boolean automaticAcceptance;
-//    @Future
+
     @NotNull
     public LocalTime eta;
     public String driverUsername;

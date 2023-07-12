@@ -27,5 +27,4 @@ public class ApiError {
             this.status = status;
         }
 
-        // ... other methods ...
 }

@@ -16,12 +16,8 @@ public class User {
     private String firstname;
     private String lastname;
     private String email;
-//    @Column(nullable = false)
     private boolean enabled = true;
-//    @Column
     private int phoneNumber;
-//    @Column
-
     private String bio;
     @Column
     private String fileName;
@@ -32,23 +28,10 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-    // dit is wel de bedoeling. Bij bv een get van user geeft SB dan ook de collectie rides mee
-        @ManyToMany
-    //was gewoon many-to-many!
-///
-//    @ManyToMany
-//    @JoinTable(name = "users_rides",
-//        joinColumns = @JoinColumn(name = "user_id"),
-//        inverseJoinColumns = @JoinColumn(name = "ride_id"),
-//        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "ride_id"})})
-//    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
+    @ManyToMany
 
-////
     private List<Ride> rides;
-    // bij deze many-to-many controlleren of wel moet
 
-    // deze cascade 3/4 erbij gezet: Let op: Het gebruik van CascadeType.REMOVE in een @OneToOne relatie kan onbedoelde gevolgen hebben voor de gegevensintegriteit.
     @OneToOne (cascade = CascadeType.REMOVE, orphanRemoval = true)
     Car car;
 
@@ -58,11 +41,9 @@ public class User {
     @OneToMany(mappedBy = "reviewedUser")
     private List<Review> reviewsReceived = new ArrayList<>();
 
-//deze 26/5 erbij gezet! test
     public User() {
         this.rides = new ArrayList<>();
     }
-///
 
 
     public String getUsername() {
@@ -96,7 +77,6 @@ public class User {
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
-
 
     public String getEmail() {
         return email;
@@ -150,17 +130,13 @@ public class User {
         return rides;
     }
 
-//    public void setRides(List<Ride> rides) {
-//        this.rides = rides;
-//    }
-public void setRides(List<Ride> rides) {
+    public void setRides(List<Ride> rides) {
     if (rides == null) {
         this.rides = new ArrayList<>();
     } else {
         this.rides = rides;
     }
 }
-/// hierboven hoort bij test 26-05
 
     public List<Review> getReviewsWritten() {
         return reviewsWritten;
@@ -178,7 +154,6 @@ public void setRides(List<Ride> rides) {
         this.reviewsReceived = reviewsReceived;
     }
 
-    // fileName en Docfile  op 15/2 toegevoegd voor profielfoto. Nog geen DTO
     public String getFileName() {
         return fileName;
     }

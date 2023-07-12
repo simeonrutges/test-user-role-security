@@ -31,17 +31,11 @@ public class Ride {
     private String driverUsername;
     @Column(columnDefinition = "TEXT")
     private String reservedSpotsByUser = "{}";
-
     private String pickUpAddress;
     private String destinationAddress;
 
-
-
     @ManyToMany(mappedBy = "rides")
-//    @ManyToMany(mappedBy = "rides", cascade = CascadeType.REMOVE) // dit is de enigste die werkt! Maar haalt ook gelijk de user weg...
     private List<User> users;
-    //    @ManyToMany(fetch = FetchType.EAGER)
-//    dit wil ik er eigenlijk ook bij hebben. Bij het opvragen van een rit wil ik ook de users zien
 
 
     public Long getId() {
@@ -131,11 +125,6 @@ public class Ride {
     public void setTotalRitPrice(double totalRitPrice) {
         this.totalRitPrice = totalRitPrice;
     }
-
-//    de logica voor TotalRitPrice hiervoor kan ook in de entiteit! les 17
-//public double calculateTotalRitPrice() {
-//    return this.quantity * this.unitprice;
-//}
 
     public int getAvailableSpots() {
         return availableSpots;

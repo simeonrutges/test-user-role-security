@@ -30,27 +30,6 @@ public class ReviewController {
         return dtos;
     }
 
-//    //////
-//    @GetMapping("")
-//    public ResponseEntity<List<ReviewDto>> getAllReviews(Principal principal,
-//                                                         @RequestParam(value = "reviewedUser", required = false) Optional<User> reviewedUser) {
-//
-//        List<ReviewDto> dtos;
-//
-//        if (reviewedUser.isEmpty()){
-//            dtos = reviewService.getAllReviews();
-//        } else {
-//            UserDetails userDetails = (UserDetails) ((Authentication) principal).getPrincipal();
-//            dtos = reviewService.getAllReviewsByReviewedUser((Principal) userDetails);
-//        }
-//
-//        return ResponseEntity.ok().body(dtos);
-//    }
-
-
-    //////
-
-
     @GetMapping("/{id}")
     public ReviewDto getReview(@PathVariable("id") Long id) {
 
@@ -82,7 +61,6 @@ public ResponseEntity<Object> createReview(@Valid @RequestBody ReviewDto reviewD
     }
 }
 
-
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable("id") Long id) {
         reviewService.deleteReview(id);
@@ -93,16 +71,5 @@ public ResponseEntity<Object> createReview(@Valid @RequestBody ReviewDto reviewD
         reviewService.updateReview(id, dto);
         return dto;
     }
-    // alles werkt behalve update
 
-    //    @PostMapping("")
-//    public ReviewDto addReview(@RequestBody ReviewDto dto) {
-//        ReviewDto dto1 = reviewService.addReview(dto);
-//        return dto1;
-//    }
-//    @PostMapping("/reviews")
-//    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto) {
-//        ReviewDto createdReview = ReviewService.createReview(reviewDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdReview);
-//    }
 }

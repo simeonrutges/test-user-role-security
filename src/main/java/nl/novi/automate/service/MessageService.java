@@ -31,27 +31,24 @@ public class MessageService {
     }
 
 public MessageDto createMessage(MessageDto messageDto) {
-    // Controleer of de sender en receiver bestaan
     User sender = userRepository.findByUsername(messageDto.getSenderUsername())
             .orElseThrow(() -> new RecordNotFoundException("Sender with username " + messageDto.getSenderUsername() + " not found"));
     User receiver = userRepository.findByUsername(messageDto.getReceiverUsername())
             .orElseThrow(() -> new RecordNotFoundException("Receiver with username " + messageDto.getReceiverUsername() + " not found"));
 
-    // Maak de Message en sla deze op
     Message message = dtoMapperService.dtoToMessage(messageDto);
     message.setSenderUsername(sender.getUsername());
     message.setReceiverUsername(receiver.getUsername());
     message.setTimestamp(LocalDateTime.now());
     Message savedMessage = messageRepository.save(message);
 
-    // Maak de Notification en sla deze op
     Notification notification = new Notification();
     notification.setSender(sender);
     notification.setReceiver(receiver);
     notification.setType(NotificationType.NEW_MESSAGE);
     notification.setSentDate(LocalDateTime.now());
     notification.setRead(false);
-    notification.setRideId(null); // Of zet dit op een geldige rit ID als dit relevant is
+    notification.setRideId(null);
     notificationRepository.save(notification);
 
     return dtoMapperService.messageToDto(savedMessage);

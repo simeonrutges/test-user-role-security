@@ -23,12 +23,12 @@ public class CarController {
     public ResponseEntity<CarDto> addCar(@Valid @RequestBody CarDto carDto, Authentication authentication) {
         String username = authentication.getName(); // verkrijg de gebruikersnaam van de ingelogde gebruiker
         CarDto addedCar = carService.addCar(carDto, username); // geef de gebruikersnaam door aan de CarService
-//        return ResponseEntity.ok(addedCar); 29/5
+
         return new ResponseEntity<>(addedCar, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) //29-5
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCar(@PathVariable("id") Long id) {
         carService.deleteCar(id);
     }

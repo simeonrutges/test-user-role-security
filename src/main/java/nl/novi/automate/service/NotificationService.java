@@ -32,7 +32,6 @@ public class NotificationService {
     public List<NotificationDto> getAllNotifications() {
         List<Notification> notifications = notificationRepository.findAll();
         return notifications.stream()
-//                .map(this::notificationConvertToDto)
                 .map(dtoMapperService::notificationToDto)
                 .collect(Collectors.toList());
     }
@@ -59,7 +58,6 @@ public class NotificationService {
         return dtoMapperService.notificationToDto(savedNotification);
     }
 
-    // Andere service methoden indien nodig (bijv. update, delete)
     public NotificationDto createNotification(NotificationDto notificationDto, Ride ride) {
         //        voor DELETE RDIE
         Notification notification = dtoMapperService.dtoToNotification(notificationDto);
@@ -72,13 +70,8 @@ public class NotificationService {
         String rideDetails = "Rit details: Driver - " + ride.getDriverUsername() +
                 ", Pick Up Location - " + ride.getPickUpLocation() +
                 ", Destination - " + ride.getDestination() +
-//                ", Route - " + ride.getRoute() +
-//                ", Departure Time - " + ride.getDepartureTime() +
-//                ", Departure Date - " + ride.getDepartureDate() +
                 ", Departure DateTime - " + ride.getDepartureDateTime() +
-//                ", Price per Person - " + ride.getPricePerPerson() +
                 ", Pax - " + ride.getPax() +
-//                ", Total Rit Price - " + ride.getTotalRitPrice() +
                 ", Estimated Arrival Time - " + ride.getEta();
         return rideDetails;
     }
@@ -86,17 +79,15 @@ public class NotificationService {
     public void createAndSendPassengerLeftRideNotification(User driver, String passengerUsername, Ride ride) {
         NotificationDto notificationDto = new NotificationDto();
 
-        // Maak UserDto voor de ontvanger
         UserDto receiverDto = dtoMapperService.userToDto(driver);
 
-        // Maak UserDto voor de afzender
         User systemUser = userRepository.findByUsername("System").orElseThrow(() -> new UserNotFoundException("System user not found"));
         UserDto senderDto = dtoMapperService.userToDto(systemUser);
 
         notificationDto.setReceiver(receiverDto);
         notificationDto.setSender(senderDto);
         notificationDto.setType(NotificationType.PASSENGER_LEFT_RIDE);
-        notificationDto.setSentDate(LocalDateTime.now()); // Zorg dat deze tijdzone correct is voor uw toepassing
+        notificationDto.setSentDate(LocalDateTime.now()); // Zorgt dat deze tijdzone correct is
         notificationDto.setRead(false);
         notificationDto.setRideDetails("Passenger username: " + passengerUsername + "\n" + rideDetails(ride));
         notificationDto.setRideId(ride.getId());

@@ -80,7 +80,7 @@ class NotificationControllerTest {
         objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         dto = new NotificationDto();
-        sender = new UserDto(); // verwijder 'UserDto' hier
+        sender = new UserDto();
         sender.setUsername("testusername");
         sender.setPassword("testpassword");
         sender.setFirstname("testfirstname");
@@ -89,7 +89,7 @@ class NotificationControllerTest {
         String[] roles = {"BESTUURDER"};
         sender.setRoles(roles);
 
-        receiver = new UserDto(); // verwijder 'UserDto' hier
+        receiver = new UserDto();
         receiver.setUsername("testusername2");
         receiver.setPassword("testpassword2");
         receiver.setFirstname("testfirstname2");
@@ -104,7 +104,6 @@ class NotificationControllerTest {
         dto.setReceiver(receiver);
         dto.setType(NotificationType.PASSENGER_JOINED_RIDE);
         dto.setSentDate(LocalDateTime.now());
-//        dto.setRead(true);
         dto.setRideDetails("Test ride details");
         dto.setRideId(1L);
 
@@ -134,20 +133,6 @@ class NotificationControllerTest {
         verify(notificationService, times(1)).getNotificationById(anyLong());
     }
 
-
-//    @Test
-//    @Disabled
-//    public void getNotificationsForUser() throws Exception {
-//        when(notificationService.getNotificationsForUser(anyString())).thenReturn(Collections.singletonList(dto));
-//
-//        mockMvc.perform(get("/notification/user/{username}", receiver.getUsername())
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id", is(dto.getId().intValue())));
-//
-//        verify(notificationService, times(1)).getNotificationsForUser(anyString());
-//    }
-
     @Test
     public void getNotificationsForUser() throws Exception {
         mockMvc.perform(get("/notifications/user/{username}", "testusername2"))
@@ -155,8 +140,6 @@ class NotificationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)));
     }
-
-
 
     private static String asJsonString(Object obj) {
         try {

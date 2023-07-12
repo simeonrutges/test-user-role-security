@@ -47,20 +47,6 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-//        http
-//                .httpBasic().disable()
-//                .authorizeRequests()
-//                .antMatchers("/**").permitAll() // Alle endpoints zijn open voor iedereen
-//                .and()
-//                .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
-//                .csrf().disable().cors().and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//
-//        return http.build();
-//
-//
-////als alles gelukt is weer overschakelen naar hieronder
-
         http
                 .httpBasic().disable()
                 .authorizeRequests()
@@ -81,7 +67,6 @@ public class SecurityConfig  {
                 .antMatchers("/users/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .antMatchers("/notifications/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .antMatchers("/messages/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
-//                .antMatchers("/users").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .and()
                 .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable().cors().and()
@@ -89,9 +74,4 @@ public class SecurityConfig  {
 
         return http.build();
     }
-
-    //                .antMatchers("/rides").hasAuthority("BESTUURDER")
-//                .antMatchers("/cars").hasAuthority("BESTUURDER")
-//                .antMatchers("/bestuurder").hasAuthority("BESTUURDER")
-//                .antMatchers("/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
 }

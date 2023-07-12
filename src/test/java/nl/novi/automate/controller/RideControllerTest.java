@@ -65,7 +65,6 @@ import nl.novi.automate.exceptions.UserNotInRideException;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(RideController.class)
 @AutoConfigureMockMvc(addFilters = false) // deze uitzetten als test werkt en onderstaande activeren:
-//@TestPropertySource(locations="classpath:application-test.properties") // klopt dit??
 class RideControllerTest {
 
     @Autowired
@@ -111,12 +110,10 @@ class RideControllerTest {
         ride1.setPax(3);
         ride1.setTotalRitPrice(30.0);
         ride1.setAvailableSpots(2);
-//            ride1.setAutomaticAcceptance(true);
         ride1.setEta(LocalTime.of(10, 0));
         ride1.setDriverUsername("bestuurder1");
         ride1.setPickUpAddress("Dorpsstraat 6");
         ride1.setDestinationAddress("Station");
-//            ride1.setUsers(new ArrayList<>());  // Maak een lege lijst, of voeg UserDto instanties toe
 
         ride2 = new Ride();
         ride2.setId(2L);
@@ -131,7 +128,6 @@ class RideControllerTest {
         ride2.setPax(3);
         ride2.setTotalRitPrice(45.0);
         ride2.setAvailableSpots(2);
-//        ride2.setAutomaticAcceptance(true);
         ride2.setEta(LocalTime.of(11, 0));
         ride2.setDriverUsername("bestuurder2");
         ride2.setPickUpAddress("Mezenstraat 16");
@@ -150,7 +146,6 @@ class RideControllerTest {
         ride3.setPax(4);
         ride3.setTotalRitPrice(80.0);
         ride3.setAvailableSpots(3);
-//        ride3.setAutomaticAcceptance(true);
         ride3.setEta(LocalTime.of(12, 0));
         ride3.setDriverUsername("bestuurder3");
         ride3.setPickUpAddress("Meeuwenlaan 26");
@@ -170,13 +165,10 @@ class RideControllerTest {
         rideDto1.pax = 3;
         rideDto1.totalRitPrice = 30.0;
         rideDto1.availableSpots = 2;
-//            rideDto1.automaticAcceptance = true;
         rideDto1.eta = LocalTime.of(23, 0);
         rideDto1.driverUsername = "bestuurder1";
         rideDto1.pickUpAddress = "Dorpsstraat 6";
         rideDto1.destinationAddress = "Station";
-
-//            rideDto1.users = new ArrayList<>();  // Maak een lege lijst, of voeg UserDto instanties toe
 
         rideDto2 = new RideDto();
         rideDto2.id = 2L;
@@ -215,36 +207,7 @@ class RideControllerTest {
     }
 
 
-//@AfterEach
-//public void  tearDown() { // nog niet van toepassing
-////    Je test maakt verbinding met een database of ander extern systeem. In dit geval wil je misschien de verbinding sluiten in de tearDown methode om te voorkomen dat de resources worden uitgeput.
-////
-////    Je test maakt tijdelijke bestanden aan. Deze bestanden kunnen worden verwijderd in de tearDown methode.
-////
-////    Je test verandert een bepaalde gedeelde staat die invloed kan hebben op andere tests. Je kunt de staat terugzetten in de tearDown methode om ervoor te zorgen dat elke test in een schone omgeving wordt uitgevoerd.
-////
-////    Je test maakt gebruik van mocks of stubs die moeten worden opgeschoond of gereset na elk gebruik.
-////    if (tempFile != null) {
-////        boolean result = tempFile.delete();
-////        Assertions.assertTrue(result, "Failed to delete temporary file");
-////    } //methode om tijdelijke bestanden te verwijderen. Waarschijnlijk niet van toepassing
-//    }
 
-//    @Test
-//    void addRideTest_ValidInput() throws Exception {
-//        // Use rideDto1 that was set up in the @BeforeEach method.
-//        when(rideService.addRide(any(RideDto.class))).thenReturn(ride1); // This should return a RideDto, not a Ride.
-//
-//        mockMvc.perform(post("/rides")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(rideDto1)))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(ride1))); // This should expect a RideDto, not a Ride.
-//
-//
-//        verify(rideService, times(1)).addRide(rideDto1);
-//
-//    }
 
 
     @Test

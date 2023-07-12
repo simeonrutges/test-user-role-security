@@ -47,9 +47,6 @@ public class UserController {
             return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
         } else {
 
-            //@Valid met BindingResults nog opgeven. Zie les Dto-service 2.06
-
-            //met password encoder encoden
             dto.setPassword(passwordEncoder.encode(dto.password));
 
             String newUsername = userService.createUser(dto);
@@ -77,14 +74,14 @@ public class UserController {
         return ResponseEntity.ok().body(optionalUser);
     }
 
-    @DeleteMapping("/{username}")
-    public ResponseEntity<Object> deleteUser(@PathVariable String username) {
-        //Deze werkt niet. Wel nodig?
-
-        userService.deleteUser(username);
-
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{username}")
+//    public ResponseEntity<Object> deleteUser(@PathVariable String username) {
+//        //Deze werkt niet. Wel nodig?
+//
+//        userService.deleteUser(username);
+//
+//        return ResponseEntity.noContent().build();
+//    }
 
     @PutMapping("/{username}")
     public ResponseEntity<Object> updateUser(@PathVariable String username, @RequestBody UserDto newUser) {
@@ -102,18 +99,18 @@ public class UserController {
     }
 
 
-    @PutMapping("/{username}/{carId}")
-    public void assignCarToUser(@PathVariable ("username") String username,@PathVariable ("carId") Long carId) {
-        userService.assignCarToUser(username, carId);
-        //@Valid moet bij de  regel voor @Requetsbody!!
-        // dit was overal ID. zie televisions
-    }
-//    @GetMapping("/{role}")
-//    public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
-//        List<User> users = userService.getUsersByRole(role);
-//        return ResponseEntity.ok(users);
+//    @PutMapping("/{username}/{carId}")
+//    public void assignCarToUser(@PathVariable ("username") String username,@PathVariable ("carId") Long carId) {
+//        userService.assignCarToUser(username, carId);
+//        //@Valid moet bij de  regel voor @Requetsbody!!
+//        // dit was overal ID. zie televisions
 //    }
-    // bovenstaande is het probleem. Heeft met de security te maken?
+////    @GetMapping("/{role}")
+////    public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
+////        List<User> users = userService.getUsersByRole(role);
+////        return ResponseEntity.ok(users);
+////    }
+//    // bovenstaande is het probleem. Heeft met de security te maken?
 
     @PostMapping("/single/uploadDb")
     public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
@@ -130,35 +127,17 @@ public class UserController {
         }
     }
 
-//    @GetMapping("/downloadFromDB/{fileName}")
-//    ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
-//        //Marc heeft in HW klas staan <Resource>
-//
-//        return userService.singleFileDownload(fileName, request);
-//    }
-
-
-    // 9/6 de methode hierboven was goed. Hier beneden is gedaan om de errorstatus in de FE
     @GetMapping("/downloadFromDB/{fileName}")
     ResponseEntity<byte[]> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
 
-        // Probeer de afbeelding te vinden
         Optional<User> userWithImage = userService.findImage(fileName);
 
-        // Als de afbeelding niet bestaat, geef dan een 404-statuscode terug
         if (!userWithImage.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        // Als de afbeelding bestaat, ga dan verder met de download
         return userService.singleFileDownload(fileName, request);
     }
-
-
-
-
-
-
 
     @DeleteMapping("/deleteProfileImage/{username}")
     public ResponseEntity<?> deleteProfileImage(@PathVariable("username") String username) {

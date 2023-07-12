@@ -6,10 +6,6 @@ import javax.persistence.*;
 
 @Entity
 public class Car {
-    //is push test-user-role-sec branch gelukt?
-    // dit staat alleen in de foto upload
-    // komt dit er dan ook bij?
-    //laatste test
     @Id
     @GeneratedValue
     private Long id;
@@ -17,9 +13,8 @@ public class Car {
     private String model;
     private String brand;
 
-    // cascade erbij gezet 3/4. als user delete wordt dan car ook: , cascade = CascadeType.ALL
     @OneToOne(mappedBy = "car")
-            @JsonIgnore
+    @JsonIgnore
     User user;
 
     public Long getId() {
@@ -29,7 +24,6 @@ public class Car {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getLicensePlate() {
         return licensePlate;

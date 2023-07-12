@@ -46,6 +46,4 @@ public class MessageController {
 //        List<MessageDto> messages = messageService.getMessagesForUser(username);
 //        return ResponseEntity.ok(messages);
 //    }
-
-    // Andere endpoints indien nodig (update, delete,....)
 }

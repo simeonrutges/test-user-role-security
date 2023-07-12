@@ -16,31 +16,14 @@ public class UserDto {
     @Email
     @NotNull
     public String email;
-//    @Column
     public String bio;
-//    @Column(nullable = false)
     public boolean enabled = true;
-//    @Column
-//    @Size (min = 10, max = 10)
     public int phoneNumber;
-
     public String fileName;
-
-    //Mark zegt dat de docfile niet nodig is hier
     public byte[] docFile;
-
-//    @NotEmpty
     public String[] roles;
 
     public CarDto car;
-// Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
-
-
-
-//    public List<RideDto> rides;
-
-    // Deze hoeft hier niet door de gebruiker te worden meegegeven toch?
-
 
     public String getUsername() {
         return username;
@@ -130,9 +113,6 @@ public class UserDto {
         this.docFile = docFile;
     }
 
-
-    //////
-
     public CarDto getCar() {
         return car;
     }
@@ -140,26 +120,5 @@ public class UserDto {
     public void setCar(CarDto car) {
         this.car = car;
     }
-
-
-    //
-//    public Collection<Ride> getRides() {
-//        return rides;
-//    }
-//
-//    public void setRides(Collection<Ride> rides) {
-//        this.rides = rides;
-//    }
-//    //    public void setRoles(List<Role> userRoles) {
-////    }
-
-
-//    public List<RideDto> getRides() {
-//        return rides;
-//    }
-//
-//    public void setRides(List<RideDto> rides) {
-//        this.rides = rides;
-//    }
 
 }

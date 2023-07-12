@@ -11,18 +11,6 @@ public class ReviewDto {
     public String reviewedUserUsername;
     public String reviewerUsername;
 
-//    public ReviewDto(){
-//
-//    }
-//
-//    public ReviewDto(Long id, String text, LocalDate publishDate, Long reviewedUserId, Long reviewerId) {
-//        this.id = id;
-//        this.text = text;
-//        this.publishDate = publishDate;
-//        this.reviewedUserId = reviewedUserId;
-//        this.reviewerId = reviewerId;
-//    }
-
     public Long getId() {
         return id;
     }

@@ -54,7 +54,7 @@ class CarControllerTest {
 
     @BeforeEach
     void setUp() {
-        // zal ik een constructor in de Car entiteit zetten?
+
         car1 = new Car();
         car1.setId(1L);
         car1.setModel("Capture");
@@ -90,7 +90,6 @@ class CarControllerTest {
                         .delete("/cars/{id}", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
-        // Voor een DELETE-methode zijn er niet echt velden om te controleren, omdat het geen inhoud retourneert.
     }
 
     @Test
@@ -115,6 +114,6 @@ class CarControllerTest {
                         .get("/cars/user/{username}", "user")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(content().string("Car not found")); // Hier controleer ik de foutboodschap die wordt geretourneerd.
+                .andExpect(content().string("Car not found"));
     }
 }

@@ -29,18 +29,14 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CarRepository carRepository;
-//    private final CarService carService;
-//    private final RoleRepository roleRepos;
+//    private final CarRepository carRepository;
     private final DtoMapperService dtoMapperService;
     private final RideRepository rideRepository;
 
 
-    public UserService(UserRepository userRepository, CarRepository carRepository, DtoMapperService dtoMapperService,  RideRepository rideRepository) {
+    public UserService(UserRepository userRepository, DtoMapperService dtoMapperService,  RideRepository rideRepository) {
         this.userRepository = userRepository;
-        this.carRepository = carRepository;
-//        this.carService = carService;
-//        this.roleRepos = roleRepos;
+//        this.carRepository = carRepository;
         this.dtoMapperService = dtoMapperService;
         this.rideRepository = rideRepository;
     }
@@ -62,21 +58,21 @@ public class UserService {
         return dtos;
     }
 
-    public void assignCarToUser(String username, Long carId) {
-        var optionalUser = userRepository.findByUsername(username);
-        var optionalCar = carRepository.findById(carId);
-
-        if (optionalUser.isPresent() && optionalCar.isPresent()) {
-            var user = optionalUser.get();
-            var car = optionalCar.get();
-
-            user.setCar(car);
-            userRepository.save(user);
-
-        } else {
-            throw new RecordNotFoundException();
-        }
-    }
+//    public void assignCarToUser(String username, Long carId) {
+//        var optionalUser = userRepository.findByUsername(username);
+//        var optionalCar = carRepository.findById(carId);
+//
+//        if (optionalUser.isPresent() && optionalCar.isPresent()) {
+//            var user = optionalUser.get();
+//            var car = optionalCar.get();
+//
+//            user.setCar(car);
+//            userRepository.save(user);
+//
+//        } else {
+//            throw new RecordNotFoundException();
+//        }
+//    }
 
     public void addRideToUser(String username, Long id) {
         var optionalRide = rideRepository.findById(id);
@@ -108,9 +104,9 @@ public class UserService {
         }
     }
 
-    public void deleteUser(String username) {
-        userRepository.deleteByUsername(username);
-    }
+//    public void deleteUser(String username) {
+//        userRepository.deleteByUsername(username);
+//    }
 
     public UserDto updateUser(String username, UserDto userDto) {
         if (userRepository.findByUsername(username).isPresent()) {
@@ -161,24 +157,6 @@ public class UserService {
         }
     }
 
-//    public ResponseEntity<byte[]> singleFileDownload(String fileName, HttpServletRequest request) {
-//        User userFile = userRepository.findByFileName(fileName);
-//
-////        this mediaType decides witch type you accept if you only accept 1 type
-////        MediaType contentType = MediaType.IMAGE_JPEG;
-////        this is going to accept multiple types
-//
-//        String mimeType = request.getServletContext().getMimeType(userFile.getFileName());
-//
-////        for download attachment use next line
-////        return ResponseEntity.ok().contentType(contentType).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;fileName=" + resource.getFilename()).body(resource);
-////        for showing image in browser
-//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + userFile.getFileName()).body(userFile.getDocFile());
-//
-//    }
-
-    // 9/6 de methode hierboven was goed. De twee methoden hieronder nieuw om de error status te verwijderen
-
     public Optional<User> findImage(String fileName) {
         return Optional.ofNullable(userRepository.findByFileName(fileName));
     }
@@ -197,7 +175,6 @@ public class UserService {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + userFile.getFileName())
                 .body(userFile.getDocFile());
     }
-/////
 
     public void deleteProfileImage(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
