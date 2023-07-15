@@ -29,7 +29,6 @@ public class User {
     private Collection<Role> roles;
 
     @ManyToMany
-
     private List<Ride> rides;
 
     @OneToOne (cascade = CascadeType.REMOVE, orphanRemoval = true)
