@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import nl.novi.automate.dto.RideDto;
+import nl.novi.automate.exceptions.ExceededCapacityException;
 import nl.novi.automate.exceptions.UserAlreadyAddedToRideException;
 import nl.novi.automate.model.ReservationInfo;
 import nl.novi.automate.model.Ride;
@@ -16,11 +17,13 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -65,7 +68,6 @@ import nl.novi.automate.exceptions.UserNotInRideException;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(RideController.class)
 @AutoConfigureMockMvc(addFilters = false) // deze uitzetten als test werkt en onderstaande activeren:
-//@TestPropertySource(locations="classpath:application-test.properties") // klopt dit??
 class RideControllerTest {
 
     @Autowired
@@ -111,12 +113,10 @@ class RideControllerTest {
         ride1.setPax(3);
         ride1.setTotalRitPrice(30.0);
         ride1.setAvailableSpots(2);
-//            ride1.setAutomaticAcceptance(true);
         ride1.setEta(LocalTime.of(10, 0));
         ride1.setDriverUsername("bestuurder1");
         ride1.setPickUpAddress("Dorpsstraat 6");
         ride1.setDestinationAddress("Station");
-//            ride1.setUsers(new ArrayList<>());  // Maak een lege lijst, of voeg UserDto instanties toe
 
         ride2 = new Ride();
         ride2.setId(2L);
@@ -131,7 +131,6 @@ class RideControllerTest {
         ride2.setPax(3);
         ride2.setTotalRitPrice(45.0);
         ride2.setAvailableSpots(2);
-//        ride2.setAutomaticAcceptance(true);
         ride2.setEta(LocalTime.of(11, 0));
         ride2.setDriverUsername("bestuurder2");
         ride2.setPickUpAddress("Mezenstraat 16");
@@ -150,7 +149,6 @@ class RideControllerTest {
         ride3.setPax(4);
         ride3.setTotalRitPrice(80.0);
         ride3.setAvailableSpots(3);
-//        ride3.setAutomaticAcceptance(true);
         ride3.setEta(LocalTime.of(12, 0));
         ride3.setDriverUsername("bestuurder3");
         ride3.setPickUpAddress("Meeuwenlaan 26");
@@ -170,13 +168,10 @@ class RideControllerTest {
         rideDto1.pax = 3;
         rideDto1.totalRitPrice = 30.0;
         rideDto1.availableSpots = 2;
-//            rideDto1.automaticAcceptance = true;
         rideDto1.eta = LocalTime.of(23, 0);
         rideDto1.driverUsername = "bestuurder1";
         rideDto1.pickUpAddress = "Dorpsstraat 6";
         rideDto1.destinationAddress = "Station";
-
-//            rideDto1.users = new ArrayList<>();  // Maak een lege lijst, of voeg UserDto instanties toe
 
         rideDto2 = new RideDto();
         rideDto2.id = 2L;
@@ -214,39 +209,6 @@ class RideControllerTest {
 
     }
 
-
-//@AfterEach
-//public void  tearDown() { // nog niet van toepassing
-////    Je test maakt verbinding met een database of ander extern systeem. In dit geval wil je misschien de verbinding sluiten in de tearDown methode om te voorkomen dat de resources worden uitgeput.
-////
-////    Je test maakt tijdelijke bestanden aan. Deze bestanden kunnen worden verwijderd in de tearDown methode.
-////
-////    Je test verandert een bepaalde gedeelde staat die invloed kan hebben op andere tests. Je kunt de staat terugzetten in de tearDown methode om ervoor te zorgen dat elke test in een schone omgeving wordt uitgevoerd.
-////
-////    Je test maakt gebruik van mocks of stubs die moeten worden opgeschoond of gereset na elk gebruik.
-////    if (tempFile != null) {
-////        boolean result = tempFile.delete();
-////        Assertions.assertTrue(result, "Failed to delete temporary file");
-////    } //methode om tijdelijke bestanden te verwijderen. Waarschijnlijk niet van toepassing
-//    }
-
-//    @Test
-//    void addRideTest_ValidInput() throws Exception {
-//        // Use rideDto1 that was set up in the @BeforeEach method.
-//        when(rideService.addRide(any(RideDto.class))).thenReturn(ride1); // This should return a RideDto, not a Ride.
-//
-//        mockMvc.perform(post("/rides")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(rideDto1)))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(ride1))); // This should expect a RideDto, not a Ride.
-//
-//
-//        verify(rideService, times(1)).addRide(rideDto1);
-//
-//    }
-
-
     @Test
 //    @WithMockUser(username="testuser", roles="BESTUURDER")
     void testAddRideWithInvalidDto_ReturnsBadRequestResponse() throws Exception {
@@ -259,6 +221,36 @@ class RideControllerTest {
                 .andExpect(status().isBadRequest())
                 .andReturn();
     }
+
+
+    @Test
+// @WithMockUser(username="testuser", roles="BESTUURDER")
+    void testAddRideWithValidDto_ReturnsOkResponse() throws Exception {
+        // Configureer een geldige rijdto
+        RideDto validRideDto = new RideDto();
+        validRideDto.setPickUpLocation("TestLocation");
+        validRideDto.setDestination("TestDestination");
+        validRideDto.setDepartureTime(LocalTime.now());
+        validRideDto.setDepartureDate(LocalDate.now().plusDays(1)); // Een datum in de toekomst
+        validRideDto.setDepartureDateTime(LocalDateTime.now().plusDays(1)); // Een datum en tijd in de toekomst
+        validRideDto.setPricePerPerson(5.0);
+        validRideDto.setPax(2);
+        validRideDto.setAvailableSpots(2);
+        validRideDto.setEta(LocalTime.now());
+        validRideDto.setDriverUsername("testDriver");
+        validRideDto.setPickUpAddress("TestAddress");
+        validRideDto.setDestinationAddress("TestDestinationAddress");
+
+        when(rideService.addRide(validRideDto)).thenReturn(validRideDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/rides")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(validRideDto)))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+
 
 
     @Test
@@ -295,6 +287,42 @@ class RideControllerTest {
 
         verify(rideService, times(1)).addUserToRide(rideId, username, pax);
     }
+
+    @Test
+    void addUserToRideFailsDueToExceededCapacity() throws Exception {
+        Long rideId = 1L;
+        String username = "testuser";
+        int pax = 1;
+
+        doThrow(new ExceededCapacityException("Capacity Exceeded"))
+                .when(rideService).addUserToRide(rideId, username, pax);
+
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username + "/" + pax)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest());
+
+        verify(rideService, times(1)).addUserToRide(rideId, username, pax);
+    }
+
+    @Test
+    void addUserToRideFailsDueToRecordNotFound() throws Exception {
+        Long rideId = 1L;
+        String username = "testuser";
+        int pax = 1;
+
+        doThrow(new RecordNotFoundException("Record not found"))
+                .when(rideService).addUserToRide(rideId, username, pax);
+
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username + "/" + pax)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound());
+
+        verify(rideService, times(1)).addUserToRide(rideId, username, pax);
+    }
+
+
 
 //    @Test
 ////    @WithMockUser(username="testuser", roles="PASSAGIER")
@@ -349,6 +377,43 @@ class RideControllerTest {
         verify(rideService, times(1)).getRidesByCriteria("destination", "pickUpLocation", LocalDate.parse("2024-06-01"), 3);
     }
 
+    @Test
+    void getRidesByCriteria_ReturnsBadRequest_WhenDateFormatIsInvalid() throws Exception {
+        mockMvc.perform(get("/rides?destination=destination&pickUpLocation=pickUpLocation&departureDate=invalid_date&pax=3"))
+                .andExpect(status().isBadRequest());
+
+        verify(rideService, never()).getRidesByCriteria(anyString(), anyString(), any(LocalDate.class), anyInt());
+    }
+
+
+
+
+    @Test
+    void getReservationInfoForUser_ReturnsInfo_WhenUserAndRideExist() throws Exception {
+        ReservationInfo reservationInfo = new ReservationInfo(5, 20.0);
+
+        when(rideService.getReservationInfoForUser(1L, "username")).thenReturn(reservationInfo);
+
+        mockMvc.perform(get("/rides/1/users/username/reservationInfo"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(reservationInfo)));
+
+        verify(rideService, times(1)).getReservationInfoForUser(1L, "username");
+    }
+
+
+    @Test
+    void getReservationInfoForUser_ReturnsForbidden_WhenUserNotInRide() throws Exception {
+        when(rideService.getReservationInfoForUser(1L, "username")).thenThrow(new UserNotInRideException("User is not in ride"));
+
+        mockMvc.perform(get("/rides/1/users/username/reservationInfo"))
+                .andExpect(status().isForbidden());
+
+        verify(rideService, times(1)).getReservationInfoForUser(1L, "username");
+    }
+
+
+
 
     @Test
 //    @WithMockUser(username="testuser", roles="PASSAGIER")
@@ -393,6 +458,60 @@ class RideControllerTest {
 //            throw new RuntimeException(e);
 //        }
 //    }
+
+    @Test
+    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    void removeUserFromRide_Success() throws Exception {
+        doNothing().when(rideService).removeUserFromRide(anyLong(), anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/rides/{rideId}/users/{username}", 1L, "testuser")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    void removeUserFromRide_UserNotInRide() throws Exception {
+        doThrow(new UserNotInRideException("User not in ride")).when(rideService).removeUserFromRide(anyLong(), anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/rides/{rideId}/users/{username}", 1L, "testuser")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.content().string("User not in ride"));
+    }
+
+    @Test
+    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    void removeUserFromRide_RecordNotFound() throws Exception {
+        doThrow(new RecordNotFoundException("Record not found")).when(rideService).removeUserFromRide(anyLong(), anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/rides/{rideId}/users/{username}", 1L, "testuser")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Record not found"));
+    }
+
+    @Test
+    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    void updateRide() throws Exception {
+        when(rideService.updateRide(anyLong(), any(RideDto.class))).thenReturn(rideDto1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/rides/{id}", 1L)
+                        .content(objectMapper.writeValueAsString(rideDto1))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(rideDto1.id))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pickUpLocation").value(rideDto1.pickUpLocation))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.destination").value(rideDto1.destination))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.route").value(rideDto1.route));
+        // Voeg hier eventueel meer .andExpect statements toe voor andere velden in RideDto
+    }
+
 
     public static String asJsonString(final Object obj) {
         try {

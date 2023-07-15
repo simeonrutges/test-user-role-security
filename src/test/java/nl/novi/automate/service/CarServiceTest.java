@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,4 +80,31 @@ class CarServiceTest {
 
         verify(carRepository, times(1)).deleteById(1L);
     }
+    @Test
+    public void givenUserExists_whenGetCarByUser_thenReturnCar() {
+
+        User user = new User();
+        user.setUsername("username");
+        user.setCar(car1);
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        Car returnedCar = carService.getCarByUser(user.getUsername());
+
+        assertNotNull(returnedCar);
+        assertEquals(car1, returnedCar);
+    }
+
+    @Test
+    public void givenUserDoesNotExist_whenGetCarByUser_thenThrowEntityNotFoundException() {
+
+        String username = "username";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> {
+            carService.getCarByUser(username);
+        });
+
+        assertTrue(exception.getMessage().contains("User not found with username: " + username));
+    }
+
 }

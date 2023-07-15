@@ -22,21 +22,7 @@ public class CarService {
     }
 
 public CarDto addCar(CarDto carDto, String username) {
-//    Optional<User> userOptional = userRepository.findByUsername(username);
-//    if (userOptional.isPresent()) {
-//        User user = userOptional.get();
-//        Car car = transferToCar(carDto);
-//        car.setUser(user);  // koppel de auto aan de gebruiker
-//        Car savedCar = carRepository.save(car);
-//        user.setCar(savedCar); // dit is nodig om de bidirectionele relatie te behouden
-//        userRepository.save(user);
-//        return transferToDto(savedCar);
-//    } else {
-//        throw new EntityNotFoundException("User not found with username: " + username);
-//    }
-//}
 
-    // 29/5 hieronder de nieuwe code. Was de code hierboven die goed werkte. testen
     User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
 
@@ -49,7 +35,7 @@ public CarDto addCar(CarDto carDto, String username) {
     return transferToDto(savedCar);
 }
 
-    // nu mee bezig: werkt wek, maar niet de juiste timing met FE:
+
     public void removeCarFromUser(Long carId) {
         User user = userRepository.findByCarId(carId);
         if (user != null) {
@@ -63,27 +49,6 @@ public CarDto addCar(CarDto carDto, String username) {
         removeCarFromUser(carId);
         carRepository.deleteById(carId);
     }
-
-//public void deleteCar(Long carId) {
-//    var optionalCar = carRepository.findById(carId);
-//
-//    if (optionalCar.isPresent()) {
-//        var car = optionalCar.get();
-//        var user = car.getUser();
-//
-//        if (user != null) {
-//            user.setCar(null);
-//            userRepository.save(user);
-//        }
-//
-//        carRepository.deleteById(carId);
-//    } else {
-//        throw new RecordNotFoundException();
-//    }
-//}
-
-
-
 
     public Car getCarByUser(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);

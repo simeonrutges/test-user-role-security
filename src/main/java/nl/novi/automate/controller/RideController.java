@@ -104,8 +104,6 @@ public class RideController {
         RideDto ride = rideService.getRideById(id);
 
         return ResponseEntity.ok().body(ride);
-        // Deze nog niet getest in Postman. Niet zeker of deze nodig is
-
     }
 
     @DeleteMapping("/{id}")
@@ -114,10 +112,8 @@ public class RideController {
         rideService.deleteRide(id);
 
         return ResponseEntity.noContent().build();
-
     }
 
-    ////10-5
     @DeleteMapping("/{rideId}/users/{username}")
     public ResponseEntity<?> removeUserFromRide(@PathVariable Long rideId, @PathVariable String username) {
         try {

@@ -82,7 +82,7 @@ public class DtoMapperService {
 
     public Ride dtoToRide(RideDto rideDto){
         var ride = new Ride();
-//deze hieronder vandaag weggehaalt vanwege de PUT
+
         ride.setId(rideDto.getId());
         ride.setDestination(rideDto.getDestination());
         ride.setPickUpLocation(rideDto.getPickUpLocation());
@@ -93,7 +93,6 @@ public class DtoMapperService {
         ride.setDepartureDateTime(rideDto.getDepartureDateTime());
         ride.setPricePerPerson(rideDto.getPricePerPerson());
         ride.setPax(rideDto.getPax());
-//        ride.setTotalRitPrice(calculateTotalRitPrice(rideDto.getPricePerPerson(), ride.getPax()));
         ride.setTotalRitPrice(rideDto.getPricePerPerson() * rideDto.getPax());
         ride.setAvailableSpots(rideDto.getAvailableSpots());
         ride.setAutomaticAcceptance(rideDto.isAutomaticAcceptance());
@@ -133,14 +132,6 @@ public class DtoMapperService {
 
         return dto;
     }
-
-//    public double calculateTotalRitPrice(double pricePerPerson, int pax){
-//        double totalPrice = pricePerPerson * pax;
-//
-//        return totalPrice;
-//
-//    }
-
 
     public NotificationDto notificationToDto(Notification notification) {
         NotificationDto notificationDto = new NotificationDto();

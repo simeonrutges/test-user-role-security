@@ -34,8 +34,6 @@ public class NotificationController {
         return ResponseEntity.ok(createdNotification);
     }
 
-    // Andere endpoints indien nodig (bijv. update, delete)
-
     @GetMapping("/user/{username}")
     public ResponseEntity<List<NotificationDto>> getNotificationsForUser(@PathVariable String username) {
         List<NotificationDto> notifications = notificationService.getNotificationsForUser(username);

@@ -27,7 +27,6 @@ public class Notification {
     private Long rideId;
 
 
-
     public Notification() {
     }
 

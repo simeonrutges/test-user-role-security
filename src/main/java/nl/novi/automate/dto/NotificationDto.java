@@ -28,8 +28,6 @@ public class NotificationDto {
         this.rideId = rideId;
     }
 
-    // Getters en setters
-
     public Long getId() {
         return id;
     }
