@@ -29,14 +29,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final CarRepository carRepository;
     private final DtoMapperService dtoMapperService;
     private final RideRepository rideRepository;
 
 
     public UserService(UserRepository userRepository, DtoMapperService dtoMapperService,  RideRepository rideRepository) {
         this.userRepository = userRepository;
-//        this.carRepository = carRepository;
         this.dtoMapperService = dtoMapperService;
         this.rideRepository = rideRepository;
     }
@@ -57,22 +55,6 @@ public class UserService {
         }
         return dtos;
     }
-
-//    public void assignCarToUser(String username, Long carId) {
-//        var optionalUser = userRepository.findByUsername(username);
-//        var optionalCar = carRepository.findById(carId);
-//
-//        if (optionalUser.isPresent() && optionalCar.isPresent()) {
-//            var user = optionalUser.get();
-//            var car = optionalCar.get();
-//
-//            user.setCar(car);
-//            userRepository.save(user);
-//
-//        } else {
-//            throw new RecordNotFoundException();
-//        }
-//    }
 
     public void addRideToUser(String username, Long id) {
         var optionalRide = rideRepository.findById(id);
@@ -104,9 +86,6 @@ public class UserService {
         }
     }
 
-//    public void deleteUser(String username) {
-//        userRepository.deleteByUsername(username);
-//    }
 
     public UserDto updateUser(String username, UserDto userDto) {
         if (userRepository.findByUsername(username).isPresent()) {

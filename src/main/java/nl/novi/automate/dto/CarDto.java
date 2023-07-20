@@ -11,7 +11,6 @@ public class CarDto {
     @NotBlank
     public String brand;
 
-
     public CarDto() {
     }
 
