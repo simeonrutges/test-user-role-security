@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT) // Mockito's 'strictness' niveaus hebben betrekking op hoe streng de bibliotheek is over het controleren van onnodige stubs (mocks die niet gebruikt worden in je tests) en ongebruikte invocations (methodes die aangeroepen worden op je mocks maar niet geverifieerd worden in je tests).
+@MockitoSettings(strictness = Strictness.LENIENT)
 class RideServiceTest {
 
     @Mock
@@ -55,7 +55,6 @@ class RideServiceTest {
 
     @Captor
     ArgumentCaptor<Ride>captor;
-//    Dit geeft ons later de mogelijkheid om een save of update methode te testen
 
     Ride ride1;
     Ride ride2;
@@ -126,23 +125,17 @@ class RideServiceTest {
         rideDto1.setAutomaticAcceptance(true);
         rideDto1.setEta(LocalTime.of(10, 0));
         rideDto1.setDriverUsername("bestuurder1");
-        // Note: For 'users' field, we should have UserDto list.
-        // So, create UserDto instances, add them to a list and then set this list to 'users' field of rideDto1
-
 
         rideDto2 = new RideDto();
         rideDto2.setId(2L);
         rideDto2.setPickUpLocation("Woerden");
         rideDto2.setDestination("Den Haag");
-        // Initialize remaining fields of rideDto2...
-        //...
 
         rideDto3 = new RideDto();
         rideDto3.setId(3L);
         rideDto3.setPickUpLocation("Arnhem");
         rideDto3.setDestination("Maastricht");
         rideDto3.setDepartureDateTime(LocalDateTime.of(2024, 5, 31, 10, 0));
-        // Initialize remaining fields of rideDto3...
 
         user1 = new User();
         user1.setUsername("username1");
@@ -154,8 +147,8 @@ class RideServiceTest {
         user1.setPhoneNumber(1234567890);
         user1.setBio("bio1");
         user1.setFileName("filename1");
-        user1.setRoles(new ArrayList<>());  // Initialiseer de 'roles' lijst
-        user1.setRides(new ArrayList<>());  // Initialiseer de 'rides' lijst
+        user1.setRoles(new ArrayList<>());
+        user1.setRides(new ArrayList<>());
 
         userDto1 = new UserDto();
         userDto1.setUsername("username1");
@@ -167,11 +160,8 @@ class RideServiceTest {
         userDto1.setPhoneNumber(1234567890);
         userDto1.setBio("bio1");
         userDto1.setFileName("filename1");
-        userDto1.setRoles(new String[]{"ROLE_USER"});  // Initialiseer de 'roles' lijst
-//        userDto1.setCar(new CarDto());  // Initialiseer de 'car' veld
+        userDto1.setRoles(new String[]{"ROLE_USER"});
 
-//        ride1.setUsers(new ArrayList<>(Arrays.asList(user1)));
-//        user1.setRides(new ArrayList<>(Arrays.asList(ride1)));
         ride1.setUsers(new ArrayList<>(Collections.singletonList(user1)));
         user1.setRides(new ArrayList<>(Collections.singletonList(ride1)));
 
@@ -183,7 +173,6 @@ class RideServiceTest {
     void tearDown() {
     }
 
-    //When=Act Then=Assert
     @Test
     void addRide() {
         RideDto rideDto = new RideDto();
@@ -194,18 +183,18 @@ class RideServiceTest {
         rideDto.addRideInfo = "Additional Ride Info";
 
         rideDto.departureTime = LocalTime.of(10, 0);
-        rideDto.departureDate = LocalDate.now().plusDays(1); // a date in the future
-        rideDto.departureDateTime = LocalDateTime.now().plusDays(1); // a datetime in the future
+        rideDto.departureDate = LocalDate.now().plusDays(1);
+        rideDto.departureDateTime = LocalDateTime.now().plusDays(1);
 
         rideDto.pricePerPerson = 3.5;
         rideDto.pax = 2;
         rideDto.totalRitPrice = 7.0;
         rideDto.availableSpots = 2;
         rideDto.automaticAcceptance = true;
-        rideDto.eta = LocalTime.of(12, 0); // Estimated arrival time
+        rideDto.eta = LocalTime.of(12, 0);
 
         rideDto.driverUsername = "Driver";
-        rideDto.users = new ArrayList<>(); // Assume no users yet
+        rideDto.users = new ArrayList<>();
 
         Ride newRide = new Ride();
         newRide.setId(1L);
@@ -215,18 +204,18 @@ class RideServiceTest {
         newRide.setAddRideInfo("Additional Ride Info");
 
         newRide.setDepartureTime(LocalTime.of(10, 0));
-        newRide.setDepartureDate(LocalDate.now().plusDays(1)); // a date in the future
-        newRide.setDepartureDateTime(LocalDateTime.now().plusDays(1)); // a datetime in the future
+        newRide.setDepartureDate(LocalDate.now().plusDays(1));
+        newRide.setDepartureDateTime(LocalDateTime.now().plusDays(1));
 
         newRide.setPricePerPerson(3.5);
         newRide.setPax(2);
         newRide.setTotalRitPrice(7.0);
         newRide.setAvailableSpots(2);
         newRide.setAutomaticAcceptance(true);
-        newRide.setEta(LocalTime.of(12, 0)); // Estimated arrival time
+        newRide.setEta(LocalTime.of(12, 0));
 
         newRide.setDriverUsername("Driver");
-        newRide.setUsers(new ArrayList<>()); // Assume no users yet
+        newRide.setUsers(new ArrayList<>());
 
         User systemUser = new User();
         systemUser.setUsername("System");
@@ -255,7 +244,6 @@ class RideServiceTest {
         verify(notificationService).createNotification(any(NotificationDto.class));
     }
 
-
     @Test
     void getRideByIdSuccess() {
         Long rideId = 1L;
@@ -264,7 +252,6 @@ class RideServiceTest {
         when(rideRepository.findById(rideId)).thenReturn(optionalRide);
 
         RideDto rideDto = new RideDto();
-        // Initialize rideDto fields here...
 
         when(dtoMapperService.rideToDto(ride1)).thenReturn(rideDto);
 
@@ -296,7 +283,7 @@ class RideServiceTest {
 
     @Test
     void testAddUserToRide() throws JsonProcessingException {
-        // setup
+
         String username = "username1";
         Long rideId = 1L;
         int pax = 1;
@@ -330,10 +317,8 @@ class RideServiceTest {
         when(dtoMapperService.userToDto(driver)).thenReturn(driverDto);
         when(dtoMapperService.userToDto(user)).thenReturn(userDto);
 
-        // act
         rideService.addUserToRide(rideId, username, pax);
 
-        // assert
         assertEquals(ride.getAvailableSpots(), 1);
         assertEquals(ride.getTotalRitPrice(), 10.0);
         assertEquals(ride.getPax(), 1);
@@ -350,23 +335,19 @@ class RideServiceTest {
 
     @Test
     void testTransferRideListToDtoList() {
-        // Prepare test data
         List<Ride> rides = Arrays.asList(ride1, ride2, ride3);
 
         when(dtoMapperService.rideToDto(ride1)).thenReturn(rideDto1);
         when(dtoMapperService.rideToDto(ride2)).thenReturn(rideDto2);
         when(dtoMapperService.rideToDto(ride3)).thenReturn(rideDto3);
 
-        // Execute the method to test
         List<RideDto> result = rideService.transferRideListToDtoList(rides);
 
-        // Verify the result
         assertEquals(3, result.size());
         assertSame(rideDto1, result.get(0));
         assertSame(rideDto2, result.get(1));
         assertSame(rideDto3, result.get(2));
 
-        // Verify the interactions with the mocked DtoMapperService
         verify(dtoMapperService, times(1)).rideToDto(ride1);
         verify(dtoMapperService, times(1)).rideToDto(ride2);
         verify(dtoMapperService, times(1)).rideToDto(ride3);
@@ -374,70 +355,36 @@ class RideServiceTest {
 
 @Test
 void getRidesByCriteria_shouldReturnRidesMatchingCriteria() {
-    // Arrange
     List<Ride> rideList = Arrays.asList(ride1, ride2, ride3);
     List<RideDto> rideDtoList = Arrays.asList(rideDto1, rideDto2, rideDto3);
 
-    // Stel het verwachte gedrag van de mocks in
     when(rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase("Utrecht", "Amsterdam"))
             .thenReturn(Arrays.asList(ride1));
     when(dtoMapperService.rideToDto(ride1)).thenReturn(rideDto1);
 
-    // Act
     List<RideDto> result = rideService.getRidesByCriteria("Utrecht", "Amsterdam", LocalDate.of(2024, 6, 1), 2);
 
-    // Assert
     assertEquals(1, result.size());
     assertEquals(rideDto1, result.get(0));
 }
 
     @Test
     void calculateTotalRitPrice_shouldReturnCorrectTotalPrice() {
-        // Arrange
+
         double pricePerPerson = 10.0;
         int pax = 3;
         double expectedTotalPrice = 30.0;
 
-        // Act
         double result = rideService.calculateTotalRitPrice(pricePerPerson, pax);
 
-        // Assert
+
         assertEquals(expectedTotalPrice, result, 0.01);
     }
 
-@Test
-@Disabled
-void getReservationInfoForUser_shouldReturnCorrectReservationInfo() throws Exception {
-    // Arrange
-    Long rideId = 1L;
-    String username = "username1";
-
-    // Maak een map van de gebruikersnaam naar het aantal gereserveerde zitplaatsen
-    Map<String, Integer> reservedSpotsByUserMap = new HashMap<>();
-    reservedSpotsByUserMap.put(username, 2);
-    String reservedSpotsByUserJson;
-    try {
-        reservedSpotsByUserJson = new ObjectMapper().writeValueAsString(reservedSpotsByUserMap);
-    } catch (JsonProcessingException e) {
-        throw new RuntimeException("Fout bij het omzetten van JSON naar String", e);
-    }
-    ride1.setReservedSpotsByUser(reservedSpotsByUserJson);
-
-    // Act
-    ReservationInfo result = rideService.getReservationInfoForUser(rideId, username);
-
-    // Assert
-    assertNotNull(result);
-    assertEquals(2, result.getReservedSpots());
-    assertEquals(20.0, result.getTotalPrice());
-}
-
     @Test
     void deleteRide() {
-        // Act
         rideService.deleteRide(1L);
 
-        // Assert
         verify(rideRepository).findById(1L);
         verify(rideRepository).deleteById(1L);
         verify(userRepository, times(1)).save(any(User.class));

@@ -78,10 +78,8 @@ class MessageServiceTest {
         when(messageRepository.save(any(Message.class))).thenReturn(message);
         when(dtoMapperService.messageToDto(any(Message.class))).thenReturn(messageDto);
 
-        // Act
         MessageDto createdMessageDto = messageService.createMessage(messageDto);
 
-        // Assert
         verify(messageRepository).save(messageCaptor.capture());
         verify(notificationRepository).save(notificationCaptor.capture());
         Message capturedMessage = messageCaptor.getValue();
@@ -96,7 +94,6 @@ class MessageServiceTest {
 
     @Test
     void getMessagesForConversation() {
-        // Arrange
         String senderUsername = "sender";
         String receiverUsername = "receiver";
 
@@ -120,10 +117,8 @@ class MessageServiceTest {
         when(dtoMapperService.messageToDto(message1)).thenReturn(messageDto1);
         when(dtoMapperService.messageToDto(message2)).thenReturn(messageDto2);
 
-        // Act
         List<MessageDto> messages = messageService.getMessagesForConversation(senderUsername, receiverUsername);
 
-        // Assert
         assertEquals(2, messages.size());
         assertEquals(senderUsername, messages.get(0).getSenderUsername());
         assertEquals(receiverUsername, messages.get(0).getReceiverUsername());

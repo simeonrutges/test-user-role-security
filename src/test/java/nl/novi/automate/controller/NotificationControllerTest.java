@@ -73,7 +73,6 @@ class NotificationControllerTest {
     private NotificationDto dto;
     private UserDto sender;
     private UserDto receiver;
-    private String json;
 
     @BeforeEach
     public void setUp() {
@@ -110,7 +109,6 @@ class NotificationControllerTest {
         LocalDateTime sentDate = LocalDateTime.of(2023, 6, 21, 22, 20, 5, 486068600);
         dto.setSentDate(sentDate);
 
-        json = asJsonString(dto);
 
         List<NotificationDto> notifications = new ArrayList<>();
         notifications.add(dto);

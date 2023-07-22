@@ -67,7 +67,7 @@ import nl.novi.automate.exceptions.UserNotInRideException;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(RideController.class)
-@AutoConfigureMockMvc(addFilters = false) // deze uitzetten als test werkt en onderstaande activeren:
+@AutoConfigureMockMvc(addFilters = false)
 class RideControllerTest {
 
     @Autowired
@@ -85,7 +85,6 @@ class RideControllerTest {
     @MockBean
     private ReservationInfo reservationInfo;
 
-    // create an ObjectMapper as an instance field
     private static ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -210,9 +209,7 @@ class RideControllerTest {
     }
 
     @Test
-//    @WithMockUser(username="testuser", roles="BESTUURDER")
     void testAddRideWithInvalidDto_ReturnsBadRequestResponse() throws Exception {
-        // Configureer de rijdto met ongeldige gegevens, in dit geval lege velden
         RideDto invalidRideDto = new RideDto();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/rides")
@@ -222,11 +219,8 @@ class RideControllerTest {
                 .andReturn();
     }
 
-
     @Test
-// @WithMockUser(username="testuser", roles="BESTUURDER")
     void testAddRideWithValidDto_ReturnsOkResponse() throws Exception {
-        // Configureer een geldige rijdto
         RideDto validRideDto = new RideDto();
         validRideDto.setPickUpLocation("TestLocation");
         validRideDto.setDestination("TestDestination");
@@ -250,16 +244,12 @@ class RideControllerTest {
                 .andReturn();
     }
 
-
-
-
     @Test
     void addUserToRideSuccess() throws Exception {
         Long rideId = 1L;
         String username = "testuser";
         int pax = 1;
 
-        // assuming the rideService.addUserToRide() method doesn't return anything when successful
         doNothing().when(rideService).addUserToRide(rideId, username, pax);
 
         this.mockMvc.perform(MockMvcRequestBuilders.post("/rides/" + rideId + "/" + username + "/" + pax)
@@ -323,34 +313,6 @@ class RideControllerTest {
     }
 
 
-
-//    @Test
-////    @WithMockUser(username="testuser", roles="PASSAGIER")
-//    void getRidesByDestination() throws Exception{
-//        given(rideService.getRidesByCriteria(eq(Optional.of("Utrecht")), any(), any()))
-//                .willReturn(List.of(rideDto1));
-//
-//        this.mockMvc.perform(MockMvcRequestBuilders.get("/rides?destination=Utrecht")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].pickUpLocation").value("Amsterdam"))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].destination").value("Utrecht"));
-//    }
-
-//    @Test
-//    void getReservationInfoForUser_ReturnsReservationInfo_WhenUserAndRideExist() throws Exception {
-//        ReservationInfo reservationInfo = new ReservationInfo();  // fill with sample data
-//        when(rideService.getReservationInfoForUser(1L, "username")).thenReturn(reservationInfo);
-//
-//        mockMvc.perform(get("/rides/1/users/username/reservationInfo"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().json(objectMapper.writeValueAsString(reservationInfo)));
-//
-//        verify(rideService, times(1)).getReservationInfoForUser(1L, "username");
-//    }
-
     @Test
     void getReservationInfoForUser_ReturnsNotFound_WhenUserAndRideDoNotExist() throws Exception {
         when(rideService.getReservationInfoForUser(1L, "username")).thenThrow(new RecordNotFoundException());
@@ -385,9 +347,6 @@ class RideControllerTest {
         verify(rideService, never()).getRidesByCriteria(anyString(), anyString(), any(LocalDate.class), anyInt());
     }
 
-
-
-
     @Test
     void getReservationInfoForUser_ReturnsInfo_WhenUserAndRideExist() throws Exception {
         ReservationInfo reservationInfo = new ReservationInfo(5, 20.0);
@@ -401,7 +360,6 @@ class RideControllerTest {
         verify(rideService, times(1)).getReservationInfoForUser(1L, "username");
     }
 
-
     @Test
     void getReservationInfoForUser_ReturnsForbidden_WhenUserNotInRide() throws Exception {
         when(rideService.getReservationInfoForUser(1L, "username")).thenThrow(new UserNotInRideException("User is not in ride"));
@@ -412,11 +370,7 @@ class RideControllerTest {
         verify(rideService, times(1)).getReservationInfoForUser(1L, "username");
     }
 
-
-
-
     @Test
-//    @WithMockUser(username="testuser", roles="PASSAGIER")
     void getRide() throws Exception {
         given(rideService.getRideById(1L)).willReturn(rideDto1);
 
@@ -430,7 +384,6 @@ class RideControllerTest {
     }
 
     @Test
-//    @WithMockUser(username="testuser", roles="BESTUURDER")
     void deleteRide() throws Exception {
         doNothing().when(rideService).deleteRide(1L);
 
@@ -442,25 +395,8 @@ class RideControllerTest {
         verify(rideService, times(1)).deleteRide(1L);
     }
 
-
-////    Deze methode is een hulpmethode die een Java-object omzet (serializeert) naar
-////    een JSON-tekststring met behulp van de ObjectMapper klasse uit de Jackson-bibliotheek:
-//    public static String asJsonString(final Object obj) {
-//        ObjectMapper objectMapper = new ObjectMapper();
-////        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-////        objectMapper.setDateFormat(dateFormat);
-//
-//        objectMapper.registerModule(new JavaTimeModule());
-//        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//        try {
-//            return objectMapper.writeValueAsString(obj);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     @Test
-    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    @WithMockUser(username="testuser", roles="BESTUURDER")
     void removeUserFromRide_Success() throws Exception {
         doNothing().when(rideService).removeUserFromRide(anyLong(), anyString());
 
@@ -471,7 +407,7 @@ class RideControllerTest {
     }
 
     @Test
-    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    @WithMockUser(username="testuser", roles="BESTUURDER")
     void removeUserFromRide_UserNotInRide() throws Exception {
         doThrow(new UserNotInRideException("User not in ride")).when(rideService).removeUserFromRide(anyLong(), anyString());
 
@@ -483,7 +419,7 @@ class RideControllerTest {
     }
 
     @Test
-    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    @WithMockUser(username="testuser", roles="BESTUURDER")
     void removeUserFromRide_RecordNotFound() throws Exception {
         doThrow(new RecordNotFoundException("Record not found")).when(rideService).removeUserFromRide(anyLong(), anyString());
 
@@ -495,7 +431,7 @@ class RideControllerTest {
     }
 
     @Test
-    @WithMockUser(username="testuser", roles="BESTUURDER") // Zorg ervoor dat de juiste rollen zijn ingesteld
+    @WithMockUser(username="testuser", roles="BESTUURDER")
     void updateRide() throws Exception {
         when(rideService.updateRide(anyLong(), any(RideDto.class))).thenReturn(rideDto1);
 
@@ -509,13 +445,12 @@ class RideControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.pickUpLocation").value(rideDto1.pickUpLocation))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.destination").value(rideDto1.destination))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.route").value(rideDto1.route));
-        // Voeg hier eventueel meer .andExpect statements toe voor andere velden in RideDto
-    }
 
+    }
 
     public static String asJsonString(final Object obj) {
         try {
-            // use the ObjectMapper instance field
+
             return objectMapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

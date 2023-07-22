@@ -59,7 +59,7 @@ class NotificationServiceTest {
             notification1.setId(1L);
             notification1.setSender(new User());
             notification1.setReceiver(new User());
-            notification1.setType(NotificationType.PASSENGER_JOINED_RIDE); // Voeg hier je NotificationType in
+            notification1.setType(NotificationType.PASSENGER_JOINED_RIDE);
             notification1.setSentDate(LocalDateTime.now());
             notification1.setRead(true);
             notification1.setRideDetails("Some details");
@@ -69,37 +69,12 @@ class NotificationServiceTest {
             notification2.setId(2L);
             notification2.setSender(new User());
             notification2.setReceiver(new User());
-            notification2.setType(NotificationType.PASSENGER_LEFT_RIDE); // Voeg hier je NotificationType in
+            notification2.setType(NotificationType.PASSENGER_LEFT_RIDE);
             notification2.setSentDate(LocalDateTime.now());
             notification2.setRead(false);
             notification2.setRideDetails("Some other details");
             notification2.setRideId(456L);
         }
-
-//    @Test
-//    void getNotificationById() {
-//        NotificationDto notificationDto = new NotificationDto();
-//        when(notificationRepository.findById(anyLong())).thenReturn(Optional.of(notification1));
-//        when(dtoMapperService.notificationToDto(any(Notification.class))).thenReturn(notificationDto);
-//
-//        NotificationDto result = notificationService.getNotificationById(1L);
-//        assertEquals(notificationDto, result);
-//        verify(notificationRepository, times(1)).findById(anyLong());
-//        verify(dtoMapperService, times(1)).notificationToDto(any(Notification.class));
-//    }
-//
-//    @Test
-//    void getNotificationsForUser() {
-//        NotificationDto notificationDto1 = new NotificationDto();
-//        NotificationDto notificationDto2 = new NotificationDto();
-//        when(notificationRepository.findByReceiverUsername(anyString())).thenReturn(Arrays.asList(notification1, notification2));
-//        when(dtoMapperService.notificationToDto(any(Notification.class))).thenReturn(notificationDto1, notificationDto2);
-//
-//        List<NotificationDto> result = notificationService.getNotificationsForUser("username");
-//        assertEquals(2, result.size());
-//        verify(notificationRepository, times(1)).findByReceiverUsername(anyString());
-//        verify(dtoMapperService, times(2)).notificationToDto(any(Notification.class));
-//    }
 
     @Test
     void getNotificationById() {
@@ -129,5 +104,4 @@ class NotificationServiceTest {
         verify(dtoMapperService, times(1)).notificationToDto(notification1);
         verify(dtoMapperService, times(1)).notificationToDto(notification2);
     }
-
 }

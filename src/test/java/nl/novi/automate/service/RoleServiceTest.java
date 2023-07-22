@@ -6,6 +6,7 @@ import nl.novi.automate.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,16 +26,20 @@ class RoleServiceTest {
     RoleService roleService;
 
 
-    @Test
-    void createRoleTest() {
-        // Arrange
-        RoleDto roleDto = new RoleDto();
-        roleDto.rolename = "TestRole";
 
-        // Act
-        roleService.createRole(roleDto);
+@Test
+void createRoleTest() {
 
-        // Assert
-        verify(roleRepository, times(1)).save(any(Role.class));
-    }
+    RoleDto roleDto = new RoleDto();
+    roleDto.rolename = "BESTUURDER";
+
+    ArgumentCaptor<Role> roleCaptor = ArgumentCaptor.forClass(Role.class);
+
+    roleService.createRole(roleDto);
+
+    verify(roleRepository, times(1)).save(roleCaptor.capture());
+    Role capturedRole = roleCaptor.getValue();
+    assertEquals("BESTUURDER", capturedRole.getRolename());
+}
+
 }

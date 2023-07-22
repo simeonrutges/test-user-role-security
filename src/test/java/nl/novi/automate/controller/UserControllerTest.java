@@ -100,16 +100,6 @@ class UserControllerTest {
         verify(userService, times(1)).addRideToUser(anyString(), anyLong());
     }
 
-//    @Test
-//    public void testAssignCarToUser() throws Exception {
-//        doNothing().when(userService).assignCarToUser(anyString(), anyLong());
-//
-//        mockMvc.perform(MockMvcRequestBuilders.put("/users/{username}/{carId}", "testuser", 1L))
-//                .andExpect(status().isOk());
-//
-//        verify(userService, times(1)).assignCarToUser(anyString(), anyLong());
-//    }
-
     @Test
     public void testDeleteProfileImage() throws Exception {
         doNothing().when(userService).deleteProfileImage(anyString());
@@ -155,5 +145,4 @@ class UserControllerTest {
         verify(passwordEncoder, times(0)).encode(any());
         verify(userService, times(0)).createUser(any());
     }
-
 }
