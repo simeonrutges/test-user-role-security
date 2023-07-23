@@ -39,21 +39,16 @@ class RoleControllerTest {
     private UserService userService;
 
     @Test
-//    @WithMockUser(roles = "BESTUURDER")
     public void createRole_shouldReturnRoleString() throws Exception {
-        // Arrange
         RoleDto roleDto = new RoleDto();
         roleDto.rolename = "TestRole";
         String expected = "Done";
 
-        // Define behavior for roleService
         when(roleService.createRole(any(RoleDto.class))).thenReturn(expected);
 
-        // Convert object to JSON
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(roleDto);
 
-        // Act and Assert
         mockMvc.perform(post("/roles")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))

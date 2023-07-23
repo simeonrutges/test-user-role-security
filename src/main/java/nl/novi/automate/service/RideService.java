@@ -131,7 +131,7 @@ public RideDto addRide(RideDto rideDto) {
             throw new RuntimeException(e);
         }
 
-        // Send a notification to the ride's driver after adding the passenger
+        // Stuur een notificatie naar de bestuurder nadat er een passagier is toegevoegd aan de rit
         if (!ride.getDriverUsername().equals(user.getUsername())) {
             User sender = userRepository.findByUsername("System").orElseThrow(() -> new UserNotFoundException("System user not found")); // System is the sender of the notification
             User receiver = userRepository.findByUsername(ride.getDriverUsername()).orElseThrow(() -> new UserNotFoundException("Driver not found")); // You need a way to get the ride's driver
@@ -140,8 +140,8 @@ public RideDto addRide(RideDto rideDto) {
             notificationDto.setSender(dtoMapperService.userToDto(sender));
             notificationDto.setReceiver(dtoMapperService.userToDto(receiver));
             notificationDto.setType(NotificationType.PASSENGER_JOINED_RIDE);
-            notificationDto.setSentDate(LocalDateTime.now()); // Set the date and time to now
-            notificationDto.setRead(false); // The notification has not been read yet
+            notificationDto.setSentDate(LocalDateTime.now()); // zet de tijd en datum op nu
+            notificationDto.setRead(false);
 
             String rideDetails = notificationService.rideDetails(ride);
             notificationDto.setRideDetails(rideDetails);
@@ -152,22 +152,22 @@ public RideDto addRide(RideDto rideDto) {
         }
 
         if (!ride.getDriverUsername().equals(user.getUsername())) {
-            // Send a notification to the passenger after they join the ride
-            User sender = userRepository.findByUsername("System").orElseThrow(() -> new UserNotFoundException("System user not found")); // System is the sender of the notification
+            // Stuur een notificatie naar de passagier als ze aan een rit  deelnemen
+            User sender = userRepository.findByUsername("System").orElseThrow(() -> new UserNotFoundException("System user not found")); // System is de afzender van de notificatie
 
             NotificationDto passengerNotificationDto = new NotificationDto();
             passengerNotificationDto.setSender(dtoMapperService.userToDto(sender));
-            passengerNotificationDto.setReceiver(dtoMapperService.userToDto(user)); // The receiver is the passenger
+            passengerNotificationDto.setReceiver(dtoMapperService.userToDto(user)); // de ontvanger is de passagier
             passengerNotificationDto.setType(NotificationType.RIDE_CONFIRMATION);
-            passengerNotificationDto.setSentDate(LocalDateTime.now()); // Set the date and time to now
-            passengerNotificationDto.setRead(false); // The notification has not been read yet
+            passengerNotificationDto.setSentDate(LocalDateTime.now());
+            passengerNotificationDto.setRead(false);
 
             String rideDetails = notificationService.rideDetails(ride);
             passengerNotificationDto.setRideDetails(rideDetails);
 
-            passengerNotificationDto.setRideId(ride.getId()); // Set the rideId
+            passengerNotificationDto.setRideId(ride.getId());
 
-            notificationService.createNotification(passengerNotificationDto, ride); // Send the notification
+            notificationService.createNotification(passengerNotificationDto, ride); // stuur de notification
         }
 
         userRepository.save(user);
@@ -207,8 +207,6 @@ public RideDto addRide(RideDto rideDto) {
 
                 return new ReservationInfo(reservedSpots, totalPrice);
             } catch (IOException e) {
-                // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
-                // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
                 throw new RuntimeException(e);
             }
         }
@@ -326,10 +324,9 @@ public RideDto addRide(RideDto rideDto) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Convert the JSON string to a Map
             Map<String, Integer> reservedSpotsByUser = objectMapper.readValue(ride.getReservedSpotsByUser(), new TypeReference<Map<String, Integer>>() {});
 
-            // Get the number of reserved spots for the user
+            // Vraag het aantal gereserveerde plekken die een gebruiker heeft op
             Integer reservedSpots = reservedSpotsByUser.get(username);
             if (reservedSpots == null) {
                 throw new UserNotInRideException("User is not part of this ride");
@@ -339,40 +336,35 @@ public RideDto addRide(RideDto rideDto) {
                 throw new IllegalStateException("The number of reserved spots exceeds the total number of reservations");
             }
 
-            // Update the number of available spots
+            // Update het aantal availableSpots
             ride.setAvailableSpots(ride.getAvailableSpots() + reservedSpots);
 
-            // Decrease the total number of reservations (pax)
+            // Verminder het totale aantal reserveringen (pax)
             ride.setPax(ride.getPax() - reservedSpots);
 
-            // Decrease the total ride price based on the number of reserved spots for the user and the price per person
+            // Verminder de totale ritprijs op basis van het aantal gereserveerde plekken voor de gebruiker en de prijs per persoon
             ride.setTotalRitPrice(ride.getTotalRitPrice() - (ride.getPricePerPerson() * reservedSpots));
 
-            // Remove the user from the ride and the ride from the user
+            // Verwijder de gebruiker uit de rit en de rit bij de gebruiker
             ride.getUsers().remove(user);
             user.getRides().remove(ride);
 
-            // Remove the entry for this user from the Map of reserved spots
             reservedSpotsByUser.remove(username);
-            // Convert the Map back to a JSON String
+            // Convert naar een JSON String
             ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
 
             rideRepository.save(ride);
             userRepository.save(user);
 
-            // Get the User object of the driver
             Optional<User> driverOptional = userRepository.findByUsername(ride.getDriverUsername());
             if (!driverOptional.isPresent()) {
                 throw new RecordNotFoundException("Driver not found");
             }
             User driver = driverOptional.get();
 
-            // Create and send a notification to the driver of the ride
             notificationService.createAndSendPassengerLeftRideNotification(driver, username, ride);
 
         } catch (IOException e) {
-            // This is a RuntimeException because ObjectMapper.readValue can throw IOException.
-            // This would only happen if something is wrong with the JSON String we are getting from the database.
             throw new RuntimeException(e);
         }
     }

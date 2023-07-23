@@ -40,18 +40,7 @@ public class ReviewService {
     }
 
     public ReviewDto createReview(ReviewDto reviewDto) {
-        User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())
-                .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
-        User reviewer = userRepository.findByUsername(reviewDto.getReviewerUsername())
-                .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
-
-        Review review = new Review();
-
-        review.setReviewedUser(reviewedUser);
-        review.setReviewer(reviewer);
-        review.setText(reviewDto.getText());
-        review.setPublishDate(reviewDto.getPublishDate());
-
+        Review review = transferToReview(reviewDto);
         Review savedReview = reviewRepository.save(review);
         return transferToDto(savedReview);
     }
@@ -61,20 +50,12 @@ public class ReviewService {
     }
 
     public void updateReview(Long id, ReviewDto reviewDto) {
-        User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())
-                .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
-        User reviewer = userRepository.findByUsername(reviewDto.getReviewerUsername())
-                .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
-
         if(!reviewRepository.existsById(id)) {
             throw new RecordNotFoundException("No review found");
         }
-        Review storedReview = reviewRepository.findById(id).orElse(null);
-        storedReview.setReviewedUser(reviewedUser);
-        storedReview.setReviewer(reviewer);
-        storedReview.setText(reviewDto.getText());
-        storedReview.setPublishDate(reviewDto.getPublishDate());
-        reviewRepository.save(storedReview);
+        Review reviewToUpdate = transferToReview(reviewDto);
+        reviewToUpdate.setId(id);
+        reviewRepository.save(reviewToUpdate);
     }
 
     public ReviewDto transferToDto(Review review){
@@ -89,16 +70,22 @@ public class ReviewService {
         return dto;
     }
 
-    //    public Review transferToReview(ReviewDto reviewDto){
-//        var review = new Review();
-//
-//        review.setId(reviewDto.getId());
-//        review.setReviewer(reviewDto.getReviewer());
-//        review.setReceiver(reviewDto.getReceiver());
-//        review.setText(reviewDto.getText());
-//        review.setPublishDate(reviewDto.getPublishDate());
-//
-//        return review;
-//    }
+public Review transferToReview(ReviewDto reviewDto){
+    var review = new Review();
+
+    review.setId(reviewDto.getId());
+// Let op: Op dit moment is de foutafhandeling hier gezet. Indien nodig kunnen deze verplaatst worden naar de createReview en updatReview.
+    User reviewer = userRepository.findByUsername(reviewDto.getReviewerUsername())
+            .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewerUsername() + " not found"));
+    User reviewedUser = userRepository.findByUsername(reviewDto.getReviewedUserUsername())
+            .orElseThrow(() -> new UserNotFoundException("User with username " + reviewDto.getReviewedUserUsername() + " not found"));
+
+    review.setReviewer(reviewer);
+    review.setReviewedUser(reviewedUser);
+    review.setText(reviewDto.getText());
+    review.setPublishDate(reviewDto.getPublishDate());
+
+    return review;
+}
 
 }

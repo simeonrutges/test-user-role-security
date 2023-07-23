@@ -29,21 +29,4 @@ public class MessageController {
         return ResponseEntity.ok(messages);
     }
 
-    //    @GetMapping("")
-//    public ResponseEntity<List<MessageDto>> getAllMessages() {
-//        List<MessageDto> messages = messageService.getAllMessages();
-//        return ResponseEntity.ok(messages);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<MessageDto> getMessageById(@PathVariable Long id) {
-//        MessageDto message = messageService.getMessageById(id);
-//        return ResponseEntity.ok(message);
-//    }
-
-    //    @GetMapping("/user/{username}")
-//    public ResponseEntity<List<MessageDto>> getMessagesForUser(@PathVariable String username) {
-//        List<MessageDto> messages = messageService.getMessagesForUser(username);
-//        return ResponseEntity.ok(messages);
-//    }
 }

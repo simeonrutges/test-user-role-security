@@ -47,7 +47,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("test")  //activeerd de test applications...!
+@ActiveProfiles("test")
 class CarIntegrationTest {
 
     @Autowired
@@ -137,13 +137,12 @@ class CarIntegrationTest {
     @Test
     @Transactional
     void deleteCar() throws Exception {
-        // Perform the delete request
+
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/cars/{id}", car2.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-//         Verify the deletion
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/cars/{id}", car2.getId())
                         .accept(MediaType.APPLICATION_JSON))

@@ -74,14 +74,6 @@ public class UserController {
         return ResponseEntity.ok().body(optionalUser);
     }
 
-//    @DeleteMapping("/{username}")
-//    public ResponseEntity<Object> deleteUser(@PathVariable String username) {
-//        //Deze werkt niet. Wel nodig?
-//
-//        userService.deleteUser(username);
-//
-//        return ResponseEntity.noContent().build();
-//    }
 
     @PutMapping("/{username}")
     public ResponseEntity<Object> updateUser(@PathVariable String username, @RequestBody UserDto newUser) {
@@ -95,28 +87,13 @@ public class UserController {
     public ResponseEntity<Object> addRideToUser(@PathVariable String username, @PathVariable Long rideId){
         userService.addRideToUser(username, rideId);
         return ResponseEntity.ok().build();
-        //object kan ook void zijn
     }
 
-
-//    @PutMapping("/{username}/{carId}")
-//    public void assignCarToUser(@PathVariable ("username") String username,@PathVariable ("carId") Long carId) {
-//        userService.assignCarToUser(username, carId);
-//        //@Valid moet bij de  regel voor @Requetsbody!!
-//        // dit was overal ID. zie televisions
-//    }
-////    @GetMapping("/{role}")
-////    public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
-////        List<User> users = userService.getUsersByRole(role);
-////        return ResponseEntity.ok(users);
-////    }
-//    // bovenstaande is het probleem. Heeft met de security te maken?
 
     @PostMapping("/single/uploadDb")
     public ResponseEntity<?> singleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("username") String username) {
         try {
             User fileDocument = userService.uploadFileDocument(username, file);
-            // users erbij gezet hieronder
             String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("users/downloadFromDB/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
             String contentType = file.getContentType();
             return ResponseEntity.ok(new FileUploadResponse(fileDocument.getFileName(), url, contentType));

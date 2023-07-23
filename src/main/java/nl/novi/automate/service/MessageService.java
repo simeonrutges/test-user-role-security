@@ -62,53 +62,5 @@ public MessageDto createMessage(MessageDto messageDto) {
                 .collect(Collectors.toList());
     }
 
-
-////29-5 tijdens test uitgecomm.
-//    public List<MessageDto> getMessagesForUser(String username) {
-//        return messageRepository.findBySenderUsernameOrReceiverUsername(username, username).stream()
-//                .map(dtoMapperService::messageToDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<MessageDto> getAllMessages() {
-//        return messageRepository.findAll().stream()
-//                .map(dtoMapperService::messageToDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public MessageDto getMessageById(Long id) {
-//        Message message = messageRepository.findById(id)
-//                .orElseThrow(() -> new RecordNotFoundException("Message with id " + id + " not found"));
-//        return dtoMapperService.messageToDto(message);
-//    }
-
-
-
-//    ruim voor 19/5 uitgrcomm..":
-    //    public MessageDto createMessage(MessageDto messageDto) {
-//        // Controleer of de sender en receiver bestaan
-//        User sender = userRepository.findByUsername(messageDto.getSenderUsername())
-//                .orElseThrow(() -> new RecordNotFoundException("Sender with username " + messageDto.getSenderUsername() + " not found"));
-//        User receiver = userRepository.findByUsername(messageDto.getReceiverUsername())
-//                .orElseThrow(() -> new RecordNotFoundException("Receiver with username " + messageDto.getReceiverUsername() + " not found"));
-//
-//        // Maak de Message en sla deze op
-//        Message message = dtoMapperService.dtoToMessage(messageDto);
-//        message.setSenderUsername(sender.getUsername());
-//        message.setReceiverUsername(receiver.getUsername());
-//        message.setTimestamp(LocalDateTime.now());
-//        Message savedMessage = messageRepository.save(message);
-//
-//        return dtoMapperService.messageToDto(savedMessage);
-//    }
-    //
-//    public List<MessageDto> getMessagesForConversation(String sender, String receiver) {
-//        return messageRepository
-//                .findAllBySenderUsernameAndReceiverUsernameOrSenderUsernameAndReceiverUsername(sender, receiver, receiver, sender)
-//                .stream()
-//                .map(dtoMapperService::messageToDto)
-//                .collect(Collectors.toList());
-//    }
-
 }
 
