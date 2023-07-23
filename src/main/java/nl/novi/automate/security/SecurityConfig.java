@@ -67,6 +67,7 @@ public class SecurityConfig  {
                 .antMatchers("/users/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .antMatchers("/notifications/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .antMatchers("/messages/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
+                .antMatchers("/reviews/**").hasAnyAuthority("PASSAGIER", "BESTUURDER")
                 .and()
                 .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable().cors().and()
