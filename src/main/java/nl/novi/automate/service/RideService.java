@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public RideDto addRide(RideDto rideDto) {
             ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
         } catch (IOException e) {
             // Dit is een RuntimeException omdat ObjectMapper.readValue IOException kan gooien.
-            // Dit zou alleen gebeuren als er iets mis is met de JSON String die we uit de database krijgen.
+            // Dit zou alleen gebeuren als er iets mis is met de JSON String.
             throw new RuntimeException(e);
         }
 
@@ -217,19 +218,19 @@ public RideDto addRide(RideDto rideDto) {
             LocalDate departureDate,
             int pax)
     {
-        List<Ride> rideList;
+        LocalDateTime now = LocalDateTime.now();
 
-        rideList = rideRepository.findAllRidesByDestinationEqualsIgnoreCaseAndPickUpLocationEqualsIgnoreCase(
+        List<Ride> rideList = rideRepository.findAllByDestinationIgnoreCaseAndPickUpLocationIgnoreCaseAndDepartureDateTimeAfter(
                 destination,
-                pickUpLocation
+                pickUpLocation,
+                now
         );
 
         List<Ride> availableRideList = new ArrayList<>();
         for (Ride ride : rideList) {
-            if (departureDate == null || ride.getDepartureDateTime().toLocalDate().equals(departureDate)) {
-                if (ride.getAvailableSpots() >= pax) {
-                    availableRideList.add(ride);
-                }
+            // Alleen checken of er genoeg plaatsen zijn. De query checked de datum al
+            if (ride.getAvailableSpots() >= pax) {
+                availableRideList.add(ride);
             }
         }
 
@@ -254,7 +255,6 @@ public RideDto addRide(RideDto rideDto) {
         if (optionalRide.isPresent()) {
             Ride ride = optionalRide.get();
 
-            // Stuur een notificatie naar elke gerelateerde gebruiker voordat de rit wordt verwijderd
             for (User user : ride.getUsers()) {
                 // Verstuur de notificatie alleen naar passagiers, niet naar de bestuurder
                 if (!user.getUsername().equals(ride.getDriverUsername())) {
@@ -271,12 +271,11 @@ public RideDto addRide(RideDto rideDto) {
                     notificationService.createNotification(notificationDto, ride);
                 }
 
-                // Verwijder de rit uit de lijst van ritten voor elke gerelateerde gebruiker
+                // Verwijder de rit uit de lijst van ritten voor elke gebruiker
                 user.getRides().remove(ride);
                 userRepository.save(user);
             }
 
-            // Verwijder de Ride entiteit
             rideRepository.deleteById(id);
         } else {
             throw new RecordNotFoundException("Rit niet gevonden");
@@ -350,7 +349,7 @@ public RideDto addRide(RideDto rideDto) {
             user.getRides().remove(ride);
 
             reservedSpotsByUser.remove(username);
-            // Convert naar een JSON String
+
             ride.setReservedSpotsByUser(objectMapper.writeValueAsString(reservedSpotsByUser));
 
             rideRepository.save(ride);

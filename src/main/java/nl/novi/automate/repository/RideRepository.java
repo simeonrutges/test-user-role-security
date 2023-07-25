@@ -18,4 +18,10 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
 
     @Query("SELECT r FROM Ride r JOIN r.users u WHERE u = :user")
     List<Ride> findRidesForUser(@Param("user") User user);
+
+    List<Ride> findAllByDestinationIgnoreCaseAndPickUpLocationIgnoreCaseAndDepartureDateTimeAfter(
+            String destination,
+            String pickUpLocation,
+            LocalDateTime departureDateTime);
+
 }
