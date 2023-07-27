@@ -18,6 +18,7 @@ public class User {
     private String email;
     private boolean enabled = true;
     private int phoneNumber;
+    @Column(length = 1000)
     private String bio;
     @Column
     private String fileName;

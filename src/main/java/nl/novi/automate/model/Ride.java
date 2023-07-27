@@ -17,7 +17,9 @@ public class Ride {
     private Long id;
     private String pickUpLocation;
     private String destination;
+    @Column(length = 250)
     private String route;
+    @Column(length = 500)
     private String addRideInfo;
     private LocalTime departureTime;
     private LocalDate departureDate;
